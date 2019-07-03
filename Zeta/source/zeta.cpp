@@ -3,7 +3,8 @@ MAIN.CPP
 TODO: Refactor all of this crap, it's test code
 */
 
-#include <cache/cache_files.h>
+#include <cache/cache_files_reach.h>
+#include <tag_files/tag_groups_reach.h>
 
 int main()
 {
@@ -29,22 +30,12 @@ int main()
 	fclose(stream);
 
 	auto header = (s_cache_file_header *)buffer;
-	
 	auto magic = (qword)header->memory_buffer_offset - header->virtual_base_address;
-
-	for (long i = 0; i < k_number_of_cache_file_partitions; i++)
-	{
-		header->partitions[i].base_address += magic;
-		header->partitions[i].size = header->partitions[i].size & 0xffffffff;
-	}
-
-	auto tag_index = header->tag_index =
-		(s_cache_tag_index_header *)(buffer + (qword)header->tag_index + magic);
-
-	tag_index->groups = (s_tag_group *)(buffer + (qword)tag_index->groups + magic);
-	tag_index->tags = (s_cache_tag_instance *)(buffer + (qword)tag_index->tags + magic);
-	tag_index->important_groups = (s_tag_group *)(buffer + (qword)tag_index->important_groups + magic);
-	tag_index->tag_interop_table_address += magic;
+	auto tag_index = (s_cache_tag_index_header *)(buffer + header->tag_index_address + magic);
+	auto tag_groups = (s_tag_group_reach *)(buffer + tag_index->groups_address + magic);
+	auto tag_instances = (s_cache_tag_instance *)(buffer + tag_index->tags_address + magic);
+	auto important_groups = (s_tag_group_reach *)(buffer + tag_index->important_groups_address + magic);
+	auto tag_interop = buffer + tag_index->tag_interop_table_address + magic;
 
 	long *tag_name_offsets = (long *)(buffer + header->tag_name_indices_offset);
 
@@ -54,7 +45,7 @@ int main()
 
 	for (long i = 0; i < tag_index->tag_count; i++)
 	{
-		auto tag_instance = &tag_index->tags[i];
+		auto tag_instance = &tag_instances[i];
 
 		if (tag_instance->group_index == NONE || tag_instance->identifier == NONE)
 			continue;
@@ -66,7 +57,7 @@ int main()
 			i,
 			tag_offset,
 			buffer + header->tag_names_buffer_offset + tag_name_offsets[i],
-			tag_to_string(tag_index->groups[tag_instance->group_index].tags[0], &tag_string[0]));
+			tag_to_string(tag_groups[tag_instance->group_index].tags[0], &tag_string[0]));
 	}
 
 	delete[] buffer;

@@ -17,6 +17,10 @@ CSERIES.H
 
 /* ---------- macros */
 
+#ifndef BLAMAPI
+#define BLAMAPI
+#endif
+
 /* ---------- constants */
 
 enum

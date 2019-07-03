@@ -1,44 +1,16 @@
 /*
-CACHE_FILES.H
+CACHE_FILES_REACH.H
 */
 
 #pragma once
 
+#include <haloreach.h>
+
 #include <cseries/cseries.h>
+#include <cache/cache_files.h>
 #include <tag_files/tag_groups.h>
 
 /* ---------- constants */
-
-enum
-{
-	k_cache_header_signature = 'head',
-	k_cache_footer_signature = 'foot',
-	k_cache_tags_signature = 'tags',
-
-	k_maximum_tag_address = 0xC0000000
-};
-
-enum e_scenario_type
-{
-	_scenario_type_none = NONE,
-	_scenario_type_campaign,
-	_scenario_type_multiplayer,
-	_scenario_type_mainmenu,
-	_scenario_type_shared,
-	_scenario_type_shared_campaign,
-	_scenario_type_unused5,
-	_scenario_type_unused6,
-	k_number_of_scenario_types
-};
-
-enum e_scenario_load_type
-{
-	_scenario_load_none = NONE,
-	_scenario_load_mainmenu,
-	_scenario_load_shared,
-	_scenario_load_shared_campaign,
-	k_number_of_scenario_load_types
-};
 
 enum e_cache_file_partition
 {
@@ -101,11 +73,11 @@ static_assert(sizeof(s_cache_tag_instance) == 0x8);
 struct s_cache_tag_index_header
 {
 	qword group_count;
-	s_tag_group *groups;
+	qword groups_address;
 	qword tag_count;
-	s_cache_tag_instance *tags;
+	qword tags_address;
 	qword important_group_count;
-	s_tag_group *important_groups;
+	qword important_groups_address;
 	qword tag_interop_table_count;
 	qword tag_interop_table_address;
 	long unknown44;
@@ -121,7 +93,7 @@ struct s_cache_file_header
 	long file_version;
 	long file_length;
 	long file_compressed_length;
-	s_cache_tag_index_header *tag_index;
+	qword tag_index_address;
 	long memory_buffer_offset;
 	long memory_buffer_size;
 	u_long_string source_file;
@@ -181,4 +153,9 @@ struct s_cache_file_header
 };
 static_assert(sizeof(s_cache_file_header) == 0xA000);
 
-/* ---------- prototypes/CACHE_FILES.CPP */
+/* ---------- classes */
+
+class BLAMAPI c_cache_file_reach : public c_cache_file
+{
+public:
+};
