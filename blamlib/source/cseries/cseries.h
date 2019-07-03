@@ -14,6 +14,7 @@ CSERIES.H
 
 #include <cseries/enums.inl>
 #include <cseries/flags.inl>
+#include <cseries/static_string.inl>
 
 /* ---------- macros */
 
@@ -58,19 +59,11 @@ static_assert(sizeof(tag) == 0x4);
 typedef unsigned long string_id;
 static_assert(sizeof(string_id) == 0x4);
 
-union u_short_string
-{
-	char ascii[k_maximum_short_string_ascii_length];
-	wchar_t unicode[k_maximum_short_string_unicode_length];
-};
-static_assert(sizeof(u_short_string) == k_maximum_short_string_length);
+typedef u_static_string<k_maximum_short_string_length> short_string;
+static_assert(sizeof(short_string) == k_maximum_short_string_length);
 
-union u_long_string
-{
-	char ascii[k_maximum_long_string_ascii_length];
-	wchar_t unicode[k_maximum_long_string_unicode_length];
-};
-static_assert(sizeof(u_long_string) == k_maximum_long_string_length);
+typedef u_static_string<k_maximum_long_string_length> long_string;
+static_assert(sizeof(long_string) == k_maximum_long_string_length);
 
 template <typename t_value>
 struct s_ptr32

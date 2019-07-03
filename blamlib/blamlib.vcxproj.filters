@@ -76,5 +76,8 @@
     <None Include="source\math\vector4d.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="source\cseries\static_string.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

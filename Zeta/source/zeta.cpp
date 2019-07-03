@@ -29,19 +29,18 @@ int main()
 	fread(buffer, header_base.file_length, 1, stream);
 	fclose(stream);
 
-	auto header = (s_cache_file_header *)buffer;
-	auto magic = (qword)header->memory_buffer_offset - header->virtual_base_address;
-	auto tag_index = (s_cache_tag_index_header *)(buffer + header->tag_index_address + magic);
-	auto tag_groups = (s_tag_group_reach *)(buffer + tag_index->groups_address + magic);
-	auto tag_instances = (s_cache_tag_instance *)(buffer + tag_index->tags_address + magic);
-	auto important_groups = (s_tag_group_reach *)(buffer + tag_index->important_groups_address + magic);
-	auto tag_interop = buffer + tag_index->tag_interop_table_address + magic;
-
-	long *tag_name_offsets = (long *)(buffer + header->tag_name_indices_offset);
+	auto header = (s_cache_file_header_reach *)buffer;
+	auto magic = (qword)header->memory_buffer_offset - header->virtual_base.address;
+	auto tag_index = (s_cache_tag_index_header_reach *)(buffer + header->tag_index.address + magic);
+	auto tag_groups = (s_tag_group_reach *)(buffer + tag_index->groups.address + magic);
+	auto tag_instances = (s_cache_tag_instance_reach *)(buffer + tag_index->tags.address + magic);
+	auto important_groups = (s_tag_group_reach *)(buffer + tag_index->important_groups.address + magic);
+	auto tag_interop = buffer + tag_index->tag_interop_table.address + magic;
+	auto tag_name_offsets = (long *)(buffer + header->tag_name_indices_offset);
 
 	char tag_string[5] = { 0, 0, 0, 0, 0 };
 
-	qword address_mask = header->virtual_base_address - (qword)header->memory_buffer_offset - 0x10000000;
+	qword address_mask = header->virtual_base.address - (qword)header->memory_buffer_offset - 0x10000000;
 
 	for (long i = 0; i < tag_index->tag_count; i++)
 	{
@@ -50,8 +49,8 @@ int main()
 		if (tag_instance->group_index == NONE || tag_instance->identifier == NONE)
 			continue;
 
-		qword tag_offset = tag_instance->page_address == 0 ? 0 :
-			((qword)tag_instance->page_address * 4) - address_mask;
+		qword tag_offset = tag_instance->location.address == 0 ? 0 :
+			((qword)tag_instance->location.address * 4) - address_mask;
 
 		printf("[Index: 0x%lX, Offset: 0x%zX] %s.%s\n",
 			i,

@@ -4,6 +4,8 @@ HALOREACH.H
 
 #pragma once
 
+/* ---------- macros */
+
 #ifdef BLAMAPI
 #	undef BLAMAPI
 #endif

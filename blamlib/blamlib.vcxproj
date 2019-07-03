@@ -35,6 +35,7 @@
   <ItemGroup>
     <None Include="source\cseries\enums.inl" />
     <None Include="source\cseries\flags.inl" />
+    <None Include="source\cseries\static_string.inl" />
     <None Include="source\math\point2d.inl" />
     <None Include="source\math\point3d.inl" />
     <None Include="source\math\quaternion.inl" />

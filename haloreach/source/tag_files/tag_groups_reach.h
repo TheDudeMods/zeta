@@ -4,6 +4,8 @@ TAG_GROUPS.H
 
 #pragma once
 
+#include <haloreach.h>
+
 #include <cseries/cseries.h>
 #include <tag_files/tag_groups.h>
 
@@ -36,17 +38,17 @@ static_assert(sizeof(s_tag_data_reach) == 0x14);
 
 /* ---------- classes */
 
-class c_tag_group_reach : public c_tag_group
+class BLAMAPI c_tag_group_reach : public c_tag_group
 {
 public:
 };
 
-class c_tag_block_reach : public c_tag_block
+class BLAMAPI c_tag_block_reach : public c_tag_block
 {
 public:
 };
 
-class c_tag_data_reach : public c_tag_data
+class BLAMAPI c_tag_data_reach : public c_tag_data
 {
 public:
 };

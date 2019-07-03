@@ -8,25 +8,25 @@ TAG_GROUPS.H
 
 /* ---------- classes */
 
-class c_tag_group
+class BLAMAPI c_tag_group
 {
 protected:
 	void *m_address;
 };
 
-class c_tag_block
+class BLAMAPI c_tag_block
 {
 protected:
 	void *m_address;
 };
 
-class c_tag_data
+class BLAMAPI c_tag_data
 {
 protected:
 	void *m_address;
 };
 
-class c_tag_reference
+class BLAMAPI c_tag_reference
 {
 protected:
 	void *m_address;

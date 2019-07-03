@@ -8,7 +8,7 @@ CACHE_FILES_REACH.H
 
 #include <cseries/cseries.h>
 #include <cache/cache_files.h>
-#include <tag_files/tag_groups.h>
+#include <tag_files/tag_groups_reach.h>
 
 /* ---------- constants */
 
@@ -34,21 +34,21 @@ enum e_cache_file_section
 
 /* ---------- structures */
 
-struct s_cache_file_partition
+struct s_cache_file_partition_reach
 {
-	qword base_address;
+	s_ptr64<void> location;
 	qword size;
 };
-static_assert(sizeof(s_cache_file_partition) == 0x10);
+static_assert(sizeof(s_cache_file_partition_reach) == 0x10);
 
-struct s_cache_file_section
+struct s_cache_file_section_reach
 {
-	dword virtual_address;
+	s_ptr32<void> location;
 	dword size;
 };
-static_assert(sizeof(s_cache_file_section) == 0x8);
+static_assert(sizeof(s_cache_file_section_reach) == 0x8);
 
-struct s_cache_file_interop
+struct s_cache_file_interop_reach
 {
 	dword unknown0;
 	dword unknown4;
@@ -58,46 +58,46 @@ struct s_cache_file_interop
 	dword debug_section_size;
 	dword runtime_base_offset;
 	dword unknown_base_offset;
-	s_cache_file_section sections[k_number_of_cache_file_sections];
+	s_cache_file_section_reach sections[k_number_of_cache_file_sections];
 };
-static_assert(sizeof(s_cache_file_interop) == 0x40);
+static_assert(sizeof(s_cache_file_interop_reach) == 0x40);
 
-struct s_cache_tag_instance
+struct s_cache_tag_instance_reach
 {
 	short group_index;
 	short identifier;
-	dword page_address;
+	s_ptr32<void> location;
 };
-static_assert(sizeof(s_cache_tag_instance) == 0x8);
+static_assert(sizeof(s_cache_tag_instance_reach) == 0x8);
 
-struct s_cache_tag_index_header
+struct s_cache_tag_index_header_reach
 {
 	qword group_count;
-	qword groups_address;
+	s_ptr64<s_tag_group_reach> groups;
 	qword tag_count;
-	qword tags_address;
+	s_ptr64<s_cache_tag_instance_reach> tags;
 	qword important_group_count;
-	qword important_groups_address;
+	s_ptr64<s_tag_group_reach> important_groups;
 	qword tag_interop_table_count;
-	qword tag_interop_table_address;
+	s_ptr64<void> tag_interop_table;
 	long unknown44;
 	long unknown48;
 	tag signature;
 	long : 32;
 };
-static_assert(sizeof(s_cache_tag_index_header) == 0x50);
+static_assert(sizeof(s_cache_tag_index_header_reach) == 0x50);
 
-struct s_cache_file_header
+struct s_cache_file_header_reach
 {
 	tag header_signature;
 	long file_version;
 	long file_length;
 	long file_compressed_length;
-	qword tag_index_address;
+	s_ptr64<s_cache_tag_index_header_reach> tag_index;
 	long memory_buffer_offset;
 	long memory_buffer_size;
-	u_long_string source_file;
-	u_short_string build;
+	long_string source_file;
+	short_string build;
 	c_enum<e_scenario_type, short> scenario_type;
 	c_enum<e_scenario_load_type, short> load_type;
 	char unknown1;
@@ -119,9 +119,9 @@ struct s_cache_file_header
 	qword unknown12;
 	qword unknown13;
 	qword unknown14;
-	u_short_string name;
+	short_string name;
 	long unknown15;
-	u_long_string scenario_path;
+	long_string scenario_path;
 	long unknown16;
 	long tag_name_count;
 	long tag_names_buffer_offset;
@@ -137,23 +137,38 @@ struct s_cache_file_header
 	long unknown23;
 	long unknown24;
 	long unknown25;
-	qword virtual_base_address;
+	s_ptr64<void> virtual_base;
 	qword virtual_base_size;
-	s_cache_file_partition partitions[k_number_of_cache_file_partitions];
+	s_cache_file_partition_reach partitions[k_number_of_cache_file_partitions];
 	qword unknown29;
 	qword unknown30;
 	long sha1_a[5];
 	long sha1_b[5];
 	long sha1_c[5];
 	long rsa[64];
-	s_cache_file_interop interop;
+	s_cache_file_interop_reach interop;
 	long guid[4];
 	long unknown32[0x26BE];
 	tag footer_signature;
 };
-static_assert(sizeof(s_cache_file_header) == 0xA000);
+static_assert(sizeof(s_cache_file_header_reach) == 0xA000);
 
 /* ---------- classes */
+
+class BLAMAPI c_cache_file_header_reach : public c_cache_file_header
+{
+public:
+};
+
+class BLAMAPI c_cache_tag_index_reach : public c_cache_tag_index
+{
+public:
+};
+
+class BLAMAPI c_cache_tag_instance_reach : public c_cache_tag_instance
+{
+public:
+};
 
 class BLAMAPI c_cache_file_reach : public c_cache_file
 {
