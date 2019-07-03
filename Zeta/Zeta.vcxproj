@@ -159,15 +159,27 @@
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\cseries\cseries.cpp" />
     <ClCompile Include="source\main\main.cpp" />
+    <ClCompile Include="source\math\integer_math.cpp" />
+    <ClCompile Include="source\math\real_math.cpp" />
+    <ClCompile Include="source\tag_files\tag_groups.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cache\cache_files.h" />
     <ClInclude Include="source\cseries\cseries.h" />
+    <ClInclude Include="source\math\integer_math.h" />
+    <ClInclude Include="source\math\real_math.h" />
     <ClInclude Include="source\tag_files\tag_groups.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\cseries\enums.inl" />
     <None Include="source\cseries\flags.inl" />
+    <None Include="source\math\point2d.inl" />
+    <None Include="source\math\point3d.inl" />
+    <None Include="source\math\quaternion.inl" />
+    <None Include="source\math\rectangle2d.inl" />
+    <None Include="source\math\vector2d.inl" />
+    <None Include="source\math\vector3d.inl" />
+    <None Include="source\math\vector4d.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

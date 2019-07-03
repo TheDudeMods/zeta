@@ -3,6 +3,7 @@ TAG_GROUPS.H
 */
 
 #pragma once
+
 #include <cseries/cseries.h>
 
 /* ---------- structures */
@@ -40,3 +41,5 @@ struct s_tag_data
 	long : 32;
 };
 static_assert(sizeof(s_tag_data) == 0x14);
+
+/* ---------- prototypes/TAG_GROUPS.CPP */

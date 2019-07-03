@@ -3,6 +3,7 @@ CACHE_FILES.H
 */
 
 #pragma once
+
 #include <cseries/cseries.h>
 #include <tag_files/tag_groups.h>
 
@@ -179,3 +180,5 @@ struct s_cache_file_header
 	tag footer_signature;
 };
 static_assert(sizeof(s_cache_file_header) == 0xA000);
+
+/* ---------- prototypes/CACHE_FILES.CPP */
