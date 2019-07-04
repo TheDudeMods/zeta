@@ -30,6 +30,12 @@
     <ClCompile Include="source\tag_files\tag_groups.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\tag_files\tag_groups_v1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tag_files\tag_groups_v2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cseries\cseries.h">
@@ -45,6 +51,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\tag_files\tag_groups.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\memory\data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tag_files\tag_groups_v2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -77,6 +89,12 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="source\cseries\static_string.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="source\cseries\static_array.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="source\tag_files\tag_groups_v1.h">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

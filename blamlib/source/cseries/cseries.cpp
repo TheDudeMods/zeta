@@ -22,7 +22,7 @@ char *tag_to_string(
 	char *string)
 {
 	for (int i = 0; i < sizeof(tag); i++)
-		string[sizeof(tag) - i - 1] = (value >> (i * k_bits_per_byte)) & k_uchar_maximum;
+		string[sizeof(tag) - i - 1] = (value >> (i * k_byte_bits)) & k_byte_maximum;
 
 	string[sizeof(tag)] = '\0';
 
@@ -35,7 +35,7 @@ tag string_to_tag(
 	tag result = 0;
 
 	for (int i = 0; i < sizeof(tag); i++)
-		result |=  string[sizeof(tag) - i - 1] << (i * k_bits_per_byte);
+		result |=  string[sizeof(tag) - i - 1] << (i * k_byte_bits);
 
 	return result;
 }

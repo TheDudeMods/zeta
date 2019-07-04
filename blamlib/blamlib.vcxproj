@@ -24,17 +24,22 @@
     <ClCompile Include="source\math\integer_math.cpp" />
     <ClCompile Include="source\math\real_math.cpp" />
     <ClCompile Include="source\tag_files\tag_groups.cpp" />
+    <ClCompile Include="source\tag_files\tag_groups_v1.cpp" />
+    <ClCompile Include="source\tag_files\tag_groups_v2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cache\cache_files.h" />
     <ClInclude Include="source\cseries\cseries.h" />
     <ClInclude Include="source\math\integer_math.h" />
     <ClInclude Include="source\math\real_math.h" />
+    <ClInclude Include="source\memory\data.h" />
     <ClInclude Include="source\tag_files\tag_groups.h" />
+    <ClInclude Include="source\tag_files\tag_groups_v2.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\cseries\enums.inl" />
     <None Include="source\cseries\flags.inl" />
+    <None Include="source\cseries\static_array.inl" />
     <None Include="source\cseries\static_string.inl" />
     <None Include="source\math\point2d.inl" />
     <None Include="source\math\point3d.inl" />
@@ -43,6 +48,7 @@
     <None Include="source\math\vector2d.inl" />
     <None Include="source\math\vector3d.inl" />
     <None Include="source\math\vector4d.inl" />
+    <None Include="source\tag_files\tag_groups_v1.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

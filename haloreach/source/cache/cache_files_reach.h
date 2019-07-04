@@ -36,14 +36,14 @@ enum e_cache_file_section
 
 struct s_cache_file_partition_reach
 {
-	s_ptr64<void> location;
+	s_ptr64<void> address;
 	qword size;
 };
 static_assert(sizeof(s_cache_file_partition_reach) == 0x10);
 
 struct s_cache_file_section_reach
 {
-	s_ptr32<void> location;
+	s_ptr32<void> address;
 	dword size;
 };
 static_assert(sizeof(s_cache_file_section_reach) == 0x8);
@@ -66,20 +66,20 @@ struct s_cache_tag_instance_reach
 {
 	short group_index;
 	short identifier;
-	s_ptr32<void> location;
+	s_ptr32<void> address;
 };
 static_assert(sizeof(s_cache_tag_instance_reach) == 0x8);
 
 struct s_cache_tag_index_header_reach
 {
 	qword group_count;
-	s_ptr64<s_tag_group_reach> groups;
+	s_ptr64<s_tag_group_v2> groups_address;
 	qword tag_count;
-	s_ptr64<s_cache_tag_instance_reach> tags;
+	s_ptr64<s_cache_tag_instance_reach> tags_address;
 	qword important_group_count;
-	s_ptr64<s_tag_group_reach> important_groups;
+	s_ptr64<s_tag_group_v2> important_groups_address;
 	qword tag_interop_table_count;
-	s_ptr64<void> tag_interop_table;
+	s_ptr64<void> tag_interop_table_address;
 	long unknown44;
 	long unknown48;
 	tag signature;
@@ -93,7 +93,7 @@ struct s_cache_file_header_reach
 	long file_version;
 	long file_length;
 	long file_compressed_length;
-	s_ptr64<s_cache_tag_index_header_reach> tag_index;
+	s_ptr64<s_cache_tag_index_header_reach> tag_index_address;
 	long memory_buffer_offset;
 	long memory_buffer_size;
 	long_string source_file;
@@ -114,15 +114,15 @@ struct s_cache_file_header_reach
 	long string_id_indices_offset;
 	long string_ids_buffer_offset;
 	long unknown9;
-	qword unknown10;
-	qword unknown11;
-	qword unknown12;
-	qword unknown13;
-	qword unknown14;
+	qword timestamp;
+	qword mainmenu_timestamp;
+	qword shared_timestamp;
+	qword campaign_timestamp;
+	qword multiplayer_timestamp;
 	short_string name;
 	long unknown15;
 	long_string scenario_path;
-	long unknown16;
+	long minor_version;
 	long tag_name_count;
 	long tag_names_buffer_offset;
 	long tag_names_buffer_size;
@@ -137,8 +137,9 @@ struct s_cache_file_header_reach
 	long unknown23;
 	long unknown24;
 	long unknown25;
-	s_ptr64<void> virtual_base;
-	qword virtual_base_size;
+	s_ptr64<void> virtual_base_address;
+	dword xdk_version;
+	long unknown26;
 	s_cache_file_partition_reach partitions[k_number_of_cache_file_partitions];
 	qword unknown29;
 	qword unknown30;

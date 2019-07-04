@@ -14,6 +14,7 @@ CSERIES.H
 
 #include <cseries/enums.inl>
 #include <cseries/flags.inl>
+#include <cseries/static_array.inl>
 #include <cseries/static_string.inl>
 
 /* ---------- macros */
@@ -37,6 +38,58 @@ enum
 	k_maximum_long_string_length = 256,
 	k_maximum_long_string_ascii_length = k_maximum_long_string_length / sizeof(char),
 	k_maximum_long_string_unicode_length = k_maximum_long_string_length / sizeof(wchar_t)
+};
+
+enum : char
+{
+	k_char_maximum = 127,
+	k_char_minimum = (-k_char_maximum) - 1,
+	k_char_bits = sizeof(char) * k_bits_per_byte
+};
+
+enum : short
+{
+	k_short_maximum = 32767,
+	k_short_minimum = (-k_short_maximum) - 1,
+	k_short_bits = sizeof(short) * k_bits_per_byte
+};
+
+enum : long
+{
+	k_long_maximum = 2147483647,
+	k_long_minimum = (-k_long_maximum) - 1,
+	k_long_bits = sizeof(long) * k_bits_per_byte
+};
+
+enum : long long
+{
+	k_int64_maximum = 9223372036854775807i64,
+	k_int64_minimum = (-k_int64_maximum) - 1,
+	k_int64_bits = sizeof(long long) * k_bits_per_byte
+};
+
+enum : unsigned char
+{
+	k_byte_maximum = 0xFF,
+	k_byte_bits = sizeof(unsigned char) * k_bits_per_byte
+};
+
+enum : unsigned short
+{
+	k_word_maximum = 0xFFFF,
+	k_word_bits = sizeof(unsigned short) * k_bits_per_byte
+};
+
+enum : unsigned long
+{
+	k_dword_maximum = 0xFFFFFFFF,
+	k_dword_bits = sizeof(unsigned long) * k_bits_per_byte
+};
+
+enum : unsigned long long
+{
+	k_qword_maximum = 0xFFFFFFFFFFFFFFFF,
+	k_qword_bits = sizeof(unsigned long long) * k_bits_per_byte
 };
 
 /* ---------- types */
@@ -68,74 +121,20 @@ static_assert(sizeof(long_string) == k_maximum_long_string_length);
 template <typename t_value>
 struct s_ptr32
 {
-	dword address;
+	dword value;
 
-	operator t_value *() { return (t_value *)address; }
+	operator t_value *() { return (t_value *)value; }
 };
 static_assert(sizeof(s_ptr32<void>) == sizeof(dword));
 
 template <typename t_value>
 struct s_ptr64
 {
-	qword address;
+	qword value;
 
-	operator t_value *() { return (t_value *)address; }
+	operator t_value *() { return (t_value *)value; }
 };
 static_assert(sizeof(s_ptr64<void>) == sizeof(qword));
-
-/* ---------- limits */
-
-enum : char
-{
-	k_char_maximum = 127,
-	k_char_minimum = (-k_char_maximum) - 1,
-	k_char_bits = sizeof(char) * k_bits_per_byte
-};
-
-enum : short
-{
-	k_short_maximum = 32767,
-	k_short_minimum = (-k_short_maximum) - 1,
-	k_short_bits = sizeof(short) * k_bits_per_byte
-};
-
-enum : long
-{
-	k_long_maximum = 2147483647,
-	k_long_minimum = (-k_long_maximum) - 1,
-	k_long_bits = sizeof(long) * k_bits_per_byte
-};
-
-enum : long long
-{
-	k_longlong_maximum = 9223372036854775807i64,
-	k_longlong_minimum = (-k_longlong_maximum) - 1,
-	k_longlong_bits = sizeof(long long) * k_bits_per_byte
-};
-
-enum : byte
-{
-	k_uchar_maximum = 0xFF,
-	k_uchar_bits = sizeof(byte) * k_bits_per_byte
-};
-
-enum : word
-{
-	k_ushort_maximum = 0xFFFF,
-	k_ushort_bits = sizeof(word) * k_bits_per_byte
-};
-
-enum : dword
-{
-	k_ulong_maximum = 0xFFFFFFFF,
-	k_ulong_bits = sizeof(dword) * k_bits_per_byte
-};
-
-enum : qword
-{
-	k_ulonglong_maximum = 0xFFFFFFFFFFFFFFFF,
-	k_ulonglong_bits = sizeof(qword) * k_bits_per_byte
-};
 
 /* ---------- prototypes/CSERIES.CPP */
 
