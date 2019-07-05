@@ -3,40 +3,69 @@ MAIN.CPP
 TODO: Refactor all of this crap, it's test code
 */
 
+#include <cseries/cseries.h>
 #include <cache/cache_files_reach.h>
 #include <tag_files/tag_groups_reach.h>
 
 int main()
 {
+	long_string cache_file_path;
+	FILE *cache_file_stream;
+	char *cache_file_buffer;
+
 	struct
 	{
 		tag header_signature;
 		long file_version;
 		long file_length;
-	} header_base;
+	} cache_file_info;
 
-	char *buffer = nullptr;
+	puts("Zeta v0.0.1");
 
-	auto stream = fopen("C:\\Halo\\Maps\\ReachPC\\m35.map", "rb+");
-	fread(&header_base, sizeof(header_base), 1, stream);
+	while (true)
+	{
+		puts("");
+		puts("Enter the path to a Halo cache file:");
+		printf("> ");
 
-	if (header_base.header_signature != 'head' || header_base.file_version != 12)
-		return EXIT_FAILURE;
+		gets_s(cache_file_path.ascii);
 
-	buffer = new char[header_base.file_length];
+		if (strlen(cache_file_path.ascii) == 0)
+			continue;
 
-	fseek(stream, 0, SEEK_SET);
-	fread(buffer, header_base.file_length, 1, stream);
-	fclose(stream);
+		if (cache_file_stream = fopen(cache_file_path.ascii, "rb+"))
+		{
+			fseek(cache_file_stream, 0, SEEK_SET);
+			fread(&cache_file_info, sizeof(cache_file_info), 1, cache_file_stream);
 
-	auto header = (s_cache_file_header_reach *)buffer;
+			if (cache_file_info.header_signature != k_cache_header_signature &&
+				_byteswap_ulong(cache_file_info.header_signature) != k_cache_header_signature)
+			{
+				puts("ERROR: Invalid cache file!");
+				continue;
+			}
+			else
+			{
+				cache_file_buffer = new char[cache_file_info.file_length];
+
+				fseek(cache_file_stream, 0, SEEK_SET);
+				fread(cache_file_buffer, cache_file_info.file_length, 1, cache_file_stream);
+				fclose(cache_file_stream);
+
+				puts("");
+				break;
+			}
+		}
+	}
+
+	auto header = (s_cache_file_header_reach *)cache_file_buffer;
 	auto magic = (qword)header->memory_buffer_offset - header->virtual_base_address.value;
-	auto tag_index = (s_cache_tag_index_header_reach *)(buffer + header->tag_index_address.value + magic);
-	auto tag_groups = (s_tag_group_v2 *)(buffer + tag_index->groups_address.value + magic);
-	auto tag_instances = (s_cache_tag_instance_reach *)(buffer + tag_index->tags_address.value + magic);
-	auto important_groups = (s_tag_group_v2 *)(buffer + tag_index->important_groups_address.value + magic);
-	auto tag_interop = buffer + tag_index->tag_interop_table_address.value + magic;
-	auto tag_name_offsets = (long *)(buffer + header->tag_name_indices_offset);
+	auto tag_index = (s_cache_tag_index_header_reach *)(cache_file_buffer + header->tag_index_address.value + magic);
+	auto tag_groups = (s_tag_group_v2 *)(cache_file_buffer + tag_index->groups_address.value + magic);
+	auto tag_instances = (s_cache_tag_instance_reach *)(cache_file_buffer + tag_index->tags_address.value + magic);
+	auto important_groups = (s_tag_group_v2 *)(cache_file_buffer + tag_index->important_groups_address.value + magic);
+	auto tag_interop = cache_file_buffer + tag_index->tag_interop_table_address.value + magic;
+	auto tag_name_offsets = (long *)(cache_file_buffer + header->tag_name_indices_offset);
 
 	char tag_string[5] = { 0, 0, 0, 0, 0 };
 
@@ -55,11 +84,11 @@ int main()
 		printf("[Index: 0x%lX, Offset: 0x%zX] %s.%s\n",
 			i,
 			tag_offset,
-			buffer + header->tag_names_buffer_offset + tag_name_offsets[i],
+			cache_file_buffer + header->tag_names_buffer_offset + tag_name_offsets[i],
 			tag_to_string(tag_groups[tag_instance->group_index].tags[0], &tag_string[0]));
 	}
 
-	delete[] buffer;
+	delete[] cache_file_buffer;
 
 	return EXIT_SUCCESS;
 }
