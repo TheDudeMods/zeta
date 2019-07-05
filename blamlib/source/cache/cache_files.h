@@ -68,9 +68,6 @@ public:
 	virtual long get_file_length() const = 0;
 	virtual void set_file_length(long length) = 0;
 
-	virtual long get_file_compressed_length() const = 0;
-	virtual void set_file_compressed_length(long length) const = 0;
-
 	virtual s_ptr64<s_cache_tag_index> get_tag_index_address() const = 0;
 	virtual void set_tag_index_address(s_ptr64<s_cache_tag_index> address) = 0;
 
@@ -80,10 +77,20 @@ public:
 	virtual long get_memory_buffer_size() const = 0;
 	virtual void set_memory_buffer_size(long size) = 0;
 
-	virtual char const *get_source_file() const = 0;
-	virtual void set_source_file(char const *file) = 0;
+	virtual char const *get_build_name() const = 0;
+	virtual void set_build_name(char const *name) = 0;
 
-	// TODO...
+	virtual e_scenario_type get_scenario_type() const = 0;
+	virtual void set_scenario_type(e_scenario_type const &type) = 0;
+
+	virtual e_scenario_load_type get_scenario_load_type() const = 0;
+	virtual void set_scenario_load_type(e_scenario_load_type const &type) = 0;
+
+	virtual char const *get_name() const = 0;
+	virtual void set_name(char const *name) = 0;
+
+	virtual s_ptr64<void> get_virtual_base_address() const = 0;
+	virtual void set_virtual_base_address(s_ptr64<void> const &address) = 0;
 };
 
 class BLAMAPI c_cache_tag_index
@@ -121,8 +128,12 @@ public:
 	c_cache_file();
 	c_cache_file(char const *path);
 	c_cache_file(c_cache_file const &file);
+	~c_cache_file();
 
-	virtual c_cache_file_header &get_header() const = 0;
-	virtual c_cache_tag_index &get_tag_index() const = 0;
-	virtual c_cache_tag_instance &get_tag_instance(long index) const = 0;
+	virtual dword get_magic32() const = 0;
+	virtual qword get_magic64() const = 0;
+
+	virtual c_cache_file_header &get_header() = 0;
+	virtual c_cache_tag_index &get_tag_index() = 0;
+	virtual c_cache_tag_instance get_tag_instance(long index) = 0;
 };

@@ -123,6 +123,9 @@ struct s_ptr32
 {
 	dword value;
 
+	s_ptr32(dword value) : value(value) {}
+	s_ptr32() : s_ptr32(0) {}
+
 	operator t_value *() { return (t_value *)value; }
 };
 static_assert(sizeof(s_ptr32<void>) == sizeof(dword));
@@ -131,6 +134,9 @@ template <typename t_value>
 struct s_ptr64
 {
 	qword value;
+
+	s_ptr64(qword value) : value(value) {}
+	s_ptr64() : s_ptr64(0) {}
 
 	operator t_value *() { return (t_value *)value; }
 };

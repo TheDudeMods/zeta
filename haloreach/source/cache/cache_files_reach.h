@@ -159,6 +159,39 @@ static_assert(sizeof(s_cache_file_header_reach) == 0xA000);
 class BLAMAPI c_cache_file_header_reach : public c_cache_file_header
 {
 public:
+	c_cache_file_header_reach();
+	c_cache_file_header_reach(s_cache_file_header *const &header);
+	c_cache_file_header_reach(c_cache_file_header_reach const &header);
+
+	long get_file_version() const override;
+	void set_file_version(long version) override;
+
+	long get_file_length() const override;
+	void set_file_length(long length) override;
+
+	s_ptr64<s_cache_tag_index> get_tag_index_address() const override;
+	void set_tag_index_address(s_ptr64<s_cache_tag_index> address) override;
+
+	long get_memory_buffer_offset() const override;
+	void set_memory_buffer_offset(long offset) override;
+
+	long get_memory_buffer_size() const override;
+	void set_memory_buffer_size(long size) override;
+
+	char const *get_build_name() const override;
+	void set_build_name(char const *name) override;
+
+	e_scenario_type get_scenario_type() const override;
+	void set_scenario_type(e_scenario_type const &type) override;
+
+	e_scenario_load_type get_scenario_load_type() const override;
+	void set_scenario_load_type(e_scenario_load_type const &type) override;
+
+	char const *get_name() const override;
+	void set_name(char const *name) override;
+
+	s_ptr64<void> get_virtual_base_address() const override;
+	void set_virtual_base_address(s_ptr64<void> const &address) override;
 };
 
 class BLAMAPI c_cache_tag_index_reach : public c_cache_tag_index
@@ -173,5 +206,19 @@ public:
 
 class BLAMAPI c_cache_file_reach : public c_cache_file
 {
+protected:
+	c_cache_file_header_reach m_header;
+	c_cache_tag_index_reach m_tag_index;
+
 public:
+	c_cache_file_reach();
+	c_cache_file_reach(char const *path);
+	c_cache_file_reach(c_cache_file_reach const &file);
+
+	dword get_magic32() const override;
+	qword get_magic64() const override;
+
+	c_cache_file_header &get_header() override;
+	c_cache_tag_index &get_tag_index() override;
+	c_cache_tag_instance get_tag_instance(long index) override;
 };
