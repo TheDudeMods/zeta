@@ -9,27 +9,27 @@ TAG_GROUP_V1.INL
 
 /* ---------- structures */
 
-struct s_tag_group_v1 : s_tag_group
+struct s_tag_group_v1
 {
 	tag tags[3];
 };
 static_assert(sizeof(s_tag_group_v1) == 0xC);
 
-struct s_tag_block_v1 : s_tag_block
+struct s_tag_block_v1
 {
 	long count;
-	s_ptr32<void> address;
+	dword address;
 };
 static_assert(sizeof(s_tag_block_v1) == 0x8);
 
-struct s_tag_data_v1 : s_tag_block
+struct s_tag_data_v1
 {
 	long size;
-	s_ptr32<void> address;
+	dword address;
 };
 static_assert(sizeof(s_tag_data_v1) == 0x8);
 
-struct s_tag_reference_v1 : s_tag_reference
+struct s_tag_reference_v1
 {
 	tag group_tag;
 	long index;

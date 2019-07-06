@@ -11,7 +11,7 @@ c_tag_group::c_tag_group() :
 {
 }
 
-c_tag_group::c_tag_group(s_tag_group *const &group) :
+c_tag_group::c_tag_group(void *const &group) :
 	m_group(group)
 {
 }
@@ -26,7 +26,7 @@ c_tag_block::c_tag_block() :
 {
 }
 
-c_tag_block::c_tag_block(s_tag_block *const &block) :
+c_tag_block::c_tag_block(void *const &block) :
 	m_block(block)
 {
 }
@@ -41,7 +41,7 @@ c_tag_data::c_tag_data() :
 {
 }
 
-c_tag_data::c_tag_data(s_tag_data *const &data) :
+c_tag_data::c_tag_data(void *const &data) :
 	m_data(data)
 {
 }
@@ -56,7 +56,7 @@ c_tag_reference::c_tag_reference() :
 {
 }
 
-c_tag_reference::c_tag_reference(s_tag_reference *const &reference) :
+c_tag_reference::c_tag_reference(void *const &reference) :
 	m_reference(reference)
 {
 }

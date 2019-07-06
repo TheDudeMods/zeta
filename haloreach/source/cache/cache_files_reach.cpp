@@ -11,7 +11,7 @@ c_cache_file_header_reach::c_cache_file_header_reach() :
 {
 }
 
-c_cache_file_header_reach::c_cache_file_header_reach(s_cache_file_header *const &header) :
+c_cache_file_header_reach::c_cache_file_header_reach(void *const &header) :
 	c_cache_file_header(header)
 {
 }
@@ -41,14 +41,14 @@ void c_cache_file_header_reach::set_file_length(long length)
 	((s_cache_file_header_reach *)m_header)->file_length = length;
 }
 
-s_ptr64<s_cache_tag_index> c_cache_file_header_reach::get_tag_index_address() const
+qword c_cache_file_header_reach::get_tag_index_address() const
 {
-	return s_ptr64<s_cache_tag_index>(((s_cache_file_header_reach *)m_header)->tag_index_address.value);
+	return qword(((s_cache_file_header_reach *)m_header)->tag_index_address);
 }
 
-void c_cache_file_header_reach::set_tag_index_address(s_ptr64<s_cache_tag_index> address)
+void c_cache_file_header_reach::set_tag_index_address(qword address)
 {
-	((s_cache_file_header_reach *)m_header)->tag_index_address.value = address.value;
+	((s_cache_file_header_reach *)m_header)->tag_index_address = address;
 }
 
 long c_cache_file_header_reach::get_memory_buffer_offset() const
@@ -113,12 +113,12 @@ void c_cache_file_header_reach::set_name(char const *name)
 	strcpy_s(((s_cache_file_header_reach *)m_header)->name.ascii, name);
 }
 
-s_ptr64<void> c_cache_file_header_reach::get_virtual_base_address() const
+qword c_cache_file_header_reach::get_virtual_base_address() const
 {
 	return ((s_cache_file_header_reach *)m_header)->virtual_base_address;
 }
 
-void c_cache_file_header_reach::set_virtual_base_address(s_ptr64<void> const &address)
+void c_cache_file_header_reach::set_virtual_base_address(qword const &address)
 {
 	((s_cache_file_header_reach *)m_header)->virtual_base_address = address;
 }
@@ -131,8 +131,8 @@ c_cache_file_reach::c_cache_file_reach() :
 c_cache_file_reach::c_cache_file_reach(char const *path) :
 	c_cache_file(path)
 {
-	m_header = c_cache_file_header_reach((s_cache_file_header *)&m_buffer[0]);
-	//m_tag_index = c_cache_tag_index_reach((s_cache_tag_index *)&m_buffer[m_header.get_tag_index_address().value]);
+	m_header = c_cache_file_header_reach((void *)&m_buffer[0]);
+	//m_tag_index = c_cache_tag_index_reach((void *)&m_buffer[m_header.get_tag_index_address().value]);
 }
 
 c_cache_file_reach::c_cache_file_reach(c_cache_file_reach const &file) :
@@ -142,12 +142,12 @@ c_cache_file_reach::c_cache_file_reach(c_cache_file_reach const &file) :
 
 dword c_cache_file_reach::get_magic32() const
 {
-	return (dword)(m_header.get_virtual_base_address().value - (qword)m_header.get_memory_buffer_offset() - 0x10000000);
+	return (dword)(m_header.get_virtual_base_address() - (qword)m_header.get_memory_buffer_offset() - 0x10000000);
 }
 
 qword c_cache_file_reach::get_magic64() const
 {
-	return (qword)m_header.get_memory_buffer_offset() - m_header.get_virtual_base_address().value;
+	return (qword)m_header.get_memory_buffer_offset() - m_header.get_virtual_base_address();
 }
 
 c_cache_file_header &c_cache_file_reach::get_header()

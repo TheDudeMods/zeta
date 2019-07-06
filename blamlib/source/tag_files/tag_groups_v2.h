@@ -16,36 +16,36 @@ enum e_tag_data_v2_flags
 
 /* ---------- structures */
 
-struct s_tag_group_v2 : s_tag_group
+struct s_tag_group_v2
 {
 	tag tags[3];
 	string_id name;
 };
 static_assert(sizeof(s_tag_group_v2) == 0x10);
 
-struct s_tag_block_v2 : s_tag_block
+struct s_tag_block_v2
 {
 	long count;
-	s_ptr32<void> address;
-	s_ptr32<void> definition;
+	dword address;
+	dword definition;
 };
 static_assert(sizeof(s_tag_block_v2) == 0xC);
 
-struct s_tag_data_v2 : s_tag_data
+struct s_tag_data_v2
 {
 	long size;
 	c_flags<e_tag_data_v2_flags, long> flags;
 	long file_offset;
-	s_ptr32<void> address;
-	s_ptr32<void> definition;
+	dword address;
+	dword definition;
 };
 static_assert(sizeof(s_tag_data_v2) == 0x14);
 
-struct s_tag_reference_v2 : s_tag_reference
+struct s_tag_reference_v2
 {
 	tag group_tag;
 	long name_length;
-	s_ptr32<char> name;
+	dword name;
 	long index;
 };
 static_assert(sizeof(s_tag_reference_v2) == 0x10);

@@ -36,14 +36,14 @@ enum e_cache_file_section
 
 struct s_cache_file_partition_reach
 {
-	s_ptr64<void> address;
+	qword address;
 	qword size;
 };
 static_assert(sizeof(s_cache_file_partition_reach) == 0x10);
 
 struct s_cache_file_section_reach
 {
-	s_ptr32<void> address;
+	dword address;
 	dword size;
 };
 static_assert(sizeof(s_cache_file_section_reach) == 0x8);
@@ -66,20 +66,20 @@ struct s_cache_tag_instance_reach
 {
 	short group_index;
 	short identifier;
-	s_ptr32<void> address;
+	dword address;
 };
 static_assert(sizeof(s_cache_tag_instance_reach) == 0x8);
 
 struct s_cache_tag_index_header_reach
 {
 	qword group_count;
-	s_ptr64<s_tag_group_v2> groups_address;
+	qword groups_address;
 	qword tag_count;
-	s_ptr64<s_cache_tag_instance_reach> tags_address;
+	qword tags_address;
 	qword important_group_count;
-	s_ptr64<s_tag_group_v2> important_groups_address;
+	qword important_groups_address;
 	qword tag_interop_table_count;
-	s_ptr64<void> tag_interop_table_address;
+	qword tag_interop_table_address;
 	long unknown44;
 	long unknown48;
 	tag signature;
@@ -93,7 +93,7 @@ struct s_cache_file_header_reach
 	long file_version;
 	long file_length;
 	long file_compressed_length;
-	s_ptr64<s_cache_tag_index_header_reach> tag_index_address;
+	qword tag_index_address;
 	long memory_buffer_offset;
 	long memory_buffer_size;
 	long_string source_file;
@@ -137,7 +137,7 @@ struct s_cache_file_header_reach
 	long unknown23;
 	long unknown24;
 	long unknown25;
-	s_ptr64<void> virtual_base_address;
+	qword virtual_base_address;
 	dword xdk_version;
 	long unknown26;
 	s_cache_file_partition_reach partitions[k_number_of_cache_file_partitions];
@@ -160,7 +160,7 @@ class BLAMAPI c_cache_file_header_reach : public c_cache_file_header
 {
 public:
 	c_cache_file_header_reach();
-	c_cache_file_header_reach(s_cache_file_header *const &header);
+	c_cache_file_header_reach(void *const &header);
 	c_cache_file_header_reach(c_cache_file_header_reach const &header);
 
 	long get_file_version() const override;
@@ -169,8 +169,8 @@ public:
 	long get_file_length() const override;
 	void set_file_length(long length) override;
 
-	s_ptr64<s_cache_tag_index> get_tag_index_address() const override;
-	void set_tag_index_address(s_ptr64<s_cache_tag_index> address) override;
+	qword get_tag_index_address() const override;
+	void set_tag_index_address(qword address) override;
 
 	long get_memory_buffer_offset() const override;
 	void set_memory_buffer_offset(long offset) override;
@@ -190,8 +190,8 @@ public:
 	char const *get_name() const override;
 	void set_name(char const *name) override;
 
-	s_ptr64<void> get_virtual_base_address() const override;
-	void set_virtual_base_address(s_ptr64<void> const &address) override;
+	qword get_virtual_base_address() const override;
+	void set_virtual_base_address(qword const &address) override;
 };
 
 class BLAMAPI c_cache_tag_index_reach : public c_cache_tag_index

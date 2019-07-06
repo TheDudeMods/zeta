@@ -39,27 +39,16 @@ enum e_scenario_load_type
 	k_number_of_scenario_load_types
 };
 
-/* ---------- structures */
-
-struct s_cache_file_header {};
-static_assert(sizeof(s_cache_file_header) == 0x1);
-
-struct s_cache_tag_index {};
-static_assert(sizeof(s_cache_tag_index) == 0x1);
-
-struct s_cache_tag_instance {};
-static_assert(sizeof(s_cache_tag_instance) == 0x1);
-
 /* ---------- classes */
 
 class BLAMAPI c_cache_file_header
 {
 protected:
-	s_cache_file_header *m_header;
+	void *m_header;
 
 public:
 	c_cache_file_header();
-	c_cache_file_header(s_cache_file_header *const &header);
+	c_cache_file_header(void *const &header);
 	c_cache_file_header(c_cache_file_header const &header);
 
 	virtual long get_file_version() const = 0;
@@ -68,8 +57,8 @@ public:
 	virtual long get_file_length() const = 0;
 	virtual void set_file_length(long length) = 0;
 
-	virtual s_ptr64<s_cache_tag_index> get_tag_index_address() const = 0;
-	virtual void set_tag_index_address(s_ptr64<s_cache_tag_index> address) = 0;
+	virtual qword get_tag_index_address() const = 0;
+	virtual void set_tag_index_address(qword address) = 0;
 
 	virtual long get_memory_buffer_offset() const = 0;
 	virtual void set_memory_buffer_offset(long offset) = 0;
@@ -89,18 +78,18 @@ public:
 	virtual char const *get_name() const = 0;
 	virtual void set_name(char const *name) = 0;
 
-	virtual s_ptr64<void> get_virtual_base_address() const = 0;
-	virtual void set_virtual_base_address(s_ptr64<void> const &address) = 0;
+	virtual qword get_virtual_base_address() const = 0;
+	virtual void set_virtual_base_address(qword const &address) = 0;
 };
 
 class BLAMAPI c_cache_tag_index
 {
 protected:
-	s_cache_tag_index *m_index;
+	void *m_index;
 
 public:
 	c_cache_tag_index();
-	c_cache_tag_index(s_cache_tag_index *const &index);
+	c_cache_tag_index(void *const &index);
 	c_cache_tag_index(c_cache_tag_index const &index);
 
 	// TODO...
@@ -109,11 +98,11 @@ public:
 class BLAMAPI c_cache_tag_instance
 {
 protected:
-	s_cache_tag_instance *m_instance;
+	void *m_instance;
 
 public:
 	c_cache_tag_instance();
-	c_cache_tag_instance(s_cache_tag_instance *const &instance);
+	c_cache_tag_instance(void *const &instance);
 	c_cache_tag_instance(c_cache_tag_instance const &instance);
 
 	// TODO...
