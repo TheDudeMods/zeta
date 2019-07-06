@@ -11,7 +11,7 @@ c_cache_file_header_reach::c_cache_file_header_reach() :
 {
 }
 
-c_cache_file_header_reach::c_cache_file_header_reach(void *const &header) :
+c_cache_file_header_reach::c_cache_file_header_reach(void *header) :
 	c_cache_file_header(header)
 {
 }

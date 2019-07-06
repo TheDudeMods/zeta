@@ -11,7 +11,7 @@ c_cache_file_header::c_cache_file_header() :
 {
 }
 
-c_cache_file_header::c_cache_file_header(void *const &header) :
+c_cache_file_header::c_cache_file_header(void *header) :
 	m_header(header)
 {
 }
@@ -26,7 +26,7 @@ c_cache_tag_index::c_cache_tag_index() :
 {
 }
 
-c_cache_tag_index::c_cache_tag_index(void *const &index) :
+c_cache_tag_index::c_cache_tag_index(void *index) :
 	m_index(index)
 {
 }
@@ -41,7 +41,7 @@ c_cache_tag_instance::c_cache_tag_instance() :
 {
 }
 
-c_cache_tag_instance::c_cache_tag_instance(void *const &instance) :
+c_cache_tag_instance::c_cache_tag_instance(void *instance) :
 	m_instance(instance)
 {
 }

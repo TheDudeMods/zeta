@@ -160,7 +160,7 @@ class BLAMAPI c_cache_file_header_reach : public c_cache_file_header
 {
 public:
 	c_cache_file_header_reach();
-	c_cache_file_header_reach(void *const &header);
+	c_cache_file_header_reach(void *header);
 	c_cache_file_header_reach(c_cache_file_header_reach const &header);
 
 	long get_file_version() const override;

@@ -15,7 +15,7 @@ protected:
 
 public:
 	c_tag_group();
-	c_tag_group(void *const &group);
+	c_tag_group(void *group);
 	c_tag_group(c_tag_group const &group);
 
 	virtual tag get_tag() const = 0;
@@ -38,7 +38,7 @@ protected:
 
 public:
 	c_tag_block();
-	c_tag_block(void *const &block);
+	c_tag_block(void *block);
 	c_tag_block(c_tag_block const &block);
 
 	virtual long get_count() const = 0;
@@ -55,7 +55,7 @@ protected:
 
 public:
 	c_tag_data();
-	c_tag_data(void *const &data);
+	c_tag_data(void *data);
 	c_tag_data(c_tag_data const &data);
 
 	virtual long get_size() const = 0;
@@ -72,7 +72,7 @@ protected:
 
 public:
 	c_tag_reference();
-	c_tag_reference(void *const &reference);
+	c_tag_reference(void *reference);
 	c_tag_reference(c_tag_reference const &reference);
 
 	virtual tag get_group_tag() const = 0;

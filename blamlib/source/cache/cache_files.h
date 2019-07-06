@@ -48,7 +48,7 @@ protected:
 
 public:
 	c_cache_file_header();
-	c_cache_file_header(void *const &header);
+	c_cache_file_header(void *header);
 	c_cache_file_header(c_cache_file_header const &header);
 
 	virtual long get_file_version() const = 0;
@@ -89,7 +89,7 @@ protected:
 
 public:
 	c_cache_tag_index();
-	c_cache_tag_index(void *const &index);
+	c_cache_tag_index(void *index);
 	c_cache_tag_index(c_cache_tag_index const &index);
 
 	// TODO...
@@ -102,7 +102,7 @@ protected:
 
 public:
 	c_cache_tag_instance();
-	c_cache_tag_instance(void *const &instance);
+	c_cache_tag_instance(void *instance);
 	c_cache_tag_instance(c_cache_tag_instance const &instance);
 
 	// TODO...
