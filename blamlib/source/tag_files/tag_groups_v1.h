@@ -38,7 +38,7 @@ static_assert(sizeof(s_tag_reference_v1) == 0x8);
 
 /* ---------- classes */
 
-class BLAMAPI c_tag_group_v1 : public c_tag_group
+class c_tag_group_v1 : public c_tag_group
 {
 public:
 	c_tag_group_v1();

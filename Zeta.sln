@@ -12,9 +12,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "blamlib", "blamlib\blamlib.vcxproj", "{69CB464E-F007-42DF-A413-7B605059C7CB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "haloreach", "haloreach\haloreach.vcxproj", "{F2F27F53-DA52-4C58-B4A3-1F1B20D2AB7F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{69CB464E-F007-42DF-A413-7B605059C7CB} = {69CB464E-F007-42DF-A413-7B605059C7CB}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

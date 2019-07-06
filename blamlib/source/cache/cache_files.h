@@ -41,7 +41,7 @@ enum e_scenario_load_type
 
 /* ---------- classes */
 
-class BLAMAPI c_cache_file_header
+class c_cache_file_header
 {
 protected:
 	void *m_header;
@@ -82,7 +82,7 @@ public:
 	virtual void set_virtual_base_address(qword const &address) = 0;
 };
 
-class BLAMAPI c_cache_tag_index
+class c_cache_tag_index
 {
 protected:
 	void *m_index;
@@ -95,7 +95,7 @@ public:
 	// TODO...
 };
 
-class BLAMAPI c_cache_tag_instance
+class c_cache_tag_instance
 {
 protected:
 	void *m_instance;
@@ -108,7 +108,7 @@ public:
 	// TODO...
 };
 
-class BLAMAPI c_cache_file
+class c_cache_file
 {
 protected:
 	char *m_buffer;

@@ -4,14 +4,12 @@ TAG_GROUPS.H
 
 #pragma once
 
-#include <haloreach.h>
-
 #include <cseries/cseries.h>
 #include <tag_files/tag_groups_v2.h>
 
 /* ---------- classes */
 
-class BLAMAPI c_tag_group_reach : public c_tag_group
+class c_tag_group_reach : public c_tag_group
 {
 public:
 	virtual tag get_tag() const = 0;
@@ -27,12 +25,12 @@ public:
 	virtual void set_name(char const *name) = 0;
 };
 
-class BLAMAPI c_tag_block_reach : public c_tag_block
+class c_tag_block_reach : public c_tag_block
 {
 public:
 };
 
-class BLAMAPI c_tag_data_reach : public c_tag_data
+class c_tag_data_reach : public c_tag_data
 {
 public:
 };

@@ -8,7 +8,7 @@ DATA.H
 
 /* ---------- classes */
 
-class BLAMAPI c_datum
+class c_datum
 {
 protected:
 	void *m_address;
@@ -19,7 +19,7 @@ public:
 };
 
 template <typename t_datum>
-class BLAMAPI c_data_array
+class c_data_array
 {
 protected:
 	void *m_address;
@@ -30,7 +30,7 @@ public:
 };
 
 template <typename t_datum>
-class BLAMAPI c_data_iterator
+class c_data_iterator
 {
 protected:
 	void *m_address;

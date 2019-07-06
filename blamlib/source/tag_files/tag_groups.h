@@ -8,7 +8,7 @@ TAG_GROUPS.H
 
 /* ---------- classes */
 
-class BLAMAPI c_tag_group
+class c_tag_group
 {
 protected:
 	void *m_group;
@@ -31,7 +31,7 @@ public:
 	virtual void set_name(char const *name) = 0;
 };
 
-class BLAMAPI c_tag_block
+class c_tag_block
 {
 protected:
 	void *m_block;
@@ -48,7 +48,7 @@ public:
 	virtual void set_address(dword const &address) = 0;
 };
 
-class BLAMAPI c_tag_data
+class c_tag_data
 {
 protected:
 	void *m_data;
@@ -65,7 +65,7 @@ public:
 	virtual void set_address(dword const &address) = 0;
 };
 
-class BLAMAPI c_tag_reference
+class c_tag_reference
 {
 protected:
 	void *m_reference;

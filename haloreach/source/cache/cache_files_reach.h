@@ -4,8 +4,6 @@ CACHE_FILES_REACH.H
 
 #pragma once
 
-#include <haloreach.h>
-
 #include <cseries/cseries.h>
 #include <cache/cache_files.h>
 #include <tag_files/tag_groups_reach.h>
@@ -156,7 +154,7 @@ static_assert(sizeof(s_cache_file_header_reach) == 0xA000);
 
 /* ---------- classes */
 
-class BLAMAPI c_cache_file_header_reach : public c_cache_file_header
+class c_cache_file_header_reach : public c_cache_file_header
 {
 public:
 	c_cache_file_header_reach();
@@ -194,17 +192,17 @@ public:
 	void set_virtual_base_address(qword const &address) override;
 };
 
-class BLAMAPI c_cache_tag_index_reach : public c_cache_tag_index
+class c_cache_tag_index_reach : public c_cache_tag_index
 {
 public:
 };
 
-class BLAMAPI c_cache_tag_instance_reach : public c_cache_tag_instance
+class c_cache_tag_instance_reach : public c_cache_tag_instance
 {
 public:
 };
 
-class BLAMAPI c_cache_file_reach : public c_cache_file
+class c_cache_file_reach : public c_cache_file
 {
 protected:
 	c_cache_file_header_reach m_header;

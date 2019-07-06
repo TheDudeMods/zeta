@@ -17,12 +17,6 @@ CSERIES.H
 #include <cseries/static_array.inl>
 #include <cseries/static_string.inl>
 
-/* ---------- macros */
-
-#ifndef BLAMAPI
-#define BLAMAPI
-#endif
-
 /* ---------- constants */
 
 enum
