@@ -6,7 +6,7 @@ CACHE_FILES_REACH.H
 
 #include <cseries/cseries.h>
 #include <cache/cache_files.h>
-#include <tag_files/tag_groups_reach.h>
+#include <tag_files/tag_groups_v2.h>
 
 /* ---------- constants */
 
@@ -60,15 +60,15 @@ struct s_cache_file_interop_reach
 };
 static_assert(sizeof(s_cache_file_interop_reach) == 0x40);
 
-struct s_cache_tag_instance_reach
+struct s_cache_file_tag_instance_reach
 {
 	short group_index;
 	short identifier;
 	dword address;
 };
-static_assert(sizeof(s_cache_tag_instance_reach) == 0x8);
+static_assert(sizeof(s_cache_file_tag_instance_reach) == 0x8);
 
-struct s_cache_tag_index_header_reach
+struct s_cache_file_tags_header_reach
 {
 	qword group_count;
 	qword groups_address;
@@ -83,7 +83,7 @@ struct s_cache_tag_index_header_reach
 	tag signature;
 	long : 32;
 };
-static_assert(sizeof(s_cache_tag_index_header_reach) == 0x50);
+static_assert(sizeof(s_cache_file_tags_header_reach) == 0x50);
 
 struct s_cache_file_header_reach
 {
@@ -91,7 +91,7 @@ struct s_cache_file_header_reach
 	long file_version;
 	long file_length;
 	long file_compressed_length;
-	qword tag_index_address;
+	qword tags_header_address;
 	long memory_buffer_offset;
 	long memory_buffer_size;
 	long_string source_file;
@@ -154,12 +154,21 @@ static_assert(sizeof(s_cache_file_header_reach) == 0xA000);
 
 /* ---------- classes */
 
+class c_cache_file_reach;
+class c_cache_file_header_reach;
+class c_cache_file_tags_header_reach;
+class c_cache_file_tag_instance_reach;
+
 class c_cache_file_header_reach : public c_cache_file_header
 {
+	friend c_cache_file_reach;
+	
+protected:
+	c_cache_file_reach *m_file;
+	s_cache_file_header_reach *m_header;
+
 public:
-	c_cache_file_header_reach();
-	c_cache_file_header_reach(void *header);
-	c_cache_file_header_reach(c_cache_file_header_reach const &header);
+	c_cache_file_header_reach(c_cache_file_reach *file, s_cache_file_header_reach *header);
 
 	long get_file_version() const override;
 	void set_file_version(long version) override;
@@ -167,8 +176,8 @@ public:
 	long get_file_length() const override;
 	void set_file_length(long length) override;
 
-	qword get_tag_index_address() const override;
-	void set_tag_index_address(qword address) override;
+	qword get_tags_header_address() const override;
+	void set_tags_header_address(qword address) override;
 
 	long get_memory_buffer_offset() const override;
 	void set_memory_buffer_offset(long offset) override;
@@ -187,36 +196,61 @@ public:
 
 	char const *get_name() const override;
 	void set_name(char const *name) override;
-
-	qword get_virtual_base_address() const override;
-	void set_virtual_base_address(qword const &address) override;
 };
 
-class c_cache_tag_index_reach : public c_cache_tag_index
+class c_cache_file_tags_header_reach : public c_cache_file_tags_header
 {
+	friend c_cache_file_reach;
+
+protected:
+	c_cache_file_reach *m_file;
+	s_cache_file_tags_header_reach *m_tags_header;
+	c_tag_group_v2 **m_tag_groups;
+	c_cache_file_tag_instance_reach **m_tag_instances;
+
 public:
+	c_cache_file_tags_header_reach(c_cache_file_reach *file, s_cache_file_tags_header_reach *tags_header);
+	~c_cache_file_tags_header_reach();
+
+	c_tag_group *get_tag_group(long index) override;
+	c_cache_file_tag_instance *get_tag_instance(long index) override;
 };
 
-class c_cache_tag_instance_reach : public c_cache_tag_instance
+class c_cache_file_tag_instance_reach : public c_cache_file_tag_instance
 {
+	friend c_cache_file_reach;
+
+protected:
+	c_cache_file_reach *m_file;
+	s_cache_file_tag_instance_reach *m_instance;
+	long m_index;
+
 public:
+	c_cache_file_tag_instance_reach(c_cache_file_reach *file, s_cache_file_tag_instance_reach *instance, long index);
+
+	c_tag_group *get_group() override;
+	dword get_offset() override;
+	char const *get_name() override;
+	long get_index() override;
 };
 
 class c_cache_file_reach : public c_cache_file
 {
+	friend c_cache_file_header_reach;
+	friend c_cache_file_tags_header_reach;
+	friend c_cache_file_tag_instance_reach;
+
 protected:
-	c_cache_file_header_reach m_header;
-	c_cache_tag_index_reach m_tag_index;
+	c_cache_file_header_reach *m_header;
+	c_cache_file_tags_header_reach *m_tags_header;
 
 public:
-	c_cache_file_reach();
 	c_cache_file_reach(char const *path);
-	c_cache_file_reach(c_cache_file_reach const &file);
+	~c_cache_file_reach();
 
-	dword get_magic32() const override;
-	qword get_magic64() const override;
+	dword get_address_mask() const override;
+	qword get_base_address() const override;
 
 	c_cache_file_header &get_header() override;
-	c_cache_tag_index &get_tag_index() override;
-	c_cache_tag_instance get_tag_instance(long index) override;
+	c_cache_file_tags_header &get_tags_header() override;
 };

@@ -40,9 +40,12 @@ static_assert(sizeof(s_tag_reference_v1) == 0x8);
 
 class c_tag_group_v1 : public c_tag_group
 {
+protected:
+	s_tag_group_v1 *m_group;
+
 public:
 	c_tag_group_v1();
-	c_tag_group_v1(s_tag_group_v1 *const &group);
+	c_tag_group_v1(s_tag_group_v1 *group);
 	c_tag_group_v1(c_tag_group_v1 const &group);
 
 	tag get_tag() const override;
@@ -54,8 +57,8 @@ public:
 	tag get_grandparent_tag() const override;
 	void set_grandparent_tag(tag value) override;
 
-	virtual char const *get_name() const = 0;
-	virtual void set_name(char const *name) = 0;
+	virtual string_id get_name() const = 0;
+	virtual void set_name(string_id value) = 0;
 };
 
 class c_tag_block_v1 : public c_tag_block

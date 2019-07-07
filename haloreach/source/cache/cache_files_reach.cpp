@@ -6,18 +6,11 @@ CACHE_FILES_REACH.CPP
 
 /* ---------- code */
 
-c_cache_file_header_reach::c_cache_file_header_reach() :
-	c_cache_file_header()
-{
-}
-
-c_cache_file_header_reach::c_cache_file_header_reach(void *header) :
-	c_cache_file_header(header)
-{
-}
-
-c_cache_file_header_reach::c_cache_file_header_reach(c_cache_file_header_reach const &header) :
-	c_cache_file_header(header)
+c_cache_file_header_reach::c_cache_file_header_reach(
+	c_cache_file_reach *file,
+	s_cache_file_header_reach *header) :
+		m_file(file),
+		m_header(header)
 {
 }
 
@@ -41,14 +34,14 @@ void c_cache_file_header_reach::set_file_length(long length)
 	((s_cache_file_header_reach *)m_header)->file_length = length;
 }
 
-qword c_cache_file_header_reach::get_tag_index_address() const
+qword c_cache_file_header_reach::get_tags_header_address() const
 {
-	return qword(((s_cache_file_header_reach *)m_header)->tag_index_address);
+	return qword(((s_cache_file_header_reach *)m_header)->tags_header_address);
 }
 
-void c_cache_file_header_reach::set_tag_index_address(qword address)
+void c_cache_file_header_reach::set_tags_header_address(qword address)
 {
-	((s_cache_file_header_reach *)m_header)->tag_index_address = address;
+	((s_cache_file_header_reach *)m_header)->tags_header_address = address;
 }
 
 long c_cache_file_header_reach::get_memory_buffer_offset() const
@@ -113,54 +106,112 @@ void c_cache_file_header_reach::set_name(char const *name)
 	strcpy_s(((s_cache_file_header_reach *)m_header)->name.ascii, name);
 }
 
-qword c_cache_file_header_reach::get_virtual_base_address() const
+c_cache_file_tags_header_reach::c_cache_file_tags_header_reach(
+	c_cache_file_reach *file,
+	s_cache_file_tags_header_reach *tags_header) :
+	m_file(file),
+	m_tags_header(tags_header)
 {
-	return ((s_cache_file_header_reach *)m_header)->virtual_base_address;
+	m_tag_groups = new c_tag_group_v2 *[tags_header->group_count];
+	m_tag_instances = new c_cache_file_tag_instance_reach *[tags_header->tag_count];
+
+	auto tag_groups = (s_tag_group_v2 *)(file->m_buffer + (tags_header->groups_address + file->get_base_address()));
+
+	for (auto i = 0; i < tags_header->group_count; i++)
+		m_tag_groups[i] = new c_tag_group_v2(&tag_groups[i]);
+
+	auto tag_instances = (s_cache_file_tag_instance_reach *)(file->m_buffer + (tags_header->tags_address + file->get_base_address()));
+
+	for (auto i = 0; i < tags_header->tag_count; i++)
+		m_tag_instances[i] = new c_cache_file_tag_instance_reach(file, &tag_instances[i], i);
 }
 
-void c_cache_file_header_reach::set_virtual_base_address(qword const &address)
+c_cache_file_tags_header_reach::~c_cache_file_tags_header_reach()
 {
-	((s_cache_file_header_reach *)m_header)->virtual_base_address = address;
+	for (auto i = 0; i < m_tags_header->group_count; i++)
+		delete m_tag_groups[i];
+
+	delete[] m_tag_groups;
+
+	for (auto i = 0; i < m_tags_header->tag_count; i++)
+		delete m_tag_instances[i];
+
+	delete[] m_tag_instances;
 }
 
-c_cache_file_reach::c_cache_file_reach() :
-	c_cache_file()
+c_tag_group *c_cache_file_tags_header_reach::get_tag_group(long index)
 {
+	return m_tag_groups[index];
+}
+
+c_cache_file_tag_instance *c_cache_file_tags_header_reach::get_tag_instance(long index)
+{
+	return m_tag_instances[index];
+}
+
+c_cache_file_tag_instance_reach::c_cache_file_tag_instance_reach(
+	c_cache_file_reach *file,
+	s_cache_file_tag_instance_reach *instance,
+	long index) :
+	m_file(file),
+	m_instance(instance),
+	m_index(index)
+{
+}
+
+c_tag_group *c_cache_file_tag_instance_reach::get_group()
+{
+	return m_file->get_tags_header().get_tag_group(m_instance->group_index);
+}
+
+dword c_cache_file_tag_instance_reach::get_offset()
+{
+	return (m_instance->address * 4) - m_file->get_address_mask();
+}
+
+char const *c_cache_file_tag_instance_reach::get_name()
+{
+	// TODO:
+	return nullptr;
+}
+
+long c_cache_file_tag_instance_reach::get_index()
+{
+	return m_index;
 }
 
 c_cache_file_reach::c_cache_file_reach(char const *path) :
 	c_cache_file(path)
 {
-	m_header = c_cache_file_header_reach((void *)&m_buffer[0]);
-	//m_tag_index = c_cache_tag_index_reach((void *)&m_buffer[m_header.get_tag_index_address().value]);
+	m_header = new c_cache_file_header_reach(this,
+		(s_cache_file_header_reach *)&m_buffer[0]);
+
+	m_tags_header = new c_cache_file_tags_header_reach(this,
+		(s_cache_file_tags_header_reach *)&m_buffer[m_header->get_tags_header_address() + get_base_address()]);
 }
 
-c_cache_file_reach::c_cache_file_reach(c_cache_file_reach const &file) :
-	c_cache_file(file)
+c_cache_file_reach::~c_cache_file_reach()
 {
+	delete m_header;
+	delete m_tags_header;
 }
 
-dword c_cache_file_reach::get_magic32() const
+dword c_cache_file_reach::get_address_mask() const
 {
-	return (dword)(m_header.get_virtual_base_address() - (qword)m_header.get_memory_buffer_offset() - 0x10000000);
+	return (dword)(m_header->m_header->virtual_base_address - (qword)m_header->get_memory_buffer_offset() - 0x10000000);
 }
 
-qword c_cache_file_reach::get_magic64() const
+qword c_cache_file_reach::get_base_address() const
 {
-	return (qword)m_header.get_memory_buffer_offset() - m_header.get_virtual_base_address();
+	return (qword)m_header->get_memory_buffer_offset() - m_header->m_header->virtual_base_address;
 }
 
 c_cache_file_header &c_cache_file_reach::get_header()
 {
-	return m_header;
+	return *m_header;
 }
 
-c_cache_tag_index &c_cache_file_reach::get_tag_index()
+c_cache_file_tags_header &c_cache_file_reach::get_tags_header()
 {
-	return m_tag_index;
-}
-
-c_cache_tag_instance c_cache_file_reach::get_tag_instance(long index)
-{
-	return c_cache_tag_instance();
+	return *m_tags_header;
 }

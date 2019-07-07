@@ -18,15 +18,9 @@
     <ClCompile Include="source\cache\cache_files_reach.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\tag_files\tag_groups_reach.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cache\cache_files_reach.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\tag_files\tag_groups_reach.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

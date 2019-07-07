@@ -11,13 +11,13 @@ c_tag_group_v1::c_tag_group_v1() :
 {
 }
 
-c_tag_group_v1::c_tag_group_v1(s_tag_group_v1 *const &group) :
-	c_tag_group(group)
+c_tag_group_v1::c_tag_group_v1(s_tag_group_v1 *group) :
+	m_group(group)
 {
 }
 
 c_tag_group_v1::c_tag_group_v1(c_tag_group_v1 const &group) :
-	c_tag_group(group.m_group)
+	c_tag_group_v1(group.m_group)
 {
 }
 

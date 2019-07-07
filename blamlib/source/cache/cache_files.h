@@ -5,6 +5,7 @@ CACHE_FILES.H
 #pragma once
 
 #include <cseries/cseries.h>
+#include <tag_files/tag_groups.h>
 
 /* ---------- constants */
 
@@ -43,22 +44,15 @@ enum e_scenario_load_type
 
 class c_cache_file_header
 {
-protected:
-	void *m_header;
-
 public:
-	c_cache_file_header();
-	c_cache_file_header(void *header);
-	c_cache_file_header(c_cache_file_header const &header);
-
 	virtual long get_file_version() const = 0;
 	virtual void set_file_version(long version) = 0;
 
 	virtual long get_file_length() const = 0;
 	virtual void set_file_length(long length) = 0;
 
-	virtual qword get_tag_index_address() const = 0;
-	virtual void set_tag_index_address(qword address) = 0;
+	virtual qword get_tags_header_address() const = 0;
+	virtual void set_tags_header_address(qword address) = 0;
 
 	virtual long get_memory_buffer_offset() const = 0;
 	virtual void set_memory_buffer_offset(long offset) = 0;
@@ -77,35 +71,26 @@ public:
 
 	virtual char const *get_name() const = 0;
 	virtual void set_name(char const *name) = 0;
-
-	virtual qword get_virtual_base_address() const = 0;
-	virtual void set_virtual_base_address(qword const &address) = 0;
 };
 
-class c_cache_tag_index
+class c_cache_file_tag_instance
 {
-protected:
-	void *m_index;
-
 public:
-	c_cache_tag_index();
-	c_cache_tag_index(void *index);
-	c_cache_tag_index(c_cache_tag_index const &index);
+	virtual c_tag_group *get_group() = 0;
 
-	// TODO...
+	virtual dword get_offset() = 0;
+
+	virtual char const *get_name() = 0;
+
+	virtual long get_index() = 0;
 };
 
-class c_cache_tag_instance
+class c_cache_file_tags_header
 {
-protected:
-	void *m_instance;
-
 public:
-	c_cache_tag_instance();
-	c_cache_tag_instance(void *instance);
-	c_cache_tag_instance(c_cache_tag_instance const &instance);
+	virtual c_tag_group *get_tag_group(long index) = 0;
 
-	// TODO...
+	virtual c_cache_file_tag_instance *get_tag_instance(long index) = 0;
 };
 
 class c_cache_file
@@ -119,10 +104,9 @@ public:
 	c_cache_file(c_cache_file const &file);
 	~c_cache_file();
 
-	virtual dword get_magic32() const = 0;
-	virtual qword get_magic64() const = 0;
+	virtual dword get_address_mask() const = 0;
+	virtual qword get_base_address() const = 0;
 
 	virtual c_cache_file_header &get_header() = 0;
-	virtual c_cache_tag_index &get_tag_index() = 0;
-	virtual c_cache_tag_instance get_tag_instance(long index) = 0;
+	virtual c_cache_file_tags_header &get_tags_header() = 0;
 };

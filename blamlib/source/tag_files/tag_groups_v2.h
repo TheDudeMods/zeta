@@ -54,8 +54,23 @@ static_assert(sizeof(s_tag_reference_v2) == 0x10);
 
 class c_tag_group_v2 : public c_tag_group
 {
+protected:
+	s_tag_group_v2 *m_group;
+
 public:
-	// TODO...
+	c_tag_group_v2(s_tag_group_v2 *group);
+
+	tag get_tag() const override;
+	void set_tag(tag value) override;
+
+	tag get_parent_tag() const override;
+	void set_parent_tag(tag value) override;
+
+	tag get_grandparent_tag() const override;
+	void set_grandparent_tag(tag value) override;
+
+	string_id get_name() const override;
+	void set_name(string_id value) override;
 };
 
 class c_tag_block_v2 : public c_tag_block

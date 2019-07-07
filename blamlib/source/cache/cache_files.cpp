@@ -6,51 +6,6 @@ CACHE_FILES.CPP
 
 /* ---------- code */
 
-c_cache_file_header::c_cache_file_header() :
-	c_cache_file_header(nullptr)
-{
-}
-
-c_cache_file_header::c_cache_file_header(void *header) :
-	m_header(header)
-{
-}
-
-c_cache_file_header::c_cache_file_header(c_cache_file_header const &header) :
-	c_cache_file_header(header.m_header)
-{
-}
-
-c_cache_tag_index::c_cache_tag_index() :
-	c_cache_tag_index(nullptr)
-{
-}
-
-c_cache_tag_index::c_cache_tag_index(void *index) :
-	m_index(index)
-{
-}
-
-c_cache_tag_index::c_cache_tag_index(c_cache_tag_index const &index) :
-	c_cache_tag_index(index.m_index)
-{
-}
-
-c_cache_tag_instance::c_cache_tag_instance() :
-	c_cache_tag_instance(nullptr)
-{
-}
-
-c_cache_tag_instance::c_cache_tag_instance(void *instance) :
-	m_instance(instance)
-{
-}
-
-c_cache_tag_instance::c_cache_tag_instance(c_cache_tag_instance const &instance) :
-	c_cache_tag_instance(instance.m_instance)
-{
-}
-
 c_cache_file::c_cache_file() :
 	m_buffer(nullptr)
 {

@@ -181,11 +181,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\cache\cache_files_reach.cpp" />
-    <ClCompile Include="source\tag_files\tag_groups_reach.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cache\cache_files_reach.h" />
-    <ClInclude Include="source\tag_files\tag_groups_reach.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
