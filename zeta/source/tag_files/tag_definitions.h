@@ -1,5 +1,38 @@
 #pragma once
 
+#include <cseries/cseries.h>
+
+/* ---------- macros */
+
+#define TAG_ENUM(name, option_count) \
+	extern s_enum_option name##_options[option_count]; \
+	s_enum_definition name = { #name, option_count, name##_options }; \
+	s_enum_option name##_options[option_count] =
+
+#define TAG_STRUCT(name, size) \
+	extern s_field_definition name##_fields[]; \
+	s_struct_definition name = { #name, size, name##_fields }; \
+	s_field_definition name##_fields[] =
+
+#define TAG_ARRAY(type, name, count, ...) \
+	s_array_definition name = { type, #name, count, __VA_ARGS__ }
+
+#define TAG_BLOCK(name, size, maximum_count) \
+	extern s_field_definition name##_fields[]; \
+	s_tag_block_definition name = { #name, size, maximum_count, name##_fields }; \
+	s_field_definition name##_fields[] =
+
+#define TAG_DATA(name, maximum_size) \
+	s_tag_data_definition name = { #name, maximum_size }
+
+#define TAG_GROUP(name, group_tag, size, ...) \
+	extern s_field_definition name##_fields[]; \
+	s_tag_group_definition name = { #name, group_tag, size, name##_fields, __VA_ARGS__ }; \
+	s_field_definition name##_fields[] =
+
+#define TAG_PADDING(type, name, length) \
+	s_padding_definition name = { type, #name, length }
+
 /* ---------- enumerators */
 
 enum e_field_type
@@ -100,9 +133,38 @@ struct s_array_definition
 	void const *definition;
 };
 
-/* ---------- prototypes/TAG_DEFINITIONS.CPP */
+struct s_tag_block_definition
+{
+	char const *name;
+	long element_size;
+	long maximum_count;
+	s_field_definition *fields;
+};
 
-void byteswap(s_field_definition const *definition, void *address);
-void byteswap(s_enum_definition const *definition, void *address);
-void byteswap(s_struct_definition const *definition, void *address);
-void byteswap(s_array_definition const *definition, void *address);
+struct s_tag_data_definition
+{
+	char const *name;
+	long maximum_size;
+};
+
+struct s_tag_reference_definition
+{
+	long group_tag_count;
+	tag *group_tags;
+};
+
+struct s_tag_group_definition
+{
+	char const *name;
+	tag group_tag;
+	long size;
+	s_field_definition *fields;
+	s_tag_group_definition *parent;
+};
+
+struct s_padding_definition
+{
+	e_field_type type;
+	char const *name;
+	long length;
+};

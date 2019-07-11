@@ -155,6 +155,8 @@
     <ClCompile Include="source\main\main.cpp" />
     <ClCompile Include="source\math\integer_math.cpp" />
     <ClCompile Include="source\math\real_math.cpp" />
+    <ClCompile Include="source\objects\object_definitions.cpp" />
+    <ClCompile Include="source\objects\object_types.cpp" />
     <ClCompile Include="source\scenario\scenario.cpp" />
     <ClCompile Include="source\tag_files\tag_definitions.cpp" />
     <ClCompile Include="source\tag_files\tag_groups.cpp" />
