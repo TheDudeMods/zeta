@@ -1,13 +1,20 @@
 #include <effects/effect_definitions.h>
 #include <effects/material_effect_definitions.h>
+#include <items/equipment_definitions.h>
 #include <models/model_definitions.h>
 #include <objects/crate_definitions.h>
 #include <objects/object_definitions.h>
+#include <objects/widgets/antenna.h>
+#include <objects/widgets/cloth.h>
 #include <physics/havok_collision_damage.h>
+#include <simulation/game_interface/simulation_game_position_updates.h>
 #include <sound/sound_definitions.h>
 #include <tag_files/tag_definitions.h>
 
 extern s_enum_definition object_type_enum;
+extern s_tag_block_definition water_physics_hull_surface_definition_block;
+extern s_tag_block_definition jetwash_definition_block;
+extern s_tag_block_definition multiplayer_object_definition_block;
 
 TAG_REFERENCE(object_any_reference, 1) { NONE };
 
@@ -114,7 +121,250 @@ TAG_REFERENCE(object_creation_effect_reference, 1) { k_effect_group_tag };
 TAG_REFERENCE(object_material_effects_reference, 1) { k_material_effects_group_tag };
 TAG_REFERENCE(object_melee_sound_reference, 1) { k_sound_group_tag };
 
-TAG_GROUP(object_group, k_object_group_tag, sizeof(s_object_definition))
+TAG_ENUM(
+	object_ai_properties_flags_enum,
+	k_number_of_object_ai_properties_flags)
+{
+	{ "destroyable_cover", _object_ai_properties_destroyable_cover_bit },
+	{ "pathfinding_ignore_when_dead", _object_ai_properties_pathfinding_ignore_when_dead_bit },
+	{ "dynamic_cover", _object_ai_properties_dynamic_cover_bit },
+	{ "non_flight_blocking", _object_ai_properties_non_flight_blocking_bit },
+	{ "dynamic_cover_from_center", _object_ai_properties_dynamic_cover_from_center_bit },
+	{ "has_corner_markers", _object_ai_properties_has_corner_markers_bit },
+	{ "consider_for_interaction", _object_ai_properties_consider_for_interaction_bit },
+	{ "leap_on_cover_target", _object_ai_properties_leap_on_cover_target_bit },
+};
+
+TAG_ENUM(
+	object_ai_size_enum,
+	k_number_of_object_ai_sizes)
+{
+	{ "default", _object_ai_size_default },
+	{ "tiny", _object_ai_size_tiny },
+	{ "small", _object_ai_size_small },
+	{ "medium", _object_ai_size_medium },
+	{ "large", _object_ai_size_large },
+	{ "huge", _object_ai_size_huge },
+	{ "immobile", _object_ai_size_immobile },
+};
+
+TAG_ENUM(
+	object_ai_distance_enum,
+	k_number_of_object_ai_distances)
+{
+	{ "none", _object_ai_distance_none },
+	{ "down", _object_ai_distance_down },
+	{ "step", _object_ai_distance_step },
+	{ "crouch", _object_ai_distance_crouch },
+	{ "stand", _object_ai_distance_stand },
+	{ "storey", _object_ai_distance_storey },
+	{ "tower", _object_ai_distance_tower },
+	{ "infinite", _object_ai_distance_infinite },
+};
+
+TAG_BLOCK(
+	object_ai_properties_block,
+	sizeof(s_object_ai_properties),
+	k_maximum_number_of_object_ai_properties)
+{
+	{ _field_long_flags, "flags", &object_ai_properties_flags_enum },
+	{ _field_string_id, "ai_type_name" },
+	{ _field_string_id, "interaction_name" },
+	{ _field_short_enum, "size", &object_ai_size_enum },
+	{ _field_short_enum, "leap_jump_speed", &object_ai_distance_enum },
+	{ _field_terminator }
+};
+
+TAG_ENUM(
+	object_function_flags_enum,
+	k_number_of_object_function_flags)
+{
+	{ "invert", _object_function_invert_bit },
+	{ "mapping_does_not_control_active", _object_function_mapping_does_not_control_active_bit },
+	{ "always_active", _object_function_always_active_bit },
+	{ "random_time_offset", _object_function_random_time_offset_bit },
+	{ "always_exports_value", _object_function_always_exports_value_bit },
+	{ "turn_off_with_uses_magnitude", _object_function_turn_off_with_uses_magnitude_bit },
+};
+
+TAG_ENUM(
+	object_function_interpolation_mode_enum,
+	k_number_of_object_function_interpolations)
+{
+	{ "constant_velocity", _object_function_interpolation_constant_velocity },
+	{ "linear_acceleration", _object_function_interpolation_linear_acceleration },
+	{ "damped_spring", _object_function_interpolation_damped_spring },
+	{ "fractional", _object_function_interpolation_fractional },
+};
+
+TAG_BLOCK(
+	object_function_interpolation_block,
+	sizeof(s_object_function_interpolation),
+	k_maximum_number_of_object_function_interpolations)
+{
+	{ _field_long_enum, "interpolation_mode", &object_function_interpolation_block },
+	{ _field_real, "linear_travel_time" },
+	{ _field_real, "acceleration" },
+	{ _field_real, "spring_k" },
+	{ _field_real, "spring_c" },
+	{ _field_real, "fraction" },
+	{ _field_terminator }
+};
+
+TAG_BLOCK(
+	object_runtime_interpolator_function_block,
+	sizeof(s_object_runtime_interpolator_function),
+	k_maximum_number_of_object_runtime_interpolator_functions)
+{
+	{ _field_long_integer, "runtime_interpolator_to_object_function_mapping" },
+	{ _field_terminator }
+};
+
+TAG_BLOCK(
+	object_function_block,
+	sizeof(s_object_function),
+	k_maximum_number_of_object_functions)
+{
+	{ _field_long_flags, "flags", &object_function_flags_enum },
+	{ _field_string_id, "import_name" },
+	{ _field_string_id, "export_name" },
+	{ _field_string_id, "turn_off_with" },
+	{ _field_string_id, "ranged_interpolation_name" },
+	{ _field_real, "minimum_value" },
+	{ _field_data, "default_function" },
+	{ _field_string_id, "scale_by" },
+	{ _field_block, "interpolation", &object_function_interpolation_block },
+	{ _field_long_block_index, "runtime_interpolator_index", &object_runtime_interpolator_function_block },
+	{ _field_terminator }
+};
+
+TAG_PADDING(_field_short_integer, object_post_hud_text_message_padding, 1);
+
+TAG_ENUM(
+	object_attachment_change_color_enum,
+	k_number_of_object_attachment_change_colors)
+{
+	{ "none", _object_attachment_change_color_none },
+	{ "primary", _object_attachment_change_color_primary },
+	{ "secondary", _object_attachment_change_color_secondary },
+	{ "tertiary", _object_attachment_change_color_tertiary },
+	{ "quaternary", _object_attachment_change_color_quaternary },
+};
+
+TAG_ENUM(
+	object_attachment_flags_enum,
+	k_number_of_object_attachment_flags)
+{
+	{ "force_always_on", _object_attachment_force_always_on_bit },
+	{ "effect_size_scale_from_object_scale", _object_attachment_effect_size_scale_from_object_scale_bit },
+};
+
+TAG_BLOCK(
+	object_attachment_block,
+	sizeof(s_object_attachment),
+	k_maximum_number_of_object_attachments)
+{
+	{ _field_tag_reference, "type", &object_any_reference },
+	{ _field_string_id, "marker" },
+	{ _field_short_enum, "change_color", &object_attachment_change_color_enum },
+	{ _field_word_flags, "flags", &object_attachment_flags_enum },
+	{ _field_string_id, "primary_scale" },
+	{ _field_string_id, "secondary_scale" },
+	{ _field_terminator }
+};
+
+TAG_REFERENCE(object_widget_reference, 2) { k_antenna_group_tag, k_clothwind_group_tag };
+
+TAG_BLOCK(
+	object_widget_block,
+	sizeof(s_object_widget),
+	k_maximum_number_of_object_widgets)
+{
+	{ _field_tag_reference, "type", &object_widget_reference },
+	{ _field_terminator }
+};
+
+TAG_BLOCK(
+	object_change_color_initial_permutation_block,
+	sizeof(s_object_change_color_initial_permutation),
+	k_maximum_number_of_object_change_color_initial_permutations)
+{
+	{ _field_real, "weight" },
+	{ _field_real_rgb_color, "color_lower_bound" },
+	{ _field_real_rgb_color, "color_upper_bound" },
+	{ _field_string_id, "variant_name" },
+	{ _field_terminator }
+};
+
+TAG_ENUM(
+	object_change_color_function_flags_enum,
+	k_number_of_object_change_color_function_flags)
+{
+	{ "blend_in_hsv", _object_change_color_function_blend_in_hsv_bit },
+	{ "more_colors", _object_change_color_function_more_colors_bit },
+};
+
+TAG_BLOCK(
+	object_change_color_function_block,
+	sizeof(s_object_change_color_function),
+	k_maximum_number_of_object_change_color_functions)
+{
+	{ _field_long_flags, "flags", &object_change_color_function_flags_enum },
+	{ _field_real_rgb_color, "color_lower_bound" },
+	{ _field_real_rgb_color, "color_upper_bound" },
+	{ _field_string_id, "darken_by" },
+	{ _field_string_id, "scale_by" },
+	{ _field_terminator }
+};
+
+TAG_BLOCK(
+	object_change_color_block,
+	sizeof(s_object_change_color),
+	k_maximum_number_of_object_change_colors)
+{
+	{ _field_block, "initial_permutations", &object_change_color_initial_permutation_block },
+	{ _field_block, "functions", &object_change_color_function_block },
+	{ _field_terminator }
+};
+
+TAG_BLOCK(
+	object_predicted_resource_block,
+	sizeof(s_object_predicted_resource),
+	NONE)
+{
+	{ _field_short_integer, "type_index" },
+	{ _field_short_integer, "resource_index" },
+	{ _field_long_integer, "tag_index" },
+	{ _field_terminator }
+};
+
+TAG_REFERENCE(
+	object_simulation_interpolation_reference,
+	1)
+{
+	k_simulation_interpolation_group_tag
+};
+
+TAG_REFERENCE(
+	object_reviving_equipment_reference,
+	1)
+{
+	k_equipment_group_tag
+};
+
+TAG_BLOCK(
+	object_reviving_equipment_block,
+	sizeof(s_object_reviving_equipment),
+	NONE)
+{
+	{ _field_tag_reference, "type", &object_reviving_equipment_reference },
+	{ _field_terminator }
+};
+
+TAG_GROUP(
+	object_group,
+	k_object_group_tag,
+	sizeof(s_object_definition))
 {
 	{ _field_short_enum, "object_type", &object_type_enum },
 	{ _field_padding, "post_object_type_padding", &post_object_type_padding },
@@ -139,8 +389,18 @@ TAG_GROUP(object_group, k_object_group_tag, sizeof(s_object_definition))
 	{ _field_tag_reference, "creation_effect", &object_creation_effect_reference },
 	{ _field_tag_reference, "material_effects", &object_material_effects_reference },
 	{ _field_tag_reference, "melee_sound", &object_melee_sound_reference },
-	//
-	// TODO: finish
-	//
+	{ _field_block, "ai_properties", &object_ai_properties_block },
+	{ _field_block, "functions", &object_function_block },
+	{ _field_block, "runtime_interpolator_functions", &object_runtime_interpolator_function_block },
+	{ _field_short_integer, "hud_text_message_index" },
+	{ _field_padding, "post_hud_text_message_padding", &object_post_hud_text_message_padding },
+	{ _field_block, "attachments", &object_attachment_block },
+	{ _field_block, "hull_surfaces", &water_physics_hull_surface_definition_block },
+	{ _field_block, "jetwash", &jetwash_definition_block },
+	{ _field_block, "widgets", &object_widget_block },
+	{ _field_block, "change_colors", &object_change_color_block },
+	{ _field_block, "multiplayer_object", &multiplayer_object_definition_block },
+	{ _field_tag_reference, "simulation_interpolation", &object_simulation_interpolation_reference },
+	{ _field_block, "reviving_equipment", &object_reviving_equipment_block },
 	{ _field_terminator }
 };

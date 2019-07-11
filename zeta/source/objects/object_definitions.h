@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cseries/cseries.h>
+#include <effects/jetwash.h>
 #include <math/real_math.h>
+#include <objects/multiplayer_game_objects.h>
 #include <objects/object_types.h>
 #include <physics/water_physics.h>
 #include <tag_files/tag_groups.h>
@@ -17,7 +19,10 @@ enum
 	k_maximum_number_of_object_function_interpolations = 2,
 	k_maximum_number_of_object_runtime_interpolator_functions = k_maximum_number_of_object_functions,
 	k_maximum_number_of_object_attachments = 48,
-
+	k_maximum_number_of_object_widgets = 4,
+	k_maximum_number_of_object_change_colors = 4,
+	k_maximum_number_of_object_change_color_initial_permutations = 32,
+	k_maximum_number_of_object_change_color_functions = k_maximum_number_of_object_change_colors,
 };
 
 /* ---------- enumerators */
@@ -175,6 +180,13 @@ enum e_object_attachment_flags
 	k_number_of_object_attachment_flags
 };
 
+enum e_object_change_color_function_flags
+{
+	_object_change_color_function_blend_in_hsv_bit,
+	_object_change_color_function_more_colors_bit,
+	k_number_of_object_change_color_function_flags
+};
+
 /* ---------- structures */
 
 struct s_object_early_mover_obb
@@ -240,6 +252,52 @@ struct s_object_attachment
 };
 static_assert(sizeof(s_object_attachment) == 0x20);
 
+struct s_object_widget
+{
+	s_tag_reference type;
+};
+static_assert(sizeof(s_object_widget) == 0x10);
+
+struct s_object_change_color_initial_permutation
+{
+	real weight;
+	real_rgb_color color_lower_bound;
+	real_rgb_color color_upper_bound;
+	string_id variant_name;
+};
+static_assert(sizeof(s_object_change_color_initial_permutation) == 0x20);
+
+struct s_object_change_color_function
+{
+	c_enum<e_object_change_color_function_flags, long> flags;
+	real_rgb_color color_lower_bound;
+	real_rgb_color color_upper_bound;
+	string_id darken_by;
+	string_id scale_by;
+};
+static_assert(sizeof(s_object_change_color_function) == 0x24);
+
+struct s_object_change_color
+{
+	c_tag_block<s_object_change_color_initial_permutation> initial_permutations;
+	c_tag_block<s_object_change_color_function> functions;
+};
+static_assert(sizeof(s_object_change_color) == 0x18);
+
+struct s_object_predicted_resource
+{
+	short type_index; // TODO: block index
+	short resource_index; // TODO: block index
+	long tag_index;
+};
+static_assert(sizeof(s_object_predicted_resource) == 0x8);
+
+struct s_object_reviving_equipment
+{
+	s_tag_reference type;
+};
+static_assert(sizeof(s_object_reviving_equipment) == 0x10);
+
 struct s_object_definition
 {
 	c_enum<e_object_type, short> object_type;
@@ -274,7 +332,13 @@ struct s_object_definition
 	short hud_text_message_index;
 	short : 16;
 	c_tag_block<s_object_attachment> attachments;
-	//
-	// TODO: finish
-	//
+	c_tag_block<s_water_physics_hull_surface_definition> surface_hulls;
+	c_tag_block<s_jetwash_definition> jetwash;
+	c_tag_block<s_object_widget> widgets;
+	c_tag_block<s_object_change_color> change_colors;
+	c_tag_block<s_object_predicted_resource> predicted_resources;
+	c_tag_block<s_multiplayer_object_definition> multiplayer_object;
+	s_tag_reference simulation_interpolation;
+	c_tag_block<s_object_reviving_equipment> reviving_equipment;
 };
+static_assert(sizeof(s_object_definition) == 0x178);

@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\cseries\cseries.cpp" />
+    <ClCompile Include="source\effects\jetwash.cpp" />
     <ClCompile Include="source\main\main.cpp" />
     <ClCompile Include="source\math\integer_math.cpp" />
     <ClCompile Include="source\math\real_math.cpp" />
+    <ClCompile Include="source\objects\multiplayer_game_objects.cpp" />
     <ClCompile Include="source\objects\object_definitions.cpp" />
     <ClCompile Include="source\objects\object_types.cpp" />
     <ClCompile Include="source\physics\water_physics.cpp" />
@@ -36,17 +38,23 @@
     <ClInclude Include="source\commands\commands.h" />
     <ClInclude Include="source\cseries\cseries.h" />
     <ClInclude Include="source\effects\effect_definitions.h" />
+    <ClInclude Include="source\effects\jetwash.h" />
     <ClInclude Include="source\effects\material_effect_definitions.h" />
+    <ClInclude Include="source\items\equipment_definitions.h" />
     <ClInclude Include="source\math\function_definitions.h" />
     <ClInclude Include="source\math\integer_math.h" />
     <ClInclude Include="source\math\real_math.h" />
     <ClInclude Include="source\models\model_definitions.h" />
     <ClInclude Include="source\objects\crate_definitions.h" />
+    <ClInclude Include="source\objects\multiplayer_game_objects.h" />
     <ClInclude Include="source\objects\object_definitions.h" />
     <ClInclude Include="source\objects\object_types.h" />
+    <ClInclude Include="source\objects\widgets\antenna.h" />
+    <ClInclude Include="source\objects\widgets\cloth.h" />
     <ClInclude Include="source\physics\havok_collision_damage.h" />
     <ClInclude Include="source\physics\water_physics.h" />
     <ClInclude Include="source\scenario\scenario.h" />
+    <ClInclude Include="source\simulation\game_interface\simulation_game_position_updates.h" />
     <ClInclude Include="source\sound\sound_definitions.h" />
     <ClInclude Include="source\tag_files\tag_definitions.h" />
     <ClInclude Include="source\tag_files\tag_groups.h" />
