@@ -1,7 +1,15 @@
+#include <effects/effect_definitions.h>
+#include <effects/material_effect_definitions.h>
+#include <models/model_definitions.h>
+#include <objects/crate_definitions.h>
 #include <objects/object_definitions.h>
+#include <physics/havok_collision_damage.h>
+#include <sound/sound_definitions.h>
 #include <tag_files/tag_definitions.h>
 
 extern s_enum_definition object_type_enum;
+
+TAG_REFERENCE(object_any_reference, 1) { NONE };
 
 TAG_PADDING(_field_short_integer, post_object_type_padding, 1);
 
@@ -28,7 +36,9 @@ TAG_ENUM(object_flags_enum, k_number_of_object_flags)
 	{ "does_not_damage_breakable_surfaces", _object_does_not_damage_breakable_surfaces_bit },
 };
 
-TAG_ENUM(object_lightmap_shadow_mode_enum, k_number_of_object_lightmap_shadow_modes)
+TAG_ENUM(
+	object_lightmap_shadow_mode_enum,
+	k_number_of_object_lightmap_shadow_modes)
 {
 	{ "default", _object_lightmap_shadow_mode_default },
 	{ "never", _object_lightmap_shadow_mode_never },
@@ -36,24 +46,18 @@ TAG_ENUM(object_lightmap_shadow_mode_enum, k_number_of_object_lightmap_shadow_mo
 	{ "blur", _object_lightmap_shadow_mode_blur },
 };
 
-TAG_ENUM(object_sweetener_size_enum, k_number_of_object_sweetener_sizes)
+TAG_ENUM(
+	object_sweetener_size_enum,
+	k_number_of_object_sweetener_sizes)
 {
 	{ "small", _object_sweetener_size_small },
 	{ "medium", _object_sweetener_size_medium },
 	{ "large", _object_sweetener_size_large },
 };
 
-TAG_ENUM(object_water_density_enum, k_number_of_object_water_densities)
-{
-	{ "least", _object_water_density_least },
-	{ "some", _object_water_density_some },
-	{ "equal", _object_water_density_equal },
-	{ "more", _object_water_density_more },
-	{ "more_still", _object_water_density_more_still },
-	{ "lots_more", _object_water_density_lots_more },
-};
-
-TAG_ENUM(object_runtime_flags_enum, k_number_of_object_runtime_flags)
+TAG_ENUM(
+	object_runtime_flags_enum,
+	k_number_of_object_runtime_flags)
 {
 	{ "unknown0", _object_runtime_unknown0_bit },
 	{ "unknown1", _object_runtime_unknown1_bit },
@@ -89,7 +93,14 @@ TAG_ENUM(object_runtime_flags_enum, k_number_of_object_runtime_flags)
 	{ "unknown31", _object_runtime_unknown31_bit },
 };
 
-TAG_STRUCT(object_early_mover_obb_block, sizeof(s_object_early_mover_obb))
+TAG_REFERENCE(object_model_reference, 1){ k_model_group_tag };
+TAG_REFERENCE(object_crate_object_reference, 1) { k_crate_group_tag };
+TAG_REFERENCE(object_collision_damage_reference, 1) { k_collision_damage_group_tag };
+
+TAG_BLOCK(
+	object_early_mover_obb_block,
+	sizeof(s_object_early_mover_obb),
+	k_maximum_number_of_object_early_mover_obbs)
 {
 	{ _field_string_id, "node_name" },
 	{ _field_real_bounds, "x_bounds" },
@@ -98,6 +109,10 @@ TAG_STRUCT(object_early_mover_obb_block, sizeof(s_object_early_mover_obb))
 	{ _field_real_euler_angles3d, "angles" },
 	{ _field_terminator }
 };
+
+TAG_REFERENCE(object_creation_effect_reference, 1) { k_effect_group_tag };
+TAG_REFERENCE(object_material_effects_reference, 1) { k_material_effects_group_tag };
+TAG_REFERENCE(object_melee_sound_reference, 1) { k_sound_group_tag };
 
 TAG_GROUP(object_group, k_object_group_tag, sizeof(s_object_definition))
 {
@@ -116,11 +131,14 @@ TAG_GROUP(object_group, k_object_group_tag, sizeof(s_object_definition))
 	{ _field_tag_reference, "generic_name_list" },
 	{ _field_tag_reference, "generic_service_tag_list" },
 	{ _field_string_id, "default_variant" },
-	{ _field_tag_reference, "model" },
-	{ _field_tag_reference, "crate_object" },
-	{ _field_tag_reference, "collision_damage" },
-	{ _field_tag_reference, "brittle_collision_damage" },
-	{ _field_block, "early_mover_obb", &object_early_mover_obb_block},
+	{ _field_tag_reference, "model", &object_model_reference },
+	{ _field_tag_reference, "crate_object", &object_crate_object_reference },
+	{ _field_tag_reference, "collision_damage", &object_collision_damage_reference },
+	{ _field_tag_reference, "brittle_collision_damage", &object_collision_damage_reference },
+	{ _field_block, "early_mover_obb", &object_early_mover_obb_block },
+	{ _field_tag_reference, "creation_effect", &object_creation_effect_reference },
+	{ _field_tag_reference, "material_effects", &object_material_effects_reference },
+	{ _field_tag_reference, "melee_sound", &object_melee_sound_reference },
 	//
 	// TODO: finish
 	//

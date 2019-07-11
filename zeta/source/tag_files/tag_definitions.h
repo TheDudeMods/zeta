@@ -25,6 +25,11 @@
 #define TAG_DATA(name, maximum_size) \
 	s_tag_data_definition name = { #name, maximum_size }
 
+#define TAG_REFERENCE(name, group_tag_count) \
+	extern tag name##_group_tags[group_tag_count]; \
+	s_tag_reference_definition name = { #name, group_tag_count, name##_group_tags }; \
+	tag name##_group_tags[group_tag_count] =
+
 #define TAG_GROUP(name, group_tag, size, ...) \
 	extern s_field_definition name##_fields[]; \
 	s_tag_group_definition name = { #name, group_tag, size, name##_fields, __VA_ARGS__ }; \
@@ -149,6 +154,7 @@ struct s_tag_data_definition
 
 struct s_tag_reference_definition
 {
+	char const *name;
 	long group_tag_count;
 	tag *group_tags;
 };

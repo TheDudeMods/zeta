@@ -3,13 +3,21 @@
 #include <cseries/cseries.h>
 #include <math/real_math.h>
 #include <objects/object_types.h>
+#include <physics/water_physics.h>
 #include <tag_files/tag_groups.h>
 
 /* ---------- constants */
 
 enum
 {
-	k_object_group_tag = 'obje'
+	k_object_group_tag = 'obje',
+	k_maximum_number_of_object_early_mover_obbs = 1,
+	k_maximum_number_of_object_ai_properties = 1,
+	k_maximum_number_of_object_functions = 256,
+	k_maximum_number_of_object_function_interpolations = 2,
+	k_maximum_number_of_object_runtime_interpolator_functions = k_maximum_number_of_object_functions,
+	k_maximum_number_of_object_attachments = 48,
+
 };
 
 /* ---------- enumerators */
@@ -53,17 +61,6 @@ enum e_object_sweetener_size
 	_object_sweetener_size_medium,
 	_object_sweetener_size_large,
 	k_number_of_object_sweetener_sizes
-};
-
-enum e_object_water_density
-{
-	_object_water_density_least,
-	_object_water_density_some,
-	_object_water_density_equal,
-	_object_water_density_more,
-	_object_water_density_more_still,
-	_object_water_density_lots_more,
-	k_number_of_object_water_densities
 };
 
 enum e_object_runtime_flags
@@ -255,7 +252,7 @@ struct s_object_definition
 	real angular_acceleration_scale;
 	c_enum<e_object_lightmap_shadow_mode, short> lightmap_shadow_mode;
 	c_enum<e_object_sweetener_size, char> sweetener_size;
-	c_enum<e_object_water_density, char> water_density;
+	c_enum<e_water_density, char> water_density;
 	c_flags<e_object_runtime_flags, long> runtime_flags;
 	real dynamic_light_sphere_radius;
 	real_point3d dynamic_light_sphere_offset;
@@ -270,7 +267,7 @@ struct s_object_definition
 	c_tag_block<s_object_early_mover_obb> early_mover_obb;
 	s_tag_reference creation_effect;
 	s_tag_reference material_effects;
-	s_tag_reference melee_impact;
+	s_tag_reference melee_sound;
 	c_tag_block<s_object_ai_properties> ai_properties;
 	c_tag_block<s_object_function> functions;
 	c_tag_block<s_object_runtime_interpolator_function> runtime_interpolator_functions;
