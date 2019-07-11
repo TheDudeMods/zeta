@@ -183,6 +183,24 @@ public:
 	s_tag_group *get_tag_group(long index);
 	s_cache_file_tag_instance *get_tag_instance(long index);
 
+	template <typename t_data>
+	t_data *get_buffer_data(qword address)
+	{
+		if (address == 0)
+			return nullptr;
+
+		return (t_data *)(address + m_address_mask);
+	}
+
+	template <typename t_data>
+	t_data *get_page_data(dword address)
+	{
+		if (address == 0)
+			return nullptr;
+
+		return (t_data *)(m_memory_buffer + ((qword)address * 4) - (m_header.virtual_base_address - 0x10000000));
+	}
+
 	template <typename t_tag_definition>
 	t_tag_definition *get_tag_definition(long index)
 	{
@@ -191,6 +209,6 @@ public:
 		if (!instance || instance->address == 0)
 			return nullptr;
 		
-		return (t_tag_definition *)(m_memory_buffer + (instance->address * 4) - (dword)(m_header.virtual_base_address - 0x10000000));
+		return get_page_data<t_tag_definition>(instance->address);
 	}
 };

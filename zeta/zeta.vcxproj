@@ -18,6 +18,58 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\cache\cache_files.cpp" />
+    <ClCompile Include="source\cseries\cseries.cpp" />
+    <ClCompile Include="source\main\main.cpp" />
+    <ClCompile Include="source\math\integer_math.cpp" />
+    <ClCompile Include="source\math\real_math.cpp" />
+    <ClCompile Include="source\objects\object_definitions.cpp" />
+    <ClCompile Include="source\objects\object_types.cpp" />
+    <ClCompile Include="source\scenario\scenario.cpp" />
+    <ClCompile Include="source\tag_files\tag_definitions.cpp" />
+    <ClCompile Include="source\tag_files\tag_groups.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\cache\cache_files.h" />
+    <ClInclude Include="source\commands\commands.h" />
+    <ClInclude Include="source\cseries\cseries.h" />
+    <ClInclude Include="source\math\function_definitions.h" />
+    <ClInclude Include="source\math\integer_math.h" />
+    <ClInclude Include="source\math\real_math.h" />
+    <ClInclude Include="source\objects\object_definitions.h" />
+    <ClInclude Include="source\objects\object_types.h" />
+    <ClInclude Include="source\scenario\scenario.h" />
+    <ClInclude Include="source\tag_files\tag_definitions.h" />
+    <ClInclude Include="source\tag_files\tag_groups.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\cseries\enum.inl" />
+    <None Include="source\cseries\flags.inl" />
+    <None Include="source\cseries\static_array.inl" />
+    <None Include="source\cseries\static_string.inl" />
+    <None Include="source\math\ahsv_color.inl" />
+    <None Include="source\math\argb_color.inl" />
+    <None Include="source\math\bounds.inl" />
+    <None Include="source\math\euler_angles2d.inl" />
+    <None Include="source\math\euler_angles3d.inl" />
+    <None Include="source\math\hsv_color.inl" />
+    <None Include="source\math\matrix3x3.inl" />
+    <None Include="source\math\matrix4x3.inl" />
+    <None Include="source\math\plane2d.inl" />
+    <None Include="source\math\plane3d.inl" />
+    <None Include="source\math\point2d.inl" />
+    <None Include="source\math\point3d.inl" />
+    <None Include="source\math\quaternion.inl" />
+    <None Include="source\math\rectangle2d.inl" />
+    <None Include="source\math\rgb_color.inl" />
+    <None Include="source\math\vector2d.inl" />
+    <None Include="source\math\vector3d.inl" />
+    <None Include="source\math\vector4d.inl" />
+    <None Include="source\tag_files\tag_block.inl" />
+    <None Include="source\tag_files\tag_block_flags.inl" />
+    <None Include="source\tag_files\tag_block_index.inl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{E57260A5-8EA0-436F-98A4-4076D4674117}</ProjectGuid>
@@ -149,42 +201,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="source\cache\cache_files.cpp" />
-    <ClCompile Include="source\cseries\cseries.cpp" />
-    <ClCompile Include="source\main\main.cpp" />
-    <ClCompile Include="source\math\integer_math.cpp" />
-    <ClCompile Include="source\math\real_math.cpp" />
-    <ClCompile Include="source\objects\object_definitions.cpp" />
-    <ClCompile Include="source\objects\object_types.cpp" />
-    <ClCompile Include="source\scenario\scenario.cpp" />
-    <ClCompile Include="source\tag_files\tag_definitions.cpp" />
-    <ClCompile Include="source\tag_files\tag_groups.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="source\cache\cache_files.h" />
-    <ClInclude Include="source\cseries\cseries.h" />
-    <ClInclude Include="source\math\integer_math.h" />
-    <ClInclude Include="source\math\real_math.h" />
-    <ClInclude Include="source\objects\object_definitions.h" />
-    <ClInclude Include="source\objects\object_types.h" />
-    <ClInclude Include="source\scenario\scenario.h" />
-    <ClInclude Include="source\tag_files\tag_definitions.h" />
-    <ClInclude Include="source\tag_files\tag_groups.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="source\cseries\enum.inl" />
-    <None Include="source\cseries\flags.inl" />
-    <None Include="source\cseries\static_array.inl" />
-    <None Include="source\cseries\static_string.inl" />
-    <None Include="source\math\point2d.inl" />
-    <None Include="source\math\point3d.inl" />
-    <None Include="source\math\quaternion.inl" />
-    <None Include="source\math\rectangle2d.inl" />
-    <None Include="source\math\vector2d.inl" />
-    <None Include="source\math\vector3d.inl" />
-    <None Include="source\math\vector4d.inl" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

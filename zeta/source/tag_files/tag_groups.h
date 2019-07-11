@@ -41,4 +41,8 @@ struct s_tag_data
 };
 static_assert(sizeof(s_tag_data) == 0x14);
 
-/* ---------- prototypes/TAG_GROUPS.CPP */
+/* ---------- inline headers */
+
+#include <tag_files/tag_block.inl>
+#include <tag_files/tag_block_flags.inl>
+#include <tag_files/tag_block_index.inl>

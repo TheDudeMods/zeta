@@ -79,40 +79,8 @@ c_cache_file::~c_cache_file()
 
 s_cache_file_tags_header *c_cache_file::get_tags_header()
 {
-	return (s_cache_file_tags_header *)(m_header.tags_header_address + m_address_mask);
+	return get_buffer_data<s_cache_file_tags_header>(m_header.tags_header_address);
 }
-
-enum e_string_id_set
-{
-	_string_id_set_static_globals,
-	_string_id_set_ui,
-	_string_id_set_ui_alerts,
-	_string_id_set_events,
-	_string_id_set_ui_events,
-	_string_id_set_widget_events,
-	_string_id_set_widgets,
-	_string_id_set_properties,
-	_string_id_set_cui_events,
-	_string_id_set_mp_events,
-	_string_id_set_result_codes,
-	_string_id_set_achievements,
-	_string_id_set_default_formats,
-	_string_id_set_engine_globals,
-	_string_id_set_ai,
-	_string_id_set_hud_message,
-	k_number_of_string_id_sets
-};
-
-static long string_id_set_offsets[k_number_of_string_id_sets] =
-{
-	0x173B, 0x0, 0x4C8, 0xB2D, 0xC0A, 0xC70,
-	0xD49, 0xD6F, 0xD74, 0x1433, 0x15A3,
-	0x15B7, 0x1619, 0x1631, 0x163E, 0x1667
-};
-
-#define STRING_ID_INDEX(id) ((id) & ((1 << 17) - 1))
-#define STRING_ID_SET(id) (((id) >> 17) & ((1 << 8) - 1))
-#define STRING_ID_LENGTH(id) (((id) >> (17 + 8)) & ((1 << 7) - 1))
 
 char const *c_cache_file::get_string(string_id id) const
 {
@@ -127,15 +95,12 @@ char const *c_cache_file::get_string(string_id id) const
 	if (set < 0 || set >= k_number_of_string_id_sets)
 		return nullptr;
 
-	if (id == 0x2015C)
-		printf("");
-
 	if (set == 0)
 		index -= set_min;
 	else
 		index += set_min;
 
-	return m_string_ids_buffer + m_string_id_indices[index + string_id_set_offsets[set]];
+	return m_string_ids_buffer + m_string_id_indices[index + k_string_id_set_offsets[set]];
 }
 
 char const *c_cache_file::get_tag_name(long index) const
@@ -145,12 +110,10 @@ char const *c_cache_file::get_tag_name(long index) const
 
 s_tag_group *c_cache_file::get_tag_group(long index)
 {
-	auto groups = (s_tag_group *)(get_tags_header()->groups_address + m_address_mask);
-	return &groups[index];
+	return &get_buffer_data<s_tag_group>(get_tags_header()->groups_address)[index];
 }
 
 s_cache_file_tag_instance *c_cache_file::get_tag_instance(long index)
 {
-	auto instances = (s_cache_file_tag_instance *)(get_tags_header()->tags_address + m_address_mask);
-	return &instances[index];
+	return &get_buffer_data<s_cache_file_tag_instance>(get_tags_header()->tags_address)[index & 0xFFFF];
 }
