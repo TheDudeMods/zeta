@@ -5,7 +5,8 @@
 
 /* ---------- code */
 
-real real_point3d::get_length() const
+template <>
+real s_point3d<real>::get_length() const
 {
 	return sqrtf(get_length_squared());
 }

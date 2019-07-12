@@ -23,6 +23,11 @@ struct s_static_array
 	{
 	}
 
+	t_element &operator[](long index)
+	{
+		return elements[index];
+	}
+
 	operator t_element *()
 	{
 		return elements;

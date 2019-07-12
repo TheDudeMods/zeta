@@ -16,7 +16,7 @@ extern s_tag_block_definition water_physics_hull_surface_definition_block;
 extern s_tag_block_definition jetwash_definition_block;
 extern s_tag_block_definition multiplayer_object_definition_block;
 
-TAG_REFERENCE(object_any_reference, 1) { NONE };
+TAG_REFERENCE(object_any_reference, 1) { (tag)NONE };
 
 TAG_PADDING(_field_short_integer, post_object_type_padding, 1);
 

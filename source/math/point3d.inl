@@ -25,7 +25,7 @@ struct s_point3d
 		return s_point3d<t_element>(x + other.x, y + other.y, z + other.z);
 	}
 
-	inline friend static s_point3d<t_element> operator+(const t_element &lhs, const s_point3d<t_element> &rhs)
+	inline friend s_point3d<t_element> operator+(const t_element &lhs, const s_point3d<t_element> &rhs)
 	{
 		return s_point3d<t_element>(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z);
 	}
@@ -45,7 +45,7 @@ struct s_point3d
 		return s_point3d<t_element>(x - other.x, y - other.y, z - other.z);
 	}
 
-	inline friend static s_point3d<t_element> operator-(const t_element &lhs, const s_point3d<t_element> &rhs)
+	inline friend s_point3d<t_element> operator-(const t_element &lhs, const s_point3d<t_element> &rhs)
 	{
 		return s_point3d<t_element>(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z);
 	}
@@ -60,7 +60,7 @@ struct s_point3d
 		return s_point3d<t_element>(x * other.x, y * other.y, z * other.z);
 	}
 
-	inline friend static s_point3d<t_element> operator*(const t_element &lhs, const s_point3d<t_element> &rhs)
+	inline friend s_point3d<t_element> operator*(const t_element &lhs, const s_point3d<t_element> &rhs)
 	{
 		return s_point3d<t_element>(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z);
 	}
@@ -75,7 +75,7 @@ struct s_point3d
 		return s_point3d<t_element>(x / other.x, y / other.y, z / other.z);
 	}
 
-	inline friend static s_point3d<t_element> operator/(const t_element &lhs, const s_point3d<t_element> &rhs)
+	inline friend s_point3d<t_element> operator/(const t_element &lhs, const s_point3d<t_element> &rhs)
 	{
 		return s_point3d<t_element>(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z);
 	}

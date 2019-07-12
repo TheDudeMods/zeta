@@ -84,8 +84,8 @@ s_cache_file_tags_header *c_cache_file::get_tags_header()
 
 char const *c_cache_file::get_string(string_id id) const
 {
-	auto set_min = unsigned long(0x4C8);
-	auto set_max = unsigned long(0xFFFF);
+	auto set_min = (unsigned long)0x4C8;
+	auto set_max = (unsigned long)0xFFFF;
 	auto set = STRING_ID_SET(id);
 	auto index = STRING_ID_INDEX(id);
 
