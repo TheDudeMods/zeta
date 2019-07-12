@@ -60,11 +60,12 @@ struct s_item_definition : s_object_definition
 	real ground_scale;
 	real human_hold_scale;
 	real human_holster_scale;
+	real player_hold_scale;
+	real player_holster_scale;
 	real covenant_hold_scale;
 	real covenant_holster_scale;
 	real boss_hold_scale;
 	real boss_holster_scale;
-	real player_hold_scale;
-	real player_holster_scale;
+	s_tag_reference grounded_friction_settings;
 };
-static_assert(sizeof(s_item_definition) == sizeof(s_object_definition) + 0xAC);
+static_assert(sizeof(s_item_definition) == sizeof(s_object_definition) + 0xBC);

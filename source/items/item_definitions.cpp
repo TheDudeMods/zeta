@@ -1,4 +1,5 @@
 #include <items/item_definitions.h>
+#include <physics/grounded_friction.h>
 
 extern s_tag_group_definition object_group;
 
@@ -23,6 +24,11 @@ TAG_BLOCK(
 	k_maximum_number_of_item_predicted_bitmaps)
 {
 	{ _field_tag_reference, "bitmap" }
+};
+
+TAG_REFERENCE(item_grounded_friction_settings_reference, 1)
+{
+	k_grounded_friction_group_tag
 };
 
 TAG_GROUP(
@@ -54,11 +60,12 @@ TAG_GROUP(
 	{ _field_real, "ground_scale" },
 	{ _field_real, "human_hold_scale" },
 	{ _field_real, "human_holster_scale" },
+	{ _field_real, "player_hold_scale" },
+	{ _field_real, "player_holster_scale" },
 	{ _field_real, "covenant_hold_scale" },
 	{ _field_real, "covenant_holster_scale" },
 	{ _field_real, "boss_hold_scale" },
 	{ _field_real, "boss_holster_scale" },
-	{ _field_real, "player_hold_scale" },
-	{ _field_real, "player_holster_scale" },
+	{ _field_real, "grounded_friction_settings", &item_grounded_friction_settings_reference },
 	{ _field_terminator }
 };
