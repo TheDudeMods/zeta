@@ -1,5 +1,8 @@
+#include <ai/character_definitions.h>
 #include <camera/camera_track.h>
 #include <effects/screen_effect.h>
+#include <objects/damage_new.h>
+#include <physics/spring_acceleration.h>
 #include <units/unit_definitions.h>
 #include <units/biped_definitions.h>
 #include <units/vehicle_definitions.h>
@@ -218,6 +221,34 @@ TAG_STRUCT(
     { _field_terminator }
 };
 
+TAG_REFERENCE(
+    unit_assassination_damage_response_reference,
+    1)
+{
+    k_damage_response_group_tag
+};
+
+TAG_REFERENCE(
+    unit_assassination_object_reference,
+    1)
+{
+    k_object_group_tag
+};
+
+TAG_REFERENCE(
+    unit_seat_acceleration_reference,
+    1)
+{
+    k_spring_acceleration_group_tag
+};
+
+TAG_REFERENCE(
+    unit_spawned_turret_character_reference,
+    1)
+{
+    k_character_group_tag
+};
+
 TAG_GROUP(
     unit_group,
     k_unit_group_tag,
@@ -233,6 +264,52 @@ TAG_GROUP(
     { _field_real, "camera_stiffness" },
     { _field_struct, "unit_camera", &unit_camera_struct },
     { _field_struct, "sync_action_camera", &unit_camera_struct },
+    { _field_tag_reference, "assassination_start_damage_response", &unit_assassination_damage_response_reference },
+    { _field_tag_reference, "assassination_object", &unit_assassination_object_reference },
+    { _field_string_id, "assassination_object_stow_marker" },
+    { _field_string_id, "assassination_object_out_marker" },
+    { _field_string_id, "assassination_object_anchor_marker" },
+    { _field_tag_reference, "seat_acceleration", &unit_seat_acceleration_reference },
+	{ _field_real, "soft_ping_threshold" },
+	{ _field_real, "soft_ping_interrupt_time" },
+	{ _field_real, "hard_ping_threshold" },
+	{ _field_real, "hard_ping_interrupt_time" },
+	{ _field_real, "hard_death_threshold" },
+	{ _field_real, "feign_death_threshold" },
+	{ _field_real, "feign_death_time" },
+	{ _field_real, "distance_of_evade_animation" },
+	{ _field_real, "pain_screen_duration" },
+	{ _field_real, "pain_screen_region_fade_out_duration" },
+	{ _field_real, "pain_screen_region_fade_out_weight_threshold" },
+	{ _field_angle, "paint_screen_angle_tolerance" },
+	{ _field_angle, "pain_screen_angle_randomness" },
+	{ _field_real, "defensive_screen_duration" },
+	{ _field_real, "defensive_screen_scrub_fallback_fraction" },
+	{ _field_real, "distance_of_dive_animation" },
+	{ _field_real, "terminal_velocity_fall_ratio" },
+	{ _field_real, "stun_movement_penalty" },
+	{ _field_real, "stun_turning_penalty" },
+	{ _field_real, "stun_jumping_penalty" },
+	{ _field_real, "minimum_stun_time" },
+	{ _field_real, "maximum_stun_time" },
+	{ _field_real, "feign_death_chance" },
+	{ _field_real, "feign_repeat_chance" },
+	{ _field_tag_reference, "spawned_turret_character", &unit_spawned_turret_character_reference },
+	{ _field_short_integer, "spawned_actor_count_min" },
+	{ _field_short_integer, "spawned_actor_count_max" },
+	{ _field_real, "spawned_velocity" },
+	{ _field_string_id, "aiming_pivot_marker" },
+	{ _field_angle, "aiming_velocity_maximum" },
+	{ _field_angle, "aiming_acceleration_maximum" },
+	{ _field_real, "casual_aiming_modifier" },
+	{ _field_angle, "looking_velocity_maximum" },
+	{ _field_angle, "looking_acceleration_maximum" },
+	{ _field_real, "object_velocity_maximum" },
+	{ _field_string_id, "right_hand_node" },
+	{ _field_string_id, "left_hand_node" },
+	{ _field_string_id, "preferred_gun_node" },
+	{ _field_string_id, "preferred_grenade_node" },
+	{ _field_string_id, "other_node" },
     //
     // TODO: finish
     //

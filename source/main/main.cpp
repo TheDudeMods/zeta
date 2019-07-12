@@ -1,6 +1,6 @@
 #include <cseries/cseries.h>
 #include <cache/cache_files.h>
-#include <items/item_definitions.h>
+#include <units/unit_definitions.h>
 
 int main()
 {
@@ -19,10 +19,10 @@ int main()
 	}
 
 	//
-	// Get the first item tag definition
+	// Get the first unit tag definition
 	//
 
-	s_item_definition *item = nullptr;
+	s_unit_definition *unit = nullptr;
 
 	for (qword i = 0; i < tags_header->tag_count; i++)
 	{
@@ -36,10 +36,10 @@ int main()
 		if (!group)
 			continue;
 		
-		if (group->is_in_group('item'))
+		if (group->is_in_group(k_unit_group_tag))
 		{
 			printf("[0x%04llX] %s.%s\n", i, file->get_tag_name(i), file->get_string(group->name));
-			item = file->get_tag_definition<s_item_definition>(i);
+			unit = file->get_tag_definition<s_unit_definition>(i);
 			break;
 		}
 	}
