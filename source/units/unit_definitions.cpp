@@ -1,3 +1,5 @@
+#include <camera/camera_track.h>
+#include <effects/screen_effect.h>
 #include <units/unit_definitions.h>
 #include <units/biped_definitions.h>
 #include <units/vehicle_definitions.h>
@@ -52,6 +54,170 @@ TAG_REFERENCE(
     k_vehicle_group_tag
 };
 
+TAG_REFERENCE(
+    unit_screen_effect_reference,
+    1)
+{
+    k_area_screen_effect_group_tag
+};
+
+TAG_BLOCK(
+    unit_screen_effect_reference_block,
+    sizeof(s_unit_screen_effect_reference),
+    k_maximum_number_of_unit_screen_effect_references)
+{
+    { _field_tag_reference, "type", &unit_screen_effect_reference },
+    { _field_terminator }
+};
+
+TAG_ENUM(
+    unit_camera_flags_enum,
+    k_number_of_unit_camera_flags)
+{
+    { "pitch_bounds_absolute_space", _unit_camera_pitch_bounds_absolute_space_bit },
+    { "only_collides_with_environment", _unit_camera_only_collides_with_environment_bit },
+    { "hides_player_unit_from_camera", _unit_camera_hides_player_unit_from_camera_bit },
+    { "use_aiming_vector_instead_of_marker_forward", _unit_camera_use_aiming_vector_instead_of_marker_forward_bit },
+};
+
+TAG_PADDING(
+    _field_short_integer,
+    unit_camera_post_flags_padding,
+    1);
+
+TAG_REFERENCE(
+    unit_camera_track_reference,
+    1)
+{
+    k_camera_track_group_tag
+};
+
+TAG_BLOCK(
+    unit_camera_track_reference_block,
+    sizeof(s_unit_camera_track_reference),
+    k_maximum_number_of_unit_camera_track_references)
+{
+    { _field_tag_reference, "track", &unit_camera_track_reference },
+    { _field_tag_reference, "screen_effect", &unit_screen_effect_reference },
+    { _field_terminator }
+};
+
+TAG_STRUCT(
+    unit_camera_obstruction_struct,
+    sizeof(s_unit_camera_obstruction))
+{
+    { _field_real_fraction, "cylinder_fraction" },
+    { _field_angle, "obstruction_test_angle" },
+    { _field_real, "obstruction_max_inward_accel" },
+    { _field_real, "obstruction_max_outward_accel" },
+    { _field_real, "obstruction_max_velocity" },
+    { _field_real, "obstruction_return_delay" },
+    { _field_terminator }
+};
+
+TAG_ENUM(
+    unit_camera_acceleration_input_variable_enum,
+    k_number_of_unit_camera_acceleration_input_variables)
+{
+    { "linear_velocity", _unit_camera_acceleration_input_variable_linear_velocity },
+    { "linear_acceleration", _unit_camera_acceleration_input_variable_linear_acceleration },
+    { "yaw", _unit_camera_acceleration_input_variable_yaw },
+    { "pitch", _unit_camera_acceleration_input_variable_pitch },
+    { "roll", _unit_camera_acceleration_input_variable_roll },
+};
+
+TAG_PADDING(
+    _field_char_integer,
+    unit_camera_acceleration_function_post_input_variable_padding,
+    3);
+
+TAG_STRUCT(
+    unit_camera_acceleration_function_struct,
+    sizeof(s_unit_camera_acceleration_function))
+{
+    { _field_char_enum, "input_variable", &unit_camera_acceleration_input_variable_enum },
+    { _field_padding, "post_input_variable_padding", &unit_camera_acceleration_function_post_input_variable_padding },
+    { _field_data, "data" },
+    { _field_real, "maximum_value" },
+    { _field_real, "camera_scale_axial" },
+    { _field_real, "camera_scale_perpendicular" },
+    { _field_terminator }
+};
+
+TAG_BLOCK(
+    unit_camera_acceleration_displacement_block,
+    sizeof(s_unit_camera_acceleration_displacement),
+    k_maximum_number_of_unit_camera_acceleration_displacements)
+{
+    { _field_real, "maximum_camera_velocity" },
+    { _field_struct, "forward_back", &unit_camera_acceleration_function_struct },
+    { _field_struct, "left_right", &unit_camera_acceleration_function_struct },
+    { _field_struct, "up_down", &unit_camera_acceleration_function_struct },
+    { _field_terminator }
+};
+
+TAG_ENUM(
+    unit_camera_gamepad_input_shape_enum,
+    k_number_of_unit_camera_gamepad_input_shapes)
+{
+    { "none", _unit_camera_gamepad_input_shape_none },
+    { "unit_circle", _unit_camera_gamepad_input_shape_unit_circle },
+    { "unit_square", _unit_camera_gamepad_input_shape_unit_square },
+};
+
+TAG_PADDING(
+    _field_char_integer,
+    unit_camera_gamepad_stick_info_post_input_shape_padding,
+    1);
+
+TAG_BLOCK(
+    unit_camera_gamepad_stick_function_block,
+    sizeof(s_unit_camera_gamepad_stick_function),
+    k_maximum_number_of_unit_camera_gamepad_stick_functions)
+{
+    { _field_data, "data" },
+    { _field_terminator }
+};
+
+TAG_BLOCK(
+    unit_camera_gamepad_stick_info_block,
+    sizeof(s_unit_camera_gamepad_stick_info),
+    k_maximum_number_of_unit_camera_gamepad_stick_overrides)
+{
+    { _field_char_enum, "input_shape", &unit_camera_gamepad_input_shape_enum },
+    { _field_padding, "post_input_shape_padding", &unit_camera_gamepad_stick_info_post_input_shape_padding },
+    { _field_real_fraction, "peg_threshold" },
+    { _field_real_point2d, "pegged_time" },
+    { _field_real_point2d, "pegged_scale" },
+    { _field_angle, "peg_max_angular_velocity" },
+    { _field_block, "input_mapping_function", &unit_camera_gamepad_stick_function_block },
+    { _field_terminator }
+};
+
+TAG_STRUCT(
+    unit_camera_struct,
+    sizeof(s_unit_camera))
+{
+    { _field_word_flags, "flags", &unit_camera_flags_enum },
+    { _field_padding, "post_flags_padding", &unit_camera_post_flags_padding },
+    { _field_string_id, "camera_marker_name" },
+    { _field_angle, "pitch_auto_level" },
+    { _field_angle_bounds, "pitch_range" },
+    { _field_block, "camera_tracks", &unit_camera_track_reference_block },
+    { _field_angle, "pitch_minimum_spring" },
+    { _field_angle, "pitch_maximum_spring" },
+    { _field_angle, "spring_velocity" },
+    { _field_angle, "look_acceleration" },
+    { _field_angle, "look_deceleration" },
+    { _field_real_fraction, "look_acceleration_smoothing_fraction" },
+    { _field_angle, "override_fov" },
+    { _field_struct, "camera_obstruction", &unit_camera_obstruction_struct },
+    { _field_block, "camera_acceleration", &unit_camera_acceleration_displacement_block },
+    { _field_block, "move_stick_overrides", &unit_camera_gamepad_stick_info_block },
+    { _field_block, "look_stick_overrides", &unit_camera_gamepad_stick_info_block },
+    { _field_terminator }
+};
+
 TAG_GROUP(
     unit_group,
     k_unit_group_tag,
@@ -63,6 +229,10 @@ TAG_GROUP(
     { _field_short_enum, "constant_sound_volume", &ai_sound_volume_enum },
     { _field_tag_reference, "hologram_unit", &unit_hologram_unit_reference },
     { _field_block, "campaign_metagame_bucket", &campaign_metagame_bucket_block },
+    { _field_block, "screen_effects", &unit_screen_effect_reference_block },
+    { _field_real, "camera_stiffness" },
+    { _field_struct, "unit_camera", &unit_camera_struct },
+    { _field_struct, "sync_action_camera", &unit_camera_struct },
     //
     // TODO: finish
     //

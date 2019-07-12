@@ -11,7 +11,12 @@
 
 enum
 {
-    k_unit_group_tag = 'unit'
+    k_unit_group_tag = 'unit',
+    k_maximum_number_of_unit_screen_effect_references = 4,
+    k_maximum_number_of_unit_camera_track_references = 4,
+    k_maximum_number_of_unit_camera_acceleration_displacements = 1,
+    k_maximum_number_of_unit_camera_gamepad_stick_functions = 1,
+    k_maximum_number_of_unit_camera_gamepad_stick_overrides = 1,
 };
 
 /* ---------- enumerators */
@@ -50,7 +55,120 @@ enum e_unit_definition_flags
     k_number_of_unit_definition_flags
 };
 
+enum e_unit_camera_flags
+{
+    _unit_camera_pitch_bounds_absolute_space_bit,
+    _unit_camera_only_collides_with_environment_bit,
+    _unit_camera_hides_player_unit_from_camera_bit,
+    _unit_camera_use_aiming_vector_instead_of_marker_forward_bit,
+    k_number_of_unit_camera_flags
+};
+
+enum e_unit_camera_acceleration_input_variable
+{
+    _unit_camera_acceleration_input_variable_linear_velocity,
+    _unit_camera_acceleration_input_variable_linear_acceleration,
+    _unit_camera_acceleration_input_variable_yaw,
+    _unit_camera_acceleration_input_variable_pitch,
+    _unit_camera_acceleration_input_variable_roll,
+    k_number_of_unit_camera_acceleration_input_variables
+};
+
+enum e_unit_camera_gamepad_input_shape
+{
+    _unit_camera_gamepad_input_shape_none,
+    _unit_camera_gamepad_input_shape_unit_circle,
+    _unit_camera_gamepad_input_shape_unit_square,
+    k_number_of_unit_camera_gamepad_input_shapes
+};
+
 /* ---------- structures */
+
+struct s_unit_screen_effect_reference
+{
+    s_tag_reference type;
+};
+static_assert(sizeof(s_unit_screen_effect_reference) == 0x10);
+
+struct s_unit_camera_track_reference
+{
+    s_tag_reference track;
+    s_tag_reference screen_effect;
+};
+static_assert(sizeof(s_unit_camera_track_reference) == 0x20);
+
+struct s_unit_camera_obstruction
+{
+    real_fraction cylinder_fraction;
+    angle obstruction_test_angle;
+    real obstruction_max_inward_accel;
+    real obstruction_max_outward_accel;
+    real obstruction_max_velocity;
+    real obstruction_return_delay;
+};
+static_assert(sizeof(s_unit_camera_obstruction) == 0x18);
+
+struct s_unit_camera_acceleration_function
+{
+    c_enum<e_unit_camera_acceleration_input_variable, char> input_variable;
+    char : 8;
+    short : 16;
+    s_tag_data data;
+    real maximum_value;
+    real camera_scale_axial;
+    real camera_scale_perpendicular;
+};
+static_assert(sizeof(s_unit_camera_acceleration_function) == 0x24);
+
+struct s_unit_camera_acceleration_displacement
+{
+    real maximum_camera_velocity;
+    s_unit_camera_acceleration_function forward_back;
+    s_unit_camera_acceleration_function left_right;
+    s_unit_camera_acceleration_function up_down;
+};
+static_assert(sizeof(s_unit_camera_acceleration_displacement) == 0x70);
+
+struct s_unit_camera_gamepad_stick_function
+{
+    s_tag_data data;
+};
+static_assert(sizeof(s_unit_camera_gamepad_stick_function) == 0x14);
+
+struct s_unit_camera_gamepad_stick_info
+{
+    c_enum<e_unit_camera_gamepad_input_shape, char> input_shape;
+    char : 8;
+    short : 16;
+    real_fraction peg_threshold;
+    real_point2d pegged_time;
+    real_point2d pegged_scale;
+    angle peg_max_angular_velocity;
+    c_tag_block<s_unit_camera_gamepad_stick_function> input_mapping_function;
+};
+static_assert(sizeof(s_unit_camera_gamepad_stick_info) == 0x28);
+
+struct s_unit_camera
+{
+    c_flags<e_unit_camera_flags, word> flags;
+    short : 16;
+    string_id camera_marker_name;
+    angle pitch_auto_level;
+    angle_bounds pitch_range;
+    c_tag_block<s_unit_camera_track_reference> camera_tracks;
+    angle pitch_minimum_spring;
+    angle pitch_maximum_spring;
+    angle spring_velocity;
+    angle look_acceleration;
+    angle look_deceleration;
+    real_fraction look_acceleration_smoothing_fraction;
+    angle override_fov;
+    s_unit_camera_obstruction camera_obstruction;
+    c_tag_block<s_unit_camera_acceleration_displacement> camera_acceleration;
+    c_tag_block<s_unit_camera_gamepad_stick_info> move_stick_overrides;
+    c_tag_block<s_unit_camera_gamepad_stick_info> look_stick_overrides;
+};
+static_assert(sizeof(s_unit_camera) == 0x78);
 
 struct s_unit_definition : s_object_definition
 {
@@ -59,6 +177,10 @@ struct s_unit_definition : s_object_definition
     c_enum<e_ai_sound_volume, short> constant_sound_volume;
     s_tag_reference hologram_unit;
     c_tag_block<s_campaign_metagame_bucket> campaign_metagame_bucket;
+    c_tag_block<s_unit_screen_effect_reference> screen_effects;
+    real camera_stiffness;
+    s_unit_camera unit_camera;
+    s_unit_camera sync_action_camera;
     //
     // TODO: finish
     //
