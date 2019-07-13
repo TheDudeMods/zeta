@@ -1,9 +1,14 @@
 #include <ai/character_definitions.h>
 #include <camera/camera_track.h>
 #include <effects/screen_effect.h>
+#include <interface/chud/chud_definitions.h>
+#include <items/weapon_definitions.h>
+#include <objects/damage.h>
 #include <objects/damage_new.h>
 #include <physics/spring_acceleration.h>
+#include <sound/sound_definitions.h>
 #include <units/unit_definitions.h>
+#include <units/unit_dialogue.h>
 #include <units/biped_definitions.h>
 #include <units/vehicle_definitions.h>
 
@@ -249,6 +254,146 @@ TAG_REFERENCE(
     k_character_group_tag
 };
 
+TAG_REFERENCE(
+    unit_damage_effect_reference,
+    1)
+{
+    k_damage_effect_group_tag
+};
+
+TAG_ENUM(
+    unit_motion_sensor_blip_size_enum,
+    k_number_of_unit_motion_sensor_blip_sizes)
+{
+    { "medium", _unit_motion_sensor_blip_size_medium },
+    { "small", _unit_motion_sensor_blip_size_small },
+    { "large", _unit_motion_sensor_blip_size_large },
+};
+
+TAG_ENUM(
+    unit_item_owner_size_enum,
+    k_number_of_unit_item_owner_sizes)
+{
+    { "small", _unit_item_owner_size_small },
+    { "medium", _unit_item_owner_size_medium },
+    { "large", _unit_item_owner_size_large },
+    { "huge", _unit_item_owner_size_huge },
+};
+
+TAG_BLOCK(
+    unit_posture_block,
+    sizeof(s_unit_posture),
+    k_maximum_number_of_unit_postures)
+{
+    { _field_string_id, "name" },
+    { _field_real_point3d, "pill_offset" },
+    { _field_terminator }
+};
+
+TAG_REFERENCE(
+    unit_hud_interface_reference,
+    1)
+{
+    k_chud_definition_group_tag
+};
+
+TAG_BLOCK(
+    unit_hud_interface_block,
+    sizeof(s_unit_hud_interface_reference),
+    k_maximum_number_of_unit_hud_references)
+{
+    { _field_tag_reference, "type", &unit_hud_interface_reference },
+    { _field_terminator }
+};
+
+TAG_PADDING(
+    _field_short_integer,
+    unit_dialogue_variant_post_variant_padding,
+    1);
+
+TAG_REFERENCE(
+    unit_dialogue_reference,
+    1)
+{
+    k_unit_dialogue_group_tag
+};
+
+TAG_BLOCK(
+    unit_dialogue_variant_block,
+    sizeof(s_unit_dialogue_variant),
+    k_maximum_number_of_unit_dialogue_variants)
+{
+    { _field_short_integer, "variant_number" },
+    { _field_padding, "post_variant_padding", &unit_dialogue_variant_post_variant_padding },
+    { _field_tag_reference, "dialogue", &unit_dialogue_reference },
+    { _field_terminator }
+};
+
+TAG_ENUM(
+    unit_grenade_type_enum,
+    k_number_of_unit_grenade_types)
+{
+    { "human_fragmentation", _unit_grenade_type_human_fragmentation },
+    { "covenant_plasma", _unit_grenade_type_covenant_plasma },
+};
+
+TAG_BLOCK(
+    unit_powered_seat_block,
+    sizeof(s_unit_powered_seat),
+    k_maximum_number_of_unit_powered_seats)
+{
+    { _field_real, "driver_powerup_time" },
+    { _field_real, "driver_powerdown_time" },
+    { _field_terminator }
+};
+
+TAG_REFERENCE(
+    unit_weapon_reference,
+    1)
+{
+    k_weapon_group_tag
+};
+
+TAG_BLOCK(
+    unit_weapon_reference_block,
+    sizeof(s_unit_weapon_reference),
+    k_maximum_number_of_unit_weapons)
+{
+    { _field_tag_reference, "weapon", &unit_weapon_reference },
+    { _field_string_id, "parent_marker" },
+    { _field_terminator }
+};
+
+TAG_BLOCK(
+    unit_target_tracking_type_block,
+    sizeof(s_unit_target_tracking_type),
+    k_maximum_number_of_unit_target_tracking_types)
+{
+    { _field_string_id, "tracking_type" },
+    { _field_terminator }
+};
+
+TAG_REFERENCE(
+    unit_sound_reference,
+    2)
+{
+    k_sound_group_tag,
+    k_sound_looping_group_tag
+};
+
+TAG_BLOCK(
+    unit_target_tracking_block,
+    sizeof(s_unit_target_tracking),
+    k_maximum_number_of_unit_target_trackings)
+{
+    { _field_block, "tracking_types", &unit_target_tracking_type_block },
+    { _field_real, "acquire_time" },
+    { _field_real, "grace_time" },
+    { _field_real, "decay_time" },
+    { _field_tag_reference, "tracking_sound", &unit_sound_reference },
+    { _field_tag_reference, "locked_sound", &unit_sound_reference },
+};
+
 TAG_GROUP(
     unit_group,
     k_unit_group_tag,
@@ -310,6 +455,32 @@ TAG_GROUP(
 	{ _field_string_id, "preferred_gun_node" },
 	{ _field_string_id, "preferred_grenade_node" },
 	{ _field_string_id, "other_node" },
+    { _field_tag_reference, "melee_damage", &unit_damage_effect_reference },
+    { _field_tag_reference, "native_melee_override", &unit_damage_effect_reference },
+    { _field_tag_reference, "boarding_melee_damage", &unit_damage_effect_reference },
+    { _field_tag_reference, "boarding_melee_response", &unit_damage_effect_reference },
+    { _field_tag_reference, "eviction_melee_damage", &unit_damage_effect_reference },
+    { _field_tag_reference, "eviction_melee_response", &unit_damage_effect_reference },
+    { _field_tag_reference, "landing_melee_damage", &unit_damage_effect_reference },
+    { _field_tag_reference, "flurry_melee_damage", &unit_damage_effect_reference },
+    { _field_tag_reference, "obstacle_smash_damage", &unit_damage_effect_reference },
+    { _field_tag_reference, "assassination_damage", &unit_damage_effect_reference },
+    { _field_short_enum, "motion_sensor_blip_size", &unit_motion_sensor_blip_size_enum },
+    { _field_short_enum, "item_owner_size", &unit_item_owner_size_enum },
+    { _field_string_id, "equipment_variant_name" },
+    { _field_string_id, "grounded_equipment_variant_name" },
+    { _field_block, "postures", &unit_posture_block },
+    { _field_block, "hud_interfaces", &unit_hud_interface_block },
+    { _field_block, "dialogue_variants", &unit_dialogue_variant_block },
+    { _field_angle, "grenade_angle" },
+    { _field_angle, "grenade_angle_max_elevation" },
+    { _field_angle, "grenade_angle_min_elevation" },
+    { _field_real, "grenade_velocity" },
+    { _field_short_enum, "grenade_type", &unit_grenade_type_enum },
+    { _field_short_integer, "grenade_count" },
+    { _field_block, "powered_seats", &unit_powered_seat_block },
+    { _field_block, "weapons", &unit_weapon_reference_block },
+    { _field_block, "target_tracking", &unit_target_tracking_block },
     //
     // TODO: finish
     //

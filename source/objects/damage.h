@@ -7,5 +7,5 @@
 
 enum
 {
-    k_damage_response_group_tag = 'drdf'
+    k_damage_effect_group_tag = 'jpt!'
 };

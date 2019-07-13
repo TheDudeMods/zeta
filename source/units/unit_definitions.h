@@ -17,6 +17,14 @@ enum
     k_maximum_number_of_unit_camera_acceleration_displacements = 1,
     k_maximum_number_of_unit_camera_gamepad_stick_functions = 1,
     k_maximum_number_of_unit_camera_gamepad_stick_overrides = 1,
+    k_maximum_number_of_unit_postures = NONE,
+    k_maximum_number_of_unit_hud_references = NONE,
+    k_maximum_number_of_unit_dialogue_variants = 16,
+    k_maximum_number_of_unit_powered_seats = 2,
+    k_maximum_number_of_unit_weapons = 4,
+    k_maximum_number_of_unit_target_tracking_types = 16,
+    k_maximum_number_of_unit_target_trackings = 1,
+    k_maximum_number_of_unit_seats = 64,
 };
 
 /* ---------- enumerators */
@@ -80,6 +88,30 @@ enum e_unit_camera_gamepad_input_shape
     _unit_camera_gamepad_input_shape_unit_circle,
     _unit_camera_gamepad_input_shape_unit_square,
     k_number_of_unit_camera_gamepad_input_shapes
+};
+
+enum e_unit_motion_sensor_blip_size
+{
+    _unit_motion_sensor_blip_size_medium,
+    _unit_motion_sensor_blip_size_small,
+    _unit_motion_sensor_blip_size_large,
+    k_number_of_unit_motion_sensor_blip_sizes
+};
+
+enum e_unit_item_owner_size
+{
+    _unit_item_owner_size_small,
+    _unit_item_owner_size_medium,
+    _unit_item_owner_size_large,
+    _unit_item_owner_size_huge,
+    k_number_of_unit_item_owner_sizes
+};
+
+enum e_unit_grenade_type
+{
+    _unit_grenade_type_human_fragmentation,
+    _unit_grenade_type_covenant_plasma,
+    k_number_of_unit_grenade_types
 };
 
 /* ---------- structures */
@@ -170,6 +202,58 @@ struct s_unit_camera
 };
 static_assert(sizeof(s_unit_camera) == 0x78);
 
+struct s_unit_posture
+{
+    string_id name;
+    real_point3d pill_offset;
+};
+static_assert(sizeof(s_unit_posture) == 0x10);
+
+struct s_unit_hud_interface_reference
+{
+    s_tag_reference type;
+};
+static_assert(sizeof(s_unit_hud_interface_reference) == 0x10);
+
+struct s_unit_dialogue_variant
+{
+    short variant_number;
+    short : 16;
+    s_tag_reference dialogue;
+};
+static_assert(sizeof(s_unit_dialogue_variant) == 0x14);
+
+struct s_unit_powered_seat
+{
+    real driver_powerup_time;
+    real driver_powerdown_time;
+};
+static_assert(sizeof(s_unit_powered_seat) == 0x8);
+
+struct s_unit_weapon_reference
+{
+    s_tag_reference weapon;
+    string_id parent_marker;
+};
+static_assert(sizeof(s_unit_weapon_reference) == 0x14);
+
+struct s_unit_target_tracking_type
+{
+    string_id tracking_type;
+};
+static_assert(sizeof(s_unit_target_tracking_type) == 0x4);
+
+struct s_unit_target_tracking
+{
+    c_tag_block<s_unit_target_tracking_type> tracking_types;
+    real acquire_time;
+    real grace_time;
+    real decay_time;
+    s_tag_reference tracking_sound;
+    s_tag_reference locked_sound;
+};
+static_assert(sizeof(s_unit_target_tracking) == 0x38);
+
 struct s_unit_definition : s_object_definition
 {
     c_flags<e_unit_definition_flags, long> unit_flags;
@@ -227,6 +311,32 @@ struct s_unit_definition : s_object_definition
 	string_id preferred_gun_node;
 	string_id preferred_grenade_node;
 	string_id other_node;
+    s_tag_reference melee_damage;
+    s_tag_reference native_melee_override;
+    s_tag_reference boarding_melee_damage;
+    s_tag_reference boarding_melee_response;
+    s_tag_reference eviction_melee_damage;
+    s_tag_reference eviction_melee_response;
+    s_tag_reference landing_melee_damage;
+    s_tag_reference flurry_melee_damage;
+    s_tag_reference obstacle_smash_damage;
+    s_tag_reference assassination_damage;
+    c_enum<e_unit_motion_sensor_blip_size, short> motion_sensor_blip_size;
+    c_enum<e_unit_item_owner_size, short> item_owner_size;
+    string_id equipment_variant_name;
+    string_id grounded_equipment_variant_name;
+    c_tag_block<s_unit_posture> postures;
+    c_tag_block<s_unit_hud_interface_reference> hud_interfaces;
+    c_tag_block<s_unit_dialogue_variant> dialogue_variants;
+    angle grenade_angle;
+    angle grenade_angle_max_elevation;
+    angle grenade_angle_min_elevation;
+    real grenade_velocity;
+    c_enum<e_unit_grenade_type, short> grenade_type;
+    short grenade_count;
+    c_tag_block<s_unit_powered_seat> powered_seats;
+    c_tag_block<s_unit_weapon_reference> weapons;
+    c_tag_block<s_unit_target_tracking> target_tracking;
     //
     // TODO: finish
     //
