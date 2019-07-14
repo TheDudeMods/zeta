@@ -25,6 +25,7 @@ enum
     k_maximum_number_of_unit_target_tracking_types = 16,
     k_maximum_number_of_unit_target_trackings = 1,
     k_maximum_number_of_unit_seats = 64,
+    k_maximum_number_of_unit_boarding_seats = k_maximum_number_of_unit_seats,
 };
 
 /* ---------- enumerators */
@@ -112,6 +113,60 @@ enum e_unit_grenade_type
     _unit_grenade_type_human_fragmentation,
     _unit_grenade_type_covenant_plasma,
     k_number_of_unit_grenade_types
+};
+
+enum e_unit_seat_flags
+{
+    _unit_seat_invisible_bit,
+    _unit_seat_locked_bit,
+    _unit_seat_driver_bit,
+    _unit_seat_gunner_bit,
+    _unit_seat_third_person_camera_bit,
+    _unit_seat_allows_weapons_bit,
+    _unit_seat_third_person_on_enter_bit,
+    _unit_seat_first_person_camera_slaved_to_gun_bit,
+    _unit_seat_allow_vehicle_communication_animations_bit,
+    _unit_seat_not_valid_without_driver_bit,
+    _unit_seat_boarding_seat_bit,
+    _unit_seat_ai_firing_disabled_by_max_acceleration_bit,
+    _unit_seat_boarding_enters_seat_bit,
+    _unit_seat_boarding_need_any_passenger_bit,
+    _unit_seat_invalid_for_player_bit,
+    _unit_seat_invalid_for_non_player_bit,
+    _unit_seat_invalid_for_hero_bit,
+    _unit_seat_gunner_player_only_bit,
+    _unit_seat_invisible_under_major_damage_bit,
+    _unit_seat_melee_instant_killable_bit,
+    _unit_seat_leader_preference_bit,
+    _unit_seat_allows_exit_and_detach_bit,
+    _unit_seat_blocks_headshots_bit,
+    _unit_seat_exits_to_ground_bit,
+    _unit_seat_forward_from_attachment_bit,
+    _unit_seat_disallow_ai_shooting_bit,
+    _unit_seat_prevents_weapon_stowing_bit,
+    _unit_seat_takes_top_level_aoe_damage_bit,
+    _unit_seat_disallow_exit_bit,
+    _unit_seat_local_aiming_bit,
+    _unit_seat_pelvis_relative_attachment_bit,
+    _unit_seat_apply_velocity_on_death_exit_bit,
+    k_number_of_unit_seat_flags
+};
+
+enum e_unit_ai_seat_type
+{
+    _unit_ai_seat_type_none,
+    _unit_ai_seat_type_passenger,
+    _unit_ai_seat_type_gunner,
+    _unit_ai_seat_type_small_cargo,
+    _unit_ai_seat_type_large_cargo,
+    _unit_ai_seat_type_driver,
+    k_number_of_unit_ai_seat_types
+};
+
+enum e_unit_boost_flags
+{
+    _unit_boost_pegs_throttle_bit,
+    k_number_of_unit_boost_flags
 };
 
 /* ---------- structures */
@@ -254,6 +309,79 @@ struct s_unit_target_tracking
 };
 static_assert(sizeof(s_unit_target_tracking) == 0x38);
 
+struct s_unit_seat;
+
+struct s_unit_boarding_seat
+{
+    c_tag_block_index<s_unit_seat, short> seat;
+    short : 16;
+};
+static_assert(sizeof(s_unit_boarding_seat) == 0x4);
+
+struct s_unit_seat
+{
+    c_flags<e_unit_seat_flags, long> flags;
+    string_id label;
+    string_id marker_name;
+    string_id entry_marker_name;
+    string_id boarding_grenade_marker;
+    string_id boarding_grenade_string;
+    string_id boarding_melee_string;
+    string_id in_seat_string;
+    real ping_scale;
+    real turnover_time;
+    s_tag_reference seat_acceleration;
+    real ai_scariness;
+    c_enum<e_unit_ai_seat_type, short> ai_seat_type;
+    c_tag_block_index<s_unit_seat, short> boarding_seat;
+    c_tag_block<s_unit_boarding_seat> additional_boarding_seats;
+    real_fraction listener_interpolation_factor;
+    real_bounds yaw_rate_bounds;
+    real_bounds pitch_rate_bounds;
+    real pitch_interpolation_time;
+    real min_speed_reference;
+    real max_speed_reference;
+    real speed_exponent;
+    s_unit_camera unit_camera;
+    c_tag_block<s_unit_hud_interface_reference> hud_interface_references;
+    string_id enter_seat_string;
+    angle_bounds yaw_range;
+    s_tag_reference built_in_gunner;
+    real entry_radius;
+    angle entry_marker_cone_angle;
+    angle entry_marker_facing_angle;
+    real maximum_relative_velocity;
+    real open_time;
+    real close_time;
+    string_id open_function_name;
+    string_id opening_function_name;
+    string_id closing_function_name;
+    string_id invisible_seat_region;
+    long runtime_invisible_seat_region_index;
+};
+static_assert(sizeof(s_unit_seat) == 0x13C);
+
+struct s_unit_boost
+{
+    s_tag_reference collision_damage;
+    c_flags<e_unit_boost_flags, long> flags;
+    real boost_peak_power;
+    real boost_rise_time;
+    real boost_fall_time;
+    real boost_power_per_second;
+    real boost_low_warning_threshold;
+    real recharge_rate;
+    s_tag_data trigger_to_boost;
+};
+static_assert(sizeof(s_unit_boost) == 0x40);
+
+struct s_unit_lipsync
+{
+    real_fraction attack_weight;
+    real_fraction decay_weight;
+};
+static_assert(sizeof(s_unit_lipsync) == 0x8);
+
 struct s_unit_definition : s_object_definition
 {
     c_flags<e_unit_definition_flags, long> unit_flags;
@@ -271,46 +399,46 @@ struct s_unit_definition : s_object_definition
     string_id assassination_object_out_marker;
     string_id assassination_object_anchor_marker;
     s_tag_reference seat_acceleration;
-	real soft_ping_threshold;
-	real soft_ping_interrupt_time;
-	real hard_ping_threshold;
-	real hard_ping_interrupt_time;
-	real hard_death_threshold;
-	real feign_death_threshold;
-	real feign_death_time;
-	real distance_of_evade_animation;
-	real pain_screen_duration;
-	real pain_screen_region_fade_out_duration;
-	real pain_screen_region_fade_out_weight_threshold;
-	angle paint_screen_angle_tolerance;
-	angle pain_screen_angle_randomness;
-	real defensive_screen_duration;
-	real defensive_screen_scrub_fallback_fraction;
-	real distance_of_dive_animation;
-	real terminal_velocity_fall_ratio;
-	real stun_movement_penalty;
-	real stun_turning_penalty;
-	real stun_jumping_penalty;
-	real minimum_stun_time;
-	real maximum_stun_time;
-	real feign_death_chance;
-	real feign_repeat_chance;
-	s_tag_reference spawned_turret_character;
-	short spawned_actor_count_min;
-	short spawned_actor_count_max;
-	real spawned_velocity;
-	string_id aiming_pivot_marker;
-	angle aiming_velocity_maximum;
-	angle aiming_acceleration_maximum;
-	real casual_aiming_modifier;
-	angle looking_velocity_maximum;
-	angle looking_acceleration_maximum;
-	real object_velocity_maximum;
-	string_id right_hand_node;
-	string_id left_hand_node;
-	string_id preferred_gun_node;
-	string_id preferred_grenade_node;
-	string_id other_node;
+    real soft_ping_threshold;
+    real soft_ping_interrupt_time;
+    real hard_ping_threshold;
+    real hard_ping_interrupt_time;
+    real hard_death_threshold;
+    real feign_death_threshold;
+    real feign_death_time;
+    real distance_of_evade_animation;
+    real pain_screen_duration;
+    real pain_screen_region_fade_out_duration;
+    real pain_screen_region_fade_out_weight_threshold;
+    angle pain_screen_angle_tolerance;
+    angle pain_screen_angle_randomness;
+    real defensive_screen_duration;
+    real defensive_screen_scrub_fallback_fraction;
+    real distance_of_dive_animation;
+    real terminal_velocity_fall_ratio;
+    real stun_movement_penalty;
+    real stun_turning_penalty;
+    real stun_jumping_penalty;
+    real minimum_stun_time;
+    real maximum_stun_time;
+    real feign_death_chance;
+    real feign_repeat_chance;
+    s_tag_reference spawned_turret_character;
+    short spawned_actor_count_min;
+    short spawned_actor_count_max;
+    real spawned_velocity;
+    string_id aiming_pivot_marker;
+    angle aiming_velocity_maximum;
+    angle aiming_acceleration_maximum;
+    real casual_aiming_modifier;
+    angle looking_velocity_maximum;
+    angle looking_acceleration_maximum;
+    real object_velocity_maximum;
+    string_id right_hand_node;
+    string_id left_hand_node;
+    string_id preferred_gun_node;
+    string_id preferred_grenade_node;
+    string_id other_node;
     s_tag_reference melee_damage;
     s_tag_reference native_melee_override;
     s_tag_reference boarding_melee_damage;
@@ -337,7 +465,14 @@ struct s_unit_definition : s_object_definition
     c_tag_block<s_unit_powered_seat> powered_seats;
     c_tag_block<s_unit_weapon_reference> weapons;
     c_tag_block<s_unit_target_tracking> target_tracking;
-    //
-    // TODO: finish
-    //
+    c_tag_block<s_unit_seat> seats;
+    real opening_time;
+    real closing_time;
+    real emp_disabled_time;
+    s_tag_reference emp_disabled_effect;
+    s_unit_boost boost;
+    s_unit_lipsync lipsync;
+    s_tag_reference exit_and_detach_damage;
+    s_tag_reference exit_and_detach_weapon;
 };
+static_assert(sizeof(s_unit_definition) == sizeof(s_object_definition) + 0x3A0);
