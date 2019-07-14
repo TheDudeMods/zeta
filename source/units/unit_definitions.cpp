@@ -1,10 +1,12 @@
 #include <ai/character_definitions.h>
 #include <camera/camera_track.h>
+#include <effects/effect_definitions.h>
 #include <effects/screen_effect.h>
 #include <interface/chud/chud_definitions.h>
 #include <items/weapon_definitions.h>
 #include <objects/damage.h>
 #include <objects/damage_new.h>
+#include <physics/havok_collision_damage.h>
 #include <physics/spring_acceleration.h>
 #include <sound/sound_definitions.h>
 #include <units/unit_definitions.h>
@@ -394,6 +396,165 @@ TAG_BLOCK(
     { _field_tag_reference, "locked_sound", &unit_sound_reference },
 };
 
+TAG_ENUM(
+    unit_seat_flags_enum,
+    k_number_of_unit_seat_flags)
+{
+    { "seat_invisible", _unit_seat_invisible_bit },
+    { "seat_locked", _unit_seat_locked_bit },
+    { "seat_driver", _unit_seat_driver_bit },
+    { "seat_gunner", _unit_seat_gunner_bit },
+    { "seat_third_person_camera", _unit_seat_third_person_camera_bit },
+    { "seat_allows_weapons", _unit_seat_allows_weapons_bit },
+    { "seat_third_person_on_enter", _unit_seat_third_person_on_enter_bit },
+    { "seat_first_person_camera_slaved_to_gun", _unit_seat_first_person_camera_slaved_to_gun_bit },
+    { "seat_allow_vehicle_communication_animations", _unit_seat_allow_vehicle_communication_animations_bit },
+    { "seat_not_valid_without_driver", _unit_seat_not_valid_without_driver_bit },
+    { "seat_boarding_seat", _unit_seat_boarding_seat_bit },
+    { "seat_ai_firing_disabled_by_max_acceleration", _unit_seat_ai_firing_disabled_by_max_acceleration_bit },
+    { "seat_boarding_enters_seat", _unit_seat_boarding_enters_seat_bit },
+    { "seat_boarding_need_any_passenger", _unit_seat_boarding_need_any_passenger_bit },
+    { "seat_invalid_for_player", _unit_seat_invalid_for_player_bit },
+    { "seat_invalid_for_non_player", _unit_seat_invalid_for_non_player_bit },
+    { "seat_invalid_for_hero", _unit_seat_invalid_for_hero_bit },
+    { "seat_gunner_player_only", _unit_seat_gunner_player_only_bit },
+    { "seat_invisible_under_major_damage", _unit_seat_invisible_under_major_damage_bit },
+    { "seat_melee_instant_killable", _unit_seat_melee_instant_killable_bit },
+    { "seat_leader_preference", _unit_seat_leader_preference_bit },
+    { "seat_allows_exit_and_detach", _unit_seat_allows_exit_and_detach_bit },
+    { "seat_blocks_headshots", _unit_seat_blocks_headshots_bit },
+    { "seat_exits_to_ground", _unit_seat_exits_to_ground_bit },
+    { "seat_forward_from_attachment", _unit_seat_forward_from_attachment_bit },
+    { "seat_disallow_ai_shooting", _unit_seat_disallow_ai_shooting_bit },
+    { "seat_prevents_weapon_stowing", _unit_seat_prevents_weapon_stowing_bit },
+    { "seat_takes_top_level_aoe_damage", _unit_seat_takes_top_level_aoe_damage_bit },
+    { "seat_disallow_exit", _unit_seat_disallow_exit_bit },
+    { "seat_local_aiming", _unit_seat_local_aiming_bit },
+    { "seat_pelvis_relative_attachment", _unit_seat_pelvis_relative_attachment_bit },
+    { "seat_apply_velocity_on_death_exit", _unit_seat_apply_velocity_on_death_exit_bit },
+};
+
+TAG_ENUM(
+    unit_ai_seat_type_enum,
+    k_number_of_unit_ai_seat_types)
+{
+    { "none", _unit_ai_seat_type_none },
+    { "passenger", _unit_ai_seat_type_passenger },
+    { "gunner", _unit_ai_seat_type_gunner },
+    { "small_cargo", _unit_ai_seat_type_small_cargo },
+    { "large_cargo", _unit_ai_seat_type_large_cargo },
+    { "driver", _unit_ai_seat_type_driver },
+};
+
+extern s_tag_block_definition unit_seat_block;
+
+TAG_PADDING(
+    _field_short_integer,
+    unit_boarding_seat_post_seat_padding,
+    1);
+
+TAG_BLOCK(
+    unit_boarding_seat_block,
+    sizeof(s_unit_boarding_seat),
+    k_maximum_number_of_unit_boarding_seats)
+{
+    { _field_short_block_index, "seat", &unit_seat_block },
+    { _field_padding, "post_seat_padding", &unit_boarding_seat_post_seat_padding },
+    { _field_terminator }
+};
+
+TAG_BLOCK(
+    unit_seat_block,
+    sizeof(s_unit_seat),
+    k_maximum_number_of_unit_seats)
+{
+    { _field_long_enum, "flags", &unit_seat_flags_enum },
+    { _field_string_id, "label" },
+    { _field_string_id, "marker_name" },
+    { _field_string_id, "entry_marker_name" },
+    { _field_string_id, "boarding_grenade_marker" },
+    { _field_string_id, "boarding_grenade_string" },
+    { _field_string_id, "boarding_melee_string" },
+    { _field_string_id, "in_seat_string" },
+    { _field_real, "ping_scale" },
+    { _field_real, "turnover_time" },
+    { _field_tag_reference, "seat_acceleration" },
+    { _field_real, "ai_scariness" },
+    { _field_short_enum, "ai_seat_type", &unit_ai_seat_type_enum },
+    { _field_short_block_index, "boarding_seat", &unit_seat_block },
+    { _field_block, "additional_boarding_seats", &unit_boarding_seat_block },
+    { _field_real_fraction, "listener_interpolation_factor" },
+    { _field_real_bounds, "yaw_rate_bounds" },
+    { _field_real_bounds, "pitch_rate_bounds" },
+    { _field_real, "pitch_interpolation_time" },
+    { _field_real, "min_speed_reference" },
+    { _field_real, "max_speed_reference" },
+    { _field_real, "speed_exponent" },
+    { _field_struct, "unit_camera", &unit_camera_struct },
+    { _field_block, "hud_interface_references", &unit_hud_interface_reference },
+    { _field_string_id, "enter_seat_string" },
+    { _field_angle_bounds, "yaw_range" },
+    { _field_tag_reference, "built_in_gunner" },
+    { _field_real, "entry_radius" },
+    { _field_angle, "entry_marker_cone_angle" },
+    { _field_angle, "entry_marker_facing_angle" },
+    { _field_real, "maximum_relative_velocity" },
+    { _field_real, "open_time" },
+    { _field_real, "close_time" },
+    { _field_string_id, "open_function_name" },
+    { _field_string_id, "opening_function_name" },
+    { _field_string_id, "closing_function_name" },
+    { _field_string_id, "invisible_seat_region" },
+    { _field_long_integer, "runtime_invisible_seat_region_index" },
+    { _field_terminator }
+};
+
+TAG_REFERENCE(
+    unit_emp_disabled_effect_reference,
+    1)
+{
+    k_effect_group_tag
+};
+
+TAG_REFERENCE(
+    unit_boost_collision_damage_reference,
+    1)
+{
+    k_collision_damage_group_tag
+};
+
+TAG_ENUM(
+    unit_boost_flags_enum,
+    k_number_of_unit_boost_flags)
+{
+    { "pegs_throttle", _unit_boost_pegs_throttle_bit },
+};
+
+TAG_STRUCT(
+    unit_boost_struct,
+    sizeof(s_unit_boost))
+{
+    { _field_tag_reference, "collision_damage" },
+    { _field_long_flags, "flags", &unit_boost_flags_enum },
+    { _field_real, "boost_peak_power" },
+    { _field_real, "boost_rise_time" },
+    { _field_real, "boost_fall_time" },
+    { _field_real, "boost_power_per_second" },
+    { _field_real, "boost_low_warning_threshold" },
+    { _field_real, "recharge_rate" },
+    { _field_data, "trigger_to_boost" },
+    { _field_terminator }
+};
+
+TAG_STRUCT(
+    unit_lipsync_struct,
+    sizeof(s_unit_lipsync))
+{
+    { _field_real_fraction, "attack_weight" },
+    { _field_real_fraction, "decay_weight" },
+    { _field_terminator }
+};
+
 TAG_GROUP(
     unit_group,
     k_unit_group_tag,
@@ -481,8 +642,14 @@ TAG_GROUP(
     { _field_block, "powered_seats", &unit_powered_seat_block },
     { _field_block, "weapons", &unit_weapon_reference_block },
     { _field_block, "target_tracking", &unit_target_tracking_block },
-    //
-    // TODO: finish
-    //
+    { _field_block, "seats", &unit_seat_block },
+    { _field_real, "opening_time" },
+    { _field_real, "closing_time" },
+    { _field_real, "emp_disabled_time" },
+    { _field_tag_reference, "emp_disabled_effect", &unit_emp_disabled_effect_reference },
+    { _field_struct, "boost", &unit_boost_struct },
+    { _field_struct, "lipsync", &unit_lipsync_struct },
+    { _field_tag_reference, "exit_and_detach_damage", &unit_damage_effect_reference },
+    { _field_tag_reference, "exit_and_detach_weapon", &unit_weapon_reference },
     { _field_terminator }
 };
