@@ -558,7 +558,7 @@ TAG_STRUCT(
 TAG_GROUP(
     unit_group,
     k_unit_group_tag,
-    sizeof(s_unit_definition),
+    sizeof(s_unit_definition) - sizeof(s_object_definition),
     &object_group)
 {
     { _field_long_flags, "unit_flags", &unit_definition_flags_enum },

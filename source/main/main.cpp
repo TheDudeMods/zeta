@@ -28,7 +28,7 @@ int main()
 	{
 		auto instance = file->get_tag_instance(i);
 
-		if (!instance || instance->group_index == NONE)
+		if (!instance || instance->group_index == NONE || instance->address == 0)
 			continue;
 		
 		auto group = file->get_tag_group(instance->group_index);

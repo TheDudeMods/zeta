@@ -34,7 +34,7 @@ TAG_REFERENCE(item_grounded_friction_settings_reference, 1)
 TAG_GROUP(
 	item_group,
 	k_item_group_tag,
-	sizeof(s_item_definition),
+	sizeof(s_item_definition) - sizeof(s_object_definition),
 	&object_group)
 {
 	{ _field_long_flags, "item_flags", &item_definition_flags_enum },
