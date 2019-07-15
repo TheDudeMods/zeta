@@ -1,6 +1,6 @@
 #include <ai/character_definitions.h>
 #include <camera/camera_track.h>
-#include <effects/effect_definitions.h>
+#include <effects/effects.h>
 #include <effects/screen_effect.h>
 #include <interface/chud/chud_definitions.h>
 #include <items/weapons.h>

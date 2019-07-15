@@ -1,4 +1,4 @@
-#include <effects/effect_definitions.h>
+#include <effects/effects.h>
 #include <effects/material_effect_definitions.h>
 #include <items/equipment_definitions.h>
 #include <models/model_definitions.h>

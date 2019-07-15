@@ -1,54 +1,71 @@
 #include <cseries/cseries.h>
 #include <cache/cache_files.h>
-#include <units/unit_definitions.h>
+#include <commands/commands.h>
 
 int main()
 {
 	//
-	// Allocate and initialize the reach cache file
+	// Allocate and load the cache file
 	//
 
-	auto file = new c_cache_file("C:\\Halo\\Reach\\maps\\m35.map");
+	auto cache_file = new c_cache_file("C:\\Halo\\Reach\\maps\\m35.map");
+
+	//
+	// Allocate and initialize a command context, name buffer and input buffer
+	//
+
+	c_command_context test = { "test" };
+
+	auto command_context = new c_command_context("tags", &test);
+	auto name_buffer = new char[1024];
+	auto input_buffer = new char[1024];
+
+	//
+	// Perform the command loop
+	//
+
+	while (command_context)
+	{
+		//
+		// Display the full command context path
+		//
+
+		memset(name_buffer, 0, 1024);
+		printf("%s> ", command_context->get_name(name_buffer));
+		
+		//
+		// Read the command input
+		//
+
+		memset(input_buffer, 0, 1024);
+		fgets(input_buffer, 1024, stdin);
+		
+		auto newline = strchr(input_buffer, '\n');
+		if (newline) *newline = '\0';
+
+		//
+		// Parse and execute the command input
+		//
+
+		if (strcmp(input_buffer, "exit") == 0)
+			command_context = command_context->get_parent();
+		
+		puts("");
+	}
+
+	//
+	// Deallocate and dispose the command context, name buffer and input buffer
+	//
+
+	delete[] input_buffer;
+	delete[] name_buffer;
+	delete command_context;
 	
-	auto tags_header = file->get_tags_header();
-
-	if (!tags_header)
-	{
-		delete file;
-		return EXIT_FAILURE;
-	}
-
 	//
-	// Get the first unit tag definition
+	// Deallocate and dispose the cache file
 	//
 
-	s_unit_definition *unit = nullptr;
-
-	for (long i = 0; i < tags_header->tag_count; i++)
-	{
-		auto instance = file->get_tag_instance(i);
-
-		if (!instance || instance->group_index == NONE || instance->address == 0)
-			continue;
-		
-		auto group = file->get_tag_group(instance->group_index);
-
-		if (!group)
-			continue;
-		
-		if (group->is_in_group(k_unit_group_tag))
-		{
-			printf("[0x%04lX] %s.%s\n", i, file->get_tag_name(i), file->get_string(group->name));
-			unit = file->get_tag_definition<s_unit_definition>(i);
-			break;
-		}
-	}
-
-	//
-	// Dispose and deallocate the cache file
-	//
-
-	delete file;
+	delete cache_file;
 
 	return EXIT_SUCCESS;
 }

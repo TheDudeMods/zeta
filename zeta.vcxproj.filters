@@ -99,6 +99,9 @@
     <ClCompile Include="source\objects\damage_new.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\commands\commands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ai\ai.h">
@@ -117,9 +120,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\cseries\cseries.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\effects\effect_definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\effects\jetwash.h">
@@ -240,6 +240,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\items\projectiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\effects\effects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

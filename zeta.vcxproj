@@ -134,6 +134,7 @@
     <ClCompile Include="source\ai\ai.cpp" />
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\camera\camera_track.cpp" />
+    <ClCompile Include="source\commands\commands.cpp" />
     <ClCompile Include="source\cseries\cseries.cpp" />
     <ClCompile Include="source\devices\devices.cpp" />
     <ClCompile Include="source\devices\device_controls.cpp" />
@@ -170,7 +171,7 @@
     <ClInclude Include="source\devices\devices.h" />
     <ClInclude Include="source\devices\device_controls.h" />
     <ClInclude Include="source\devices\device_machines.h" />
-    <ClInclude Include="source\effects\effect_definitions.h" />
+    <ClInclude Include="source\effects\effects.h" />
     <ClInclude Include="source\effects\jetwash.h" />
     <ClInclude Include="source\effects\material_effect_definitions.h" />
     <ClInclude Include="source\effects\screen_effect.h" />

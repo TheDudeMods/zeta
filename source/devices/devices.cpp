@@ -1,5 +1,5 @@
 #include <devices/devices.h>
-#include <effects/effect_definitions.h>
+#include <effects/effects.h>
 #include <sound/sound_definitions.h>
 
 extern s_tag_group_definition object_group;
