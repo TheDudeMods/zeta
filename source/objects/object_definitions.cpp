@@ -2,7 +2,7 @@
 #include <effects/material_effect_definitions.h>
 #include <items/equipment_definitions.h>
 #include <models/model_definitions.h>
-#include <objects/crate_definitions.h>
+#include <objects/crates.h>
 #include <objects/object_definitions.h>
 #include <objects/widgets/antenna.h>
 #include <objects/widgets/cloth.h>
