@@ -141,11 +141,12 @@
     <ClCompile Include="source\effects\jetwash.cpp" />
     <ClCompile Include="source\game\campaign_metagame.cpp" />
     <ClCompile Include="source\game\game_allegiance.cpp" />
-    <ClCompile Include="source\items\item_definitions.cpp" />
+    <ClCompile Include="source\items\items.cpp" />
     <ClCompile Include="source\main\main.cpp" />
     <ClCompile Include="source\math\integer_math.cpp" />
     <ClCompile Include="source\math\real_math.cpp" />
     <ClCompile Include="source\objects\crates.cpp" />
+    <ClCompile Include="source\objects\damage_new.cpp" />
     <ClCompile Include="source\objects\multiplayer_game_objects.cpp" />
     <ClCompile Include="source\objects\object_definitions.cpp" />
     <ClCompile Include="source\objects\object_types.cpp" />
@@ -177,8 +178,9 @@
     <ClInclude Include="source\game\game_allegiance.h" />
     <ClInclude Include="source\interface\chud\chud_definitions.h" />
     <ClInclude Include="source\items\equipment_definitions.h" />
-    <ClInclude Include="source\items\item_definitions.h" />
-    <ClInclude Include="source\items\weapon_definitions.h" />
+    <ClInclude Include="source\items\items.h" />
+    <ClInclude Include="source\items\projectiles.h" />
+    <ClInclude Include="source\items\weapons.h" />
     <ClInclude Include="source\math\function_definitions.h" />
     <ClInclude Include="source\math\integer_math.h" />
     <ClInclude Include="source\math\real_math.h" />

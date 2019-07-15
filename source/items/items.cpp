@@ -1,4 +1,4 @@
-#include <items/item_definitions.h>
+#include <items/items.h>
 #include <physics/grounded_friction.h>
 
 extern s_tag_group_definition object_group;
