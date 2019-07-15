@@ -24,7 +24,7 @@ int main()
 
 	s_unit_definition *unit = nullptr;
 
-	for (qword i = 0; i < tags_header->tag_count; i++)
+	for (long i = 0; i < tags_header->tag_count; i++)
 	{
 		auto instance = file->get_tag_instance(i);
 
@@ -38,7 +38,7 @@ int main()
 		
 		if (group->is_in_group(k_unit_group_tag))
 		{
-			printf("[0x%04llX] %s.%s\n", i, file->get_tag_name(i), file->get_string(group->name));
+			printf("[0x%04lX] %s.%s\n", i, file->get_tag_name(i), file->get_string(group->name));
 			unit = file->get_tag_definition<s_unit_definition>(i);
 			break;
 		}

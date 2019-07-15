@@ -35,6 +35,8 @@ enum e_crate_flags
 	k_number_of_crate_flags
 };
 
+/* ---------- structures */
+
 struct s_crate_definition : s_object_definition
 {
 	c_flags<e_crate_flags, word> crate_flags;
