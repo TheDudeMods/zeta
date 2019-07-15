@@ -27,9 +27,6 @@
     <ClCompile Include="source\cseries\cseries.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\devices\device_definitions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\effects\jetwash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -90,6 +87,15 @@
     <ClCompile Include="source\units\unit_definitions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\devices\devices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\devices\device_machines.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\devices\device_controls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ai\ai.h">
@@ -108,9 +114,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\cseries\cseries.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\devices\device_definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\effects\effect_definitions.h">
@@ -222,6 +225,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\units\vehicle_definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\devices\device_machines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\devices\devices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\devices\device_controls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

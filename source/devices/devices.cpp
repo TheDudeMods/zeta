@@ -1,4 +1,4 @@
-#include <devices/device_definitions.h>
+#include <devices/devices.h>
 #include <effects/effect_definitions.h>
 #include <sound/sound_definitions.h>
 

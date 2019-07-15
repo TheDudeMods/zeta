@@ -135,7 +135,9 @@
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\camera\camera_track.cpp" />
     <ClCompile Include="source\cseries\cseries.cpp" />
-    <ClCompile Include="source\devices\device_definitions.cpp" />
+    <ClCompile Include="source\devices\devices.cpp" />
+    <ClCompile Include="source\devices\device_controls.cpp" />
+    <ClCompile Include="source\devices\device_machines.cpp" />
     <ClCompile Include="source\effects\jetwash.cpp" />
     <ClCompile Include="source\game\campaign_metagame.cpp" />
     <ClCompile Include="source\game\game_allegiance.cpp" />
@@ -164,7 +166,9 @@
     <ClInclude Include="source\camera\camera_track.h" />
     <ClInclude Include="source\commands\commands.h" />
     <ClInclude Include="source\cseries\cseries.h" />
-    <ClInclude Include="source\devices\device_definitions.h" />
+    <ClInclude Include="source\devices\devices.h" />
+    <ClInclude Include="source\devices\device_controls.h" />
+    <ClInclude Include="source\devices\device_machines.h" />
     <ClInclude Include="source\effects\effect_definitions.h" />
     <ClInclude Include="source\effects\jetwash.h" />
     <ClInclude Include="source\effects\material_effect_definitions.h" />
