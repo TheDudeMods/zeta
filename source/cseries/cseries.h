@@ -148,4 +148,4 @@ extern long const k_string_id_set_offsets[k_number_of_string_id_sets];
 /* ---------- prototypes/CSERIES.CPP */
 
 char *tag_to_string(tag value, char *string);
-tag string_to_tag(char *string);
+tag string_to_tag(const char *string);

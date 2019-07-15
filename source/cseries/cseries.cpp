@@ -20,7 +20,7 @@ char *tag_to_string(tag value, char *string)
 	return string;
 }
 
-tag string_to_tag(char *string)
+tag string_to_tag(const char *string)
 {
 	tag result = 0;
 

@@ -1,6 +1,7 @@
 #include <cseries/cseries.h>
 #include <cache/cache_files.h>
 #include <commands/commands.h>
+#include <commands/tags/tag_commands.h>
 
 /* ---------- globals */
 
@@ -15,6 +16,8 @@ static struct
 	long file_version;
 	long file_length;
 } cache_file_info;
+
+static char *arguments[64];
 
 /* ---------- code */
 
@@ -41,7 +44,7 @@ int main()
 
 		auto newline = strchr(cache_file_path, '\n');
 		if (newline) *newline = '\0';
-
+		
 		//
 		// If empty cache file path, start over
 		//
@@ -95,6 +98,8 @@ int main()
 
 	command_context = new c_command_context("tags");
 
+	tag_commands_initialize(command_context, cache_file);
+
 	//
 	// Perform the command loop
 	//
@@ -119,8 +124,25 @@ int main()
 		if (newline) *newline = '\0';
 
 		//
+		// Tokenize the command input buffer
+		//
+
+		memset(arguments, 0, sizeof(char *) * 64);
+
+		auto arg_count = 0;
+		char* arg_token = strtok(input_buffer, " ");
+
+		auto command = command_context->get_command(arg_token);
+
+		while (arg_token = strtok(nullptr, " "))
+			arguments[arg_count++] = arg_token;
+
+		//
 		// Parse and execute the command input
 		//
+
+		if (command)
+			command->execute(arg_count, (char const **)arguments);
 
 		if (strcmp(input_buffer, "exit") == 0)
 			command_context = command_context->get_parent();
@@ -131,6 +153,8 @@ int main()
 	//
 	// Dispose and deallocate the command context
 	//
+
+	tag_commands_dispose();
 
 	delete command_context;
 
