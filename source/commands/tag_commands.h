@@ -6,5 +6,6 @@
 
 /* ---------- prototypes/TAG_COMMANDS.CPP */
 
-void tag_commands_initialize(c_command_context *context, c_cache_file *cache_file);
-void tag_commands_dispose();
+c_command_context *create_tag_command_context(c_command_context *parent = nullptr);
+
+bool list_tags(long arg_count, char const **arg_values);

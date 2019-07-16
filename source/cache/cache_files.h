@@ -212,3 +212,13 @@ public:
 		return get_page_data<t_tag_definition>(instance->address);
 	}
 };
+
+/* ---------- globals/CACHE_FILES.CPP */
+
+extern char g_cache_file_path[1024];
+extern c_cache_file *g_cache_file;
+
+/* ---------- prototypes/CACHE_FILES.CPP */
+
+void cache_files_open();
+void cache_files_close();

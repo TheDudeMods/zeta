@@ -1,6 +1,93 @@
 #include <cache/cache_files.h>
 
+/* ---------- globals */
+
+char g_cache_file_path[1024];
+
+c_cache_file *g_cache_file = nullptr;
+
 /* ---------- code */
+
+void cache_files_open()
+{
+	//
+	// Look up the cache file to open
+	//
+
+	while (true)
+	{
+		puts("");
+		puts("Enter the path to a Halo cache file:");
+		printf("> ");
+
+		//
+		// Read the cache file path
+		//
+
+		memset(g_cache_file_path, 0, 1024);
+		fgets(g_cache_file_path, 1024, stdin);
+
+		auto newline = strchr(g_cache_file_path, '\n');
+		if (newline) *newline = '\0';
+
+		//
+		// If empty cache file path, start over
+		//
+
+		if (strlen(g_cache_file_path) == 0)
+			continue;
+
+		//
+		// Verify the cache file format
+		//
+
+		FILE *stream = nullptr;
+
+		if (stream = fopen(g_cache_file_path, "rb+"))
+		{
+			//
+			// Read limited cache file header info
+			//
+
+			struct {
+				tag header_signature;
+				long file_version;
+				long file_length;
+			} cache_file_info;
+
+			fseek(stream, 0, SEEK_SET);
+			fread(&cache_file_info, sizeof(cache_file_info), 1, stream);
+			fclose(stream);
+
+			//
+			// Check cache file header signature
+			//
+
+			if (cache_file_info.header_signature != k_cache_file_header_signature &&
+				_byteswap_ulong(cache_file_info.header_signature) != k_cache_file_header_signature)
+			{
+				puts("ERROR: Invalid cache file!");
+				continue;
+			}
+			else
+			{
+				puts("");
+				break;
+			}
+		}
+	}
+
+	//
+	// Allocate and load the cache file
+	//
+
+	g_cache_file = new c_cache_file(g_cache_file_path);
+}
+
+void cache_files_close()
+{
+	delete g_cache_file;
+}
 
 c_cache_file::c_cache_file(char const *filename) :
 	m_filename(filename),

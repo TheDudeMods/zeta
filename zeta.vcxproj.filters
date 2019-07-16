@@ -102,10 +102,7 @@
     <ClCompile Include="source\commands\commands.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\commands\tags\tag_commands.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\commands\tags\list_tags.cpp">
+    <ClCompile Include="source\commands\tag_commands.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -251,10 +248,7 @@
     <ClInclude Include="source\effects\effects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\commands\tags\tag_commands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\commands\tags\list_tags.h">
+    <ClInclude Include="source\commands\tag_commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
