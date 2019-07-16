@@ -66,8 +66,6 @@ int main()
 		puts("");
 	}
 
-	delete command_context;
-
 	cache_files_close();
 
 	return EXIT_SUCCESS;

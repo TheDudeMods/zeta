@@ -17,6 +17,9 @@ c_command_context::c_command_context(
 s_command *c_command_context::get_command(
 	char const *name)
 {
+	if (!name)
+		return nullptr;
+
 	for (auto i = 0; i < m_command_count; i++)
 		if (strcmp(name, m_commands[i].name) == 0)
 			return &m_commands[i];
