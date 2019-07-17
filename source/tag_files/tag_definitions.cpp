@@ -1,5 +1,6 @@
 #include <tag_files/tag_definitions.h>
 #include <math/integer_math.h>
+#include <cache/cache_files.h>
 #include <camera/camera_track.h>
 #include <objects/object_definitions.h>
 #include <objects/scenery.h>
@@ -551,10 +552,27 @@ void field_print(
 
 	case _field_tag_reference:
 	{
-		char tag_string[5];
 		auto reference = (s_tag_reference *)address;
-		printf("%s: tag_reference = { group_tag: %s, index: 0x%04lX }\n",
-			name, tag_to_string(reference->group_tag, tag_string), reference->index & k_word_maximum);
+		
+		if (reference->index == NONE || g_cache_file->get_tag_instance(reference->index)->group_index == NONE)
+		{
+			printf("%s: tag_reference = none\n",
+				name,
+				reference->index & k_word_maximum,
+				tag_to_string(reference->group_tag, tag_string));
+		}
+		else
+		{
+			auto tag_name = g_cache_file->get_tag_name(reference->index);
+			auto instance = g_cache_file->get_tag_instance(reference->index & k_word_maximum);
+			auto group = g_cache_file->get_tag_group(instance->group_index);
+
+			printf("%s: tag_reference = (0x%li) %s.%s\n",
+				name,
+				reference->index & k_word_maximum,
+				tag_name,
+				g_cache_file->get_string(group->name));
+		}
 		break;
 	}
 
@@ -617,6 +635,199 @@ void field_next(
 	(*out_field)++;
 }
 
+bool field_parse_enum(
+	e_field_type type,
+	char const *name,
+	void *definition,
+	void *address,
+	long arg_count,
+	char const **arg_values)
+{
+	if (arg_count != 1)
+		return false;
+
+	auto option_name = arg_values[0];
+	auto enum_definition = (s_enum_definition *)definition;
+
+	for (auto i = 0; i < enum_definition->option_count; i++)
+	{
+		if (strcmp(option_name, enum_definition->options[i].name) != 0)
+			continue;
+
+		switch (type)
+		{
+		case _field_char_enum:
+			*(long *)address = enum_definition->options[i].value;
+			return true;
+
+		case _field_short_enum:
+			*(long *)address = enum_definition->options[i].value;
+			return true;
+
+		case _field_long_enum:
+			*(long *)address = enum_definition->options[i].value;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool field_parse_flags(
+	e_field_type type,
+	char const *name,
+	void *definition,
+	void *address,
+	long arg_count,
+	char const **arg_values)
+{
+	auto enum_definition = (s_enum_definition *)definition;
+
+	if (arg_count < 1 || arg_count > enum_definition->option_count)
+		return false;
+
+	for (auto arg_index = 0;
+		arg_index < arg_count;
+		arg_index++)
+	{
+		auto found = false;
+
+		for (auto option_index = 0;
+			option_index < enum_definition->option_count;
+			option_index++)
+		{
+			auto option_name = arg_values[arg_index];
+			auto option = &enum_definition->options[option_index];
+			auto set_bit = true;
+
+			if (option_name[0] == '!')
+			{
+				option_name = &option_name[1];
+				set_bit = false;
+			}
+
+			if (strcmp(option_name, option->name) == 0)
+			{
+				found = true;
+
+				switch (type)
+				{
+				case _field_byte_flags:
+					SET_FLAG(*(byte *)address, option->value, set_bit);
+					break;
+
+				case _field_word_flags:
+					SET_FLAG(*(word *)address, option->value, set_bit);
+					break;
+
+				case _field_long_flags:
+					SET_FLAG(*(long *)address, option->value, set_bit);
+					break;
+				}
+
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			auto option_name = arg_values[arg_index];
+
+			if (strcmp(option_name, "none") == 0 ||
+				strcmp(option_name, "0") == 0)
+			{
+				switch (type)
+				{
+				case _field_byte_flags:
+					*(byte *)address = 0;
+					break;
+
+				case _field_word_flags:
+					*(word *)address = 0;
+					break;
+
+				case _field_long_flags:
+					*(long *)address = 0;
+					break;
+				}
+			}
+			else
+			{
+				printf("ERROR: no option named '%s' found in '%s' enum!\n", arg_values[arg_index], enum_definition->name);
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool field_parse_tag_reference(
+	char const *name,
+	s_tag_reference_definition *definition,
+	void *address,
+	long arg_count,
+	char const **arg_values)
+{
+	if (arg_count != 1)
+		return false;
+
+	auto tags_header = g_cache_file->get_tags_header();
+
+	auto reference = (s_tag_reference *)address;
+
+	long_string reference_string(arg_values[0]);
+	char tag_string[5];
+
+	auto tag_name = reference_string.ascii;
+	auto group_name = strrchr(reference_string.ascii, '.');
+
+	if (group_name)
+	{
+		*group_name = '\0';
+		group_name++;
+
+		for (auto i = 0; i < tags_header->tag_count; i++)
+		{
+			auto current_instance = g_cache_file->get_tag_instance(i);
+
+			if (!current_instance || current_instance->group_index == NONE || !current_instance->address)
+				continue;
+
+			auto group = g_cache_file->get_tag_group(current_instance->group_index);
+			if (!group) continue;
+
+			if (strcmp(group_name, g_cache_file->get_string(group->name)) == 0 ||
+				strcmp(group_name, tag_to_string(group->tags[0], tag_string)) == 0)
+			{
+				if (strcmp(tag_name, g_cache_file->get_tag_name(i)) == 0)
+				{
+					reference->group_tag = group->tags[0];
+					reference->index = i;
+					return true;
+				}
+			}
+		}
+	}
+	else if (strstr(tag_name, "0x") == tag_name)
+	{
+		reference->index = strtol(tag_name, nullptr, 0);
+		auto instance = g_cache_file->get_tag_instance(reference->index);
+		auto group = g_cache_file->get_tag_group(instance->group_index);
+		reference->group_tag = group->tags[0];
+		return true;
+	}
+	else if (strcmp(tag_name, "none") == 0)
+	{
+		reference->group_tag = NONE;
+		reference->index = NONE;
+		return true;
+	}
+
+	printf("ERROR: invalid tag specifier: %s\n", arg_values[0]);
+	return false;
+}
+
 bool field_parse(
 	e_field_type type,
 	char const *name,
@@ -628,222 +839,119 @@ bool field_parse(
 	switch (type)
 	{
 	case _field_tag:
-	{
 		if (arg_count != 1 || strlen(arg_values[0]) != 4)
 			return false;
 		*(tag *)address = string_to_tag(arg_values[0]);
-		break;
-	}
+		return true;
 
 	case _field_short_string:
-	{
 		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_short_string_ascii_length)
 			return false;
 		strcpy(((short_string *)address)->ascii, arg_values[0]);
-		break;
-	}
+		return true;
 
 	case _field_long_string:
-	{
 		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_long_string_ascii_length)
 			return false;
 		strcpy(((long_string *)address)->ascii, arg_values[0]);
-		break;
-	}
+		return true;
 
 	case _field_string_id:
-	{
 		if (arg_count != 1)
 			return false;
 		*(string_id *)address = strtoul(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_char_integer:
 	case _field_char_block_index:
-	{
 		if (arg_count != 1)
 			return false;
 		*(char *)address = strtol(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_short_integer:
 	case _field_short_block_index:
-	{
 		if (arg_count != 1)
 			return false;
 		*(short *)address = strtol(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_long_integer:
 	case _field_long_block_index:
-	{
 		if (arg_count != 1)
 			return false;
 		*(long *)address = strtol(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_int64_integer:
-	{
 		if (arg_count != 1)
 			return false;
 		*(long long *)address = strtoll(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_byte_integer:
-	{
 		if (arg_count != 1)
 			return false;
 		*(byte *)address = strtoul(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_word_integer:
-	{
 		if (arg_count != 1)
 			return false;
 		*(word *)address = strtoul(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_dword_integer:
-	{
 		if (arg_count != 1)
 			return false;
 		*(dword *)address = strtoul(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_qword_integer:
-	{
 		if (arg_count != 1)
 			return false;
 		*(qword *)address = strtoul(arg_values[0], nullptr, 0);
-		break;
-	}
+		return true;
 
 	case _field_char_enum:
 	case _field_short_enum:
 	case _field_long_enum:
-	{
-		if (arg_count != 1)
-			return false;
-
-		auto option_name = arg_values[0];
-		auto enum_definition = (s_enum_definition *)definition;
-
-		for (auto i = 0; i < enum_definition->option_count; i++)
-		{
-			if (strcmp(option_name, enum_definition->options[i].name) != 0)
-				continue;
-
-			switch (type)
-			{
-			case _field_char_enum:
-				*(long *)address = enum_definition->options[i].value;
-				return true;
-
-			case _field_short_enum:
-				*(long *)address = enum_definition->options[i].value;
-				return true;
-
-			case _field_long_enum:
-				*(long *)address = enum_definition->options[i].value;
-				return true;
-			}
-		}
-
-		return false;
-	}
+		return field_parse_enum(type, name, definition, address, arg_count, arg_values);
 
 	case _field_byte_flags:
 	case _field_word_flags:
 	case _field_long_flags:
-	{
-		auto enum_definition = (s_enum_definition *)definition;
+		return field_parse_flags(type, name, definition, address, arg_count, arg_values);
+	
+	case _field_point2d:
+		return arg_count == 2
+			&& field_parse(_field_short_integer, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_short_integer, "y", nullptr, (char *)address + 2, 1, &arg_values[1]);
 
-		if (arg_count < 1 || arg_count > enum_definition->option_count)
+	case _field_rectangle2d:
+		return arg_count == 4
+			&& field_parse(_field_short_integer, "top", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_short_integer, "left", nullptr, (char *)address + 2, 1, &arg_values[1])
+			&& field_parse(_field_short_integer, "bottom", nullptr, (char *)address + 4, 1, &arg_values[2])
+			&& field_parse(_field_short_integer, "right", nullptr, (char *)address + 6, 1, &arg_values[3]);
+
+	case _field_rgb_color:
+		if (arg_count != 1)
 			return false;
-
-		for (auto arg_index = 0;
-			arg_index < arg_count;
-			arg_index++)
-		{
-			auto found = false;
-
-			for (auto option_index = 0;
-				option_index < enum_definition->option_count;
-				option_index++)
-			{
-				auto option_name = arg_values[arg_index];
-				auto option = &enum_definition->options[option_index];
-				auto set_bit = true;
-
-				if (option_name[0] == '!')
-				{
-					option_name = &option_name[1];
-					set_bit = false;
-				}
-
-				if (strcmp(option_name, option->name) == 0)
-				{
-					found = true;
-
-					switch (type)
-					{
-					case _field_byte_flags:
-						SET_FLAG(*(byte *)address, option->value, set_bit);
-						break;
-
-					case _field_word_flags:
-						SET_FLAG(*(word *)address, option->value, set_bit);
-						break;
-
-					case _field_long_flags:
-						SET_FLAG(*(long *)address, option->value, set_bit);
-						break;
-					}
-
-					break;
-				}
-			}
-
-			if (!found)
-			{
-				auto option_name = arg_values[arg_index];
-				
-				if (strcmp(option_name, "none") == 0 ||
-					strcmp(option_name, "0") == 0)
-				{
-					switch (type)
-					{
-					case _field_byte_flags:
-						*(byte *)address = 0;
-						break;
-
-					case _field_word_flags:
-						*(word *)address = 0;
-						break;
-
-					case _field_long_flags:
-						*(long *)address = 0;
-						break;
-					}
-				}
-				else
-				{
-					printf("ERROR: no option named '%s' found in '%s' enum!\n", arg_values[arg_index], enum_definition->name);
-					return false;
-				}
-			}
-		}
-
+		*(long *)address = 0xFF000000 | (strtol(arg_values[0], nullptr, 0) & 0xFFFFFF);
 		return true;
-	}
+
+	case _field_argb_color:
+		if (arg_count != 1)
+			return false;
+		*(long *)address = strtol(arg_values[0], nullptr, 0);
+		return true;
+
+	case _field_angle:
+		if (arg_count != 1)
+			return false;
+		*(angle *)address = strtof(arg_values[0], nullptr);
+		return true;
 
 	case _field_real:
 		if (arg_count != 1)
@@ -851,9 +959,121 @@ bool field_parse(
 		*(real *)address = strtof(arg_values[0], nullptr);
 		return true;
 
-		//
-		// TODO: implement parsing for all parseable field types
-		//
+	case _field_real_fraction:
+		if (arg_count != 1)
+			return false;
+		*(real_fraction *)address = strtof(arg_values[0], nullptr);
+		return true;
+
+	case _field_real_point2d:
+		return arg_count == 2
+			&& field_parse(_field_real, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "y", nullptr, (char *)address + 4, 1, &arg_values[1]);
+
+	case _field_real_point3d:
+		return arg_count == 3
+			&& field_parse(_field_real, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "y", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(_field_real, "z", nullptr, (char *)address + 8, 1, &arg_values[2]);
+
+	case _field_real_vector2d:
+		return arg_count == 2
+			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1]);
+
+	case _field_real_vector3d:
+		return arg_count == 3
+			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(_field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2]);
+
+	case _field_real_quaternion:
+		return arg_count == 4
+			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(_field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2])
+			&& field_parse(_field_real, "w", nullptr, (char *)address + 12, 1, &arg_values[3]);
+
+	case _field_real_euler_angles2d:
+		return arg_count == 2
+			&& field_parse(_field_angle, "yaw", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_angle, "pitch", nullptr, (char *)address + 4, 1, &arg_values[1]);
+
+	case _field_real_euler_angles3d:
+		return arg_count == 3
+			&& field_parse(_field_angle, "yaw", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_angle, "pitch", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(_field_angle, "roll", nullptr, (char *)address + 8, 1, &arg_values[2]);
+
+	case _field_real_plane2d:
+		return arg_count == 3
+			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(_field_real, "d", nullptr, (char *)address + 8, 1, &arg_values[2]);
+
+	case _field_real_plane3d:
+		return arg_count == 4
+			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(_field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2])
+			&& field_parse(_field_real, "d", nullptr, (char *)address + 12, 1, &arg_values[3]);
+
+	case _field_real_matrix4x3:
+		return arg_count == 13
+			&& field_parse(_field_real, "scale", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real_vector3d, "forward", nullptr, (char *)address + 4, 3, &arg_values[1])
+			&& field_parse(_field_real_vector3d, "left", nullptr, (char *)address + 16, 3, &arg_values[4])
+			&& field_parse(_field_real_vector3d, "up", nullptr, (char *)address + 28, 3, &arg_values[7])
+			&& field_parse(_field_real_point3d, "position", nullptr, (char *)address + 40, 3, &arg_values[10]);
+
+	case _field_real_rgb_color:
+		return arg_count == 3
+			&& field_parse(_field_real, "red", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "green", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(_field_real, "blue", nullptr, (char *)address + 8, 1, &arg_values[2]);
+
+	case _field_real_argb_color:
+		return arg_count == 4
+			&& field_parse(_field_real, "alpha", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "red", nullptr, (char *)address + 4, 1, &arg_values[0])
+			&& field_parse(_field_real, "green", nullptr, (char *)address + 8, 1, &arg_values[1])
+			&& field_parse(_field_real, "blue", nullptr, (char *)address + 12, 1, &arg_values[2]);
+
+	case _field_real_hsv_color:
+		return arg_count == 3
+			&& field_parse(_field_real, "hue", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "saturation", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(_field_real, "value", nullptr, (char *)address + 8, 1, &arg_values[2]);
+
+	case _field_real_ahsv_color:
+		return arg_count == 4
+			&& field_parse(_field_real, "alpha", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "hue", nullptr, (char *)address + 4, 1, &arg_values[0])
+			&& field_parse(_field_real, "saturation", nullptr, (char *)address + 8, 1, &arg_values[1])
+			&& field_parse(_field_real, "value", nullptr, (char *)address + 12, 1, &arg_values[2]);
+
+	case _field_short_bounds:
+		return arg_count == 2
+			&& field_parse(_field_short_integer, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_short_integer, "upper", nullptr, (char *)address + 2, 1, &arg_values[1]);
+
+	case _field_angle_bounds:
+		return arg_count == 2
+			&& field_parse(_field_angle, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_angle, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
+
+	case _field_real_bounds:
+		return arg_count == 2
+			&& field_parse(_field_real, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
+
+	case _field_fraction_bounds:
+		return arg_count == 2
+			&& field_parse(_field_real_fraction, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(_field_real_fraction, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
+
+	case _field_tag_reference:
+		return field_parse_tag_reference(name, (s_tag_reference_definition *)definition, address, arg_count, arg_values);
 	}
 
 	return false;

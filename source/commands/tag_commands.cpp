@@ -76,14 +76,14 @@ bool edit_tag_execute(
 	if (arg_count != 1)
 		return false;
 
-	// TODO: verifiy index format
-	auto index = strtoul(arg_values[0], nullptr, 0);
+	s_tag_reference reference;
+	field_parse(_field_tag_reference, "reference", nullptr, &reference, arg_count, arg_values);
 
-	auto instance = g_cache_file->get_tag_instance(index);
+	auto instance = g_cache_file->get_tag_instance(reference.index);
 
 	if (!instance || !instance->address || instance->group_index == NONE)
 	{
-		printf("ERROR: tag instance 0x%04lX is null!", index);
+		printf("ERROR: tag instance 0x%04lX is null!", reference.index);
 		return true;
 	}
 
@@ -91,7 +91,7 @@ bool edit_tag_execute(
 
 	if (!group)
 	{
-		printf("ERROR: failed to get tag group of tag instance 0x%04lX!", index);
+		printf("ERROR: failed to get tag group of tag instance 0x%04lX!", reference.index);
 		return true;
 	}
 
@@ -105,8 +105,8 @@ bool edit_tag_execute(
 	}
 
 	g_command_context = new c_editing_command_context(
-		g_cache_file->get_tag_name(index),
-		g_cache_file->get_tag_definition<void>(index),
+		g_cache_file->get_tag_name(reference.index),
+		g_cache_file->get_tag_definition<void>(reference.index),
 		group_definition,
 		g_command_context);
 
