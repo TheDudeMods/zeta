@@ -14,8 +14,8 @@
 	s_struct_definition name = { #name, NONE, size, name##_fields, __VA_ARGS__ }; \
 	s_field_definition name##_fields[] =
 
-#define TAG_ARRAY(type, name, count, ...) \
-	s_array_definition name = { type, #name, count, __VA_ARGS__ }
+#define TAG_ARRAY(type, name, length, ...) \
+	s_array_definition name = { type, #name, length, __VA_ARGS__ }
 
 #define TAG_BLOCK(name, size, maximum_count) \
 	extern s_field_definition name##_fields[]; \
@@ -138,7 +138,7 @@ struct s_array_definition
 {
 	e_field_type type;
 	char const *name;
-	long count;
+	long length;
 	void const *definition;
 };
 
@@ -176,5 +176,13 @@ struct s_padding_definition
 };
 
 /* ---------- prototypes/TAG_DEFINITIONS.CPP */
+
+qword field_get_size(e_field_type type, void const *definition);
+
+void field_print_integer(e_field_type type, char const *name, void const *address);
+void field_print_float(e_field_type type, char const *name, void const *address);
+void field_print_enum(e_field_type type, char const *name, void const *definition, void const *address);
+void field_print_flags(e_field_type type, char const *name, void const *definition, void const *address);
+void const *struct_definition_print(s_struct_definition *definition, void const *address);
 
 s_tag_group_definition *tag_group_definition_get(tag group_tag);

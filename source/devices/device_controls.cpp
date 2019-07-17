@@ -37,4 +37,5 @@ TAG_GROUP(
 	{ _field_tag_reference, "on", &device_effect_sound_reference },
 	{ _field_tag_reference, "off", &device_effect_sound_reference },
 	{ _field_tag_reference, "deny", &device_effect_sound_reference },
+	{ _field_terminator }
 };

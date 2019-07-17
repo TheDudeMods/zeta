@@ -168,6 +168,7 @@
     <ClInclude Include="source\ai\ai.h" />
     <ClInclude Include="source\ai\character_definitions.h" />
     <ClInclude Include="source\cache\cache_files.h" />
+    <ClInclude Include="source\cache\cache_file_tag_resources.h" />
     <ClInclude Include="source\camera\camera_track.h" />
     <ClInclude Include="source\commands\commands.h" />
     <ClInclude Include="source\commands\editing_commands.h" />

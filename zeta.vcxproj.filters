@@ -260,6 +260,9 @@
     <ClInclude Include="source\commands\editing_commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\cache\cache_file_tag_resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\cseries\enum.inl">

@@ -13,7 +13,7 @@ long const k_string_id_set_offsets[k_number_of_string_id_sets] =
 
 char *tag_to_string(tag value, char *string)
 {
-	if (value == NONE)
+	if (!value || value == NONE)
 	{
 		memcpy(string, "none", 4);
 	}

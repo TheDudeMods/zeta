@@ -70,4 +70,3 @@ TAG_GROUP(
 	{ _field_string_id, "shield_function" },
 	{ _field_terminator }
 };
-static_assert(sizeof(s_machine_definition) == sizeof(s_device_definition) + 0x20);
