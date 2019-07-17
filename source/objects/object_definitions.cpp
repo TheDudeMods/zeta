@@ -382,7 +382,7 @@ TAG_GROUP(
 	{ _field_char_enum, "water_density", &water_density_enum },
 	{ _field_long_flags, "runtime_flags", &object_runtime_flags_enum },
 	{ _field_real, "dynamic_light_sphere_radius" },
-	{ _field_real_point3d, " dynamic_light_sphere_offset" },
+	{ _field_real_point3d, "dynamic_light_sphere_offset" },
 	{ _field_string_id, "generic_hud_text" },
 	{ _field_tag_reference, "generic_name_list" },
 	{ _field_tag_reference, "generic_service_tag_list" },
