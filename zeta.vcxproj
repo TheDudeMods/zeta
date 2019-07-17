@@ -135,6 +135,7 @@
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\camera\camera_track.cpp" />
     <ClCompile Include="source\commands\commands.cpp" />
+    <ClCompile Include="source\commands\edit_tag.cpp" />
     <ClCompile Include="source\commands\tag_commands.cpp" />
     <ClCompile Include="source\cseries\cseries.cpp" />
     <ClCompile Include="source\devices\devices.cpp" />

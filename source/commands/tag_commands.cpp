@@ -4,7 +4,7 @@
 
 enum
 {
-	k_number_of_tag_commands = 1
+	k_number_of_tag_commands = 2
 };
 
 /* ---------- globals */
@@ -17,6 +17,13 @@ static s_command g_tag_commands[k_number_of_tag_commands] =
 		"Lists all tags instances of the specified group.",
 		true,
 		list_tags_execute
+	},
+	{
+		"edit_tag",
+		"edit_tag <tag_index>",
+		"Opens the specified tag instance for editing.",
+		false,
+		edit_tag_execute
 	}
 };
 
