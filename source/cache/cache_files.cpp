@@ -209,3 +209,8 @@ s_cache_file_tag_instance *c_cache_file::get_tag_instance(long index)
 {
 	return &get_buffer_data<s_cache_file_tag_instance>(get_tags_header()->tags_address)[index & 0xFFFF];
 }
+
+qword c_cache_file::get_page_offset(dword address)
+{
+	return ((qword)address * 4) - (m_header.virtual_base_address - 0x10000000);
+}

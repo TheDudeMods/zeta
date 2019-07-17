@@ -18,7 +18,7 @@ void list_tags(
 		if (group->is_in_group(group_tag))
 			printf("[Index: 0x%04lX, Offset: 0x%llX] %s.%s\n",
 				i,
-				cache_file_header->memory_buffer_offset + ((qword)instance->address * 4) - (cache_file_header->virtual_base_address - 0x10000000),
+				cache_file_header->memory_buffer_offset + g_cache_file->get_page_offset(instance->address),
 				g_cache_file->get_tag_name(i),
 				g_cache_file->get_string(group->name));
 	}

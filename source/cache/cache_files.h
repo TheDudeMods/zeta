@@ -193,13 +193,15 @@ public:
 		return (t_data *)(address + m_address_mask);
 	}
 
+	qword get_page_offset(dword address);
+
 	template <typename t_data>
 	t_data *get_page_data(dword address)
 	{
 		if (address == 0)
 			return nullptr;
 
-		return (t_data *)(m_memory_buffer + ((qword)address * 4) - (m_header.virtual_base_address - 0x10000000));
+		return (t_data *)(m_memory_buffer + get_page_offset(address));
 	}
 
 	template <typename t_tag_definition>
