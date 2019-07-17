@@ -144,6 +144,7 @@
     <ClCompile Include="source\game\campaign_metagame.cpp" />
     <ClCompile Include="source\game\game_allegiance.cpp" />
     <ClCompile Include="source\items\items.cpp" />
+    <ClCompile Include="source\items\projectiles.cpp" />
     <ClCompile Include="source\main\main.cpp" />
     <ClCompile Include="source\math\integer_math.cpp" />
     <ClCompile Include="source\math\real_math.cpp" />

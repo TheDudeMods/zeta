@@ -11,7 +11,11 @@
 
 enum
 {
-	k_projectile_group_tag = 'proj'
+	k_projectile_group_tag = 'proj',
+	k_maximum_number_of_projectile_material_responses = 200,
+	k_maximum_number_of_projectile_brute_grenades = 1,
+	k_maximum_number_of_projectile_fire_bomb_grenades = 1,
+	k_maximum_number_of_projectile_conical_spreads = 1
 };
 
 /* ---------- enumerators */
@@ -62,42 +66,116 @@ enum e_projectile_detonation_timer_start
 	k_number_of_projectile_detonation_timer_starts
 };
 
+enum e_projectile_material_response_type
+{
+	_projectile_material_response_type_impact_detonate,
+	_projectile_material_response_type_fizzle,
+	_projectile_material_response_type_overpenetrate,
+	_projectile_material_response_type_attach,
+	_projectile_material_response_type_bounce,
+	_projectile_material_response_type_bounce_dud,
+	_projectile_material_response_type_fizzle_ricochet,
+	_projectile_material_response_type_turn_physical,
+	_projectile_material_response_type_airstrike,
+	k_number_of_projectile_material_response_types
+};
+
+enum e_projectile_material_response_flags
+{
+	_projectile_material_response_only_against_units_bit,
+	_projectile_material_response_never_against_units_bit,
+	_projectile_material_response_only_against_bipeds_bit,
+	_projectile_material_response_only_against_vehicles_bit,
+	_projectile_material_response_never_against_wuss_players_bit,
+	_projectile_material_response_only_when_tethered_bit,
+	_projectile_material_response_only_when_not_tethered_bit,
+	_projectile_material_response_only_against_dead_bipeds_bit,
+	_projectile_material_response_never_against_dead_bipeds_bit,
+	_projectile_material_response_only_ai_projectiles_bit,
+	_projectile_material_response_never_ai_projectiles_bit,
+	k_number_of_projectile_material_response_flags
+};
+
+enum e_projectile_material_response_effect_scale
+{
+	_projectile_material_response_effect_scale_damage,
+	_projectile_material_response_effect_scale_angle,
+	k_number_of_projectile_material_response_effect_scales
+};
+
 /* ---------- structures */
 
 struct s_projectile_material_response_old
 {
-	//
-	// TODO
-	//
+	c_enum<e_projectile_material_response_type, short> default_response;
+	short : 16;
+	string_id material_name;
+	short runtime_material_index;
+	short : 16;
+	c_enum<e_projectile_material_response_type, short> potential_response;
+	c_flags<e_projectile_material_response_flags, word> response_flags;
+	real_fraction chance_fraction;
+	angle_bounds between;
+	real_bounds and;
+	c_enum<e_projectile_material_response_effect_scale, short> scale_effects_by;
+	short : 16;
+	angle angular_noise;
+	real velocity_noise;
+	real initial_friction;
+	real parallel_friction;
+	real perpendicular_friction;
 };
+static_assert(sizeof(s_projectile_material_response_old) == 0x3C);
 
 struct s_projectile_material_response
 {
-	//
-	// TODO
-	//
+	string_id material_name;
+	short runtime_material_index;
+	c_flags<e_projectile_material_response_flags, word> response_flags;
+	real_fraction chance_fraction;
+	angle_bounds between;
+	real_bounds and;
+	c_enum<e_projectile_material_response_type, short> response;
+	c_enum<e_projectile_material_response_effect_scale, short> scale_effects_by;
+	angle angular_noise;
+	real velocity_noise;
+	real initial_friction;
+	real parallel_friction;
+	real perpendicular_friction;
 };
+static_assert(sizeof(s_projectile_material_response) == 0x34);
 
 struct s_projectile_brute_grenade
 {
-	//
-	// TODO
-	//
+	angle minimum_angular_velocity;
+	angle maximum_angular_velocity;
+	angle spin_angular_velocity;
+	real angular_damping;
+	real drag_angle_k;
+	real drag_speed_k;
+	real drag_exponent;
+	real attach_sample_radius;
+	real attach_acc_k;
+	real attach_acc_s;
+	real attach_acc_e;
+	real attach_acc_damping;
 };
+static_assert(sizeof(s_projectile_brute_grenade) == 0x30);
 
 struct s_projectile_fire_bomb_grenade
 {
-	//
-	// TODO
-	//
+	real projection_offset;
 };
+static_assert(sizeof(s_projectile_fire_bomb_grenade) == 0x4);
 
 struct s_projectile_conical_spread
 {
-	//
-	// TODO
-	//
+	short yaw_count;
+	short pitch_count;
+	real distribution_exponent;
+	angle spread;
 };
+static_assert(sizeof(s_projectile_conical_spread) == 0xC);
 
 struct s_projectile_definition : s_object_definition
 {

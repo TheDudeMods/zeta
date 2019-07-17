@@ -8,4 +8,5 @@
 
 c_command_context *create_tag_command_context(c_command_context *parent = nullptr);
 
-bool list_tags(long arg_count, char const **arg_values);
+void list_tags(tag group_tag);
+bool list_tags_execute(long arg_count, char const **arg_values);
