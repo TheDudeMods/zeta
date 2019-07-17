@@ -19,7 +19,7 @@
 	((FLAGS) & FLAG(BIT))
 
 #define SET_FLAG(FLAGS, BIT, VALUE) \
-	((FLAGS) = (VALUE) ? ((FLAGS) | FLAG(BIT)) : ((FLAGS) & ~FLAG(BIT)))
+	((FLAGS) = ((VALUE) ? ((FLAGS) | FLAG(BIT)) : ((FLAGS) & ~FLAG(BIT))))
 
 #define STRING_ID_INDEX(id) ((id) & ((1 << 17) - 1))
 #define STRING_ID_SET(id) (((id) >> 17) & ((1 << 8) - 1))

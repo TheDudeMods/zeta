@@ -182,7 +182,7 @@ void field_print(e_field_type type, char const *name, void *definition, void *ad
 void field_next(s_field_definition **out_field, void **out_address);
 bool field_parse(e_field_type type, char const *name, void *definition, void *address, long arg_count, char const **arg_values);
 
-void *struct_print(s_struct_definition *definition, void *address);
+void *struct_print(s_struct_definition *definition, void *address, char const *filter);
 s_field_definition *struct_get_field(s_struct_definition *definition, char const *name, void **out_address);
 
 s_tag_group_definition *tag_group_definition_get(tag group_tag);

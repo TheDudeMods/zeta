@@ -11,6 +11,44 @@
 #include <items/projectiles.h>
 #include <units/unit_definitions.h>
 
+/* ---------- constants */
+
+enum
+{
+	k_number_of_tag_group_definitions = 10
+};
+
+/* ---------- globals */
+
+extern s_tag_group_definition camera_track_group;
+extern s_tag_group_definition control_group;
+extern s_tag_group_definition crate_group;
+extern s_tag_group_definition device_group;
+extern s_tag_group_definition item_group;
+extern s_tag_group_definition machine_group;
+extern s_tag_group_definition object_group;
+extern s_tag_group_definition projectile_group;
+extern s_tag_group_definition scenery_group;
+extern s_tag_group_definition unit_group;
+
+static struct
+{
+	tag group_tag;
+	s_tag_group_definition *definition;
+} g_tag_group_definitions[k_number_of_tag_group_definitions] =
+{
+	{ k_camera_track_group_tag, &camera_track_group },
+	{ k_control_group_tag, &control_group },
+	{ k_crate_group_tag, &crate_group },
+	{ k_device_group_tag, &device_group },
+	{ k_item_group_tag, &item_group },
+	{ k_machine_group_tag, &machine_group },
+	{ k_object_group_tag, &object_group },
+	{ k_projectile_group_tag, &projectile_group },
+	{ k_scenery_group_tag, &scenery_group },
+	{ k_unit_group_tag, &unit_group },
+};
+
 /* ---------- code */
 
 qword field_get_size(
@@ -589,32 +627,253 @@ bool field_parse(
 {
 	switch (type)
 	{
+	case _field_tag:
+	{
+		if (arg_count != 1 || strlen(arg_values[0]) != 4)
+			return false;
+		*(tag *)address = string_to_tag(arg_values[0]);
+		break;
+	}
+
+	case _field_short_string:
+	{
+		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_short_string_ascii_length)
+			return false;
+		strcpy(((short_string *)address)->ascii, arg_values[0]);
+		break;
+	}
+
+	case _field_long_string:
+	{
+		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_long_string_ascii_length)
+			return false;
+		strcpy(((long_string *)address)->ascii, arg_values[0]);
+		break;
+	}
+
+	case _field_string_id:
+	{
+		if (arg_count != 1)
+			return false;
+		*(string_id *)address = strtoul(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_char_integer:
+	case _field_char_block_index:
+	{
+		if (arg_count != 1)
+			return false;
+		*(char *)address = strtol(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_short_integer:
+	case _field_short_block_index:
+	{
+		if (arg_count != 1)
+			return false;
+		*(short *)address = strtol(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_long_integer:
+	case _field_long_block_index:
+	{
+		if (arg_count != 1)
+			return false;
+		*(long *)address = strtol(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_int64_integer:
+	{
+		if (arg_count != 1)
+			return false;
+		*(long long *)address = strtoll(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_byte_integer:
+	{
+		if (arg_count != 1)
+			return false;
+		*(byte *)address = strtoul(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_word_integer:
+	{
+		if (arg_count != 1)
+			return false;
+		*(word *)address = strtoul(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_dword_integer:
+	{
+		if (arg_count != 1)
+			return false;
+		*(dword *)address = strtoul(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_qword_integer:
+	{
+		if (arg_count != 1)
+			return false;
+		*(qword *)address = strtoul(arg_values[0], nullptr, 0);
+		break;
+	}
+
+	case _field_char_enum:
+	case _field_short_enum:
+	case _field_long_enum:
+	{
+		if (arg_count != 1)
+			return false;
+
+		auto option_name = arg_values[0];
+		auto enum_definition = (s_enum_definition *)definition;
+
+		for (auto i = 0; i < enum_definition->option_count; i++)
+		{
+			if (strcmp(option_name, enum_definition->options[i].name) != 0)
+				continue;
+
+			switch (type)
+			{
+			case _field_char_enum:
+				*(long *)address = enum_definition->options[i].value;
+				return true;
+
+			case _field_short_enum:
+				*(long *)address = enum_definition->options[i].value;
+				return true;
+
+			case _field_long_enum:
+				*(long *)address = enum_definition->options[i].value;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	case _field_byte_flags:
+	case _field_word_flags:
+	case _field_long_flags:
+	{
+		auto enum_definition = (s_enum_definition *)definition;
+
+		if (arg_count < 1 || arg_count > enum_definition->option_count)
+			return false;
+
+		for (auto arg_index = 0;
+			arg_index < arg_count;
+			arg_index++)
+		{
+			auto found = false;
+
+			for (auto option_index = 0;
+				option_index < enum_definition->option_count;
+				option_index++)
+			{
+				auto option_name = arg_values[arg_index];
+				auto option = &enum_definition->options[option_index];
+				auto set_bit = true;
+
+				if (option_name[0] == '!')
+				{
+					option_name = &option_name[1];
+					set_bit = false;
+				}
+
+				if (strcmp(option_name, option->name) == 0)
+				{
+					found = true;
+
+					switch (type)
+					{
+					case _field_byte_flags:
+						SET_FLAG(*(byte *)address, option->value, set_bit);
+						break;
+
+					case _field_word_flags:
+						SET_FLAG(*(word *)address, option->value, set_bit);
+						break;
+
+					case _field_long_flags:
+						SET_FLAG(*(long *)address, option->value, set_bit);
+						break;
+					}
+
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				auto option_name = arg_values[arg_index];
+				
+				if (strcmp(option_name, "none") == 0 ||
+					strcmp(option_name, "0") == 0)
+				{
+					switch (type)
+					{
+					case _field_byte_flags:
+						*(byte *)address = 0;
+						break;
+
+					case _field_word_flags:
+						*(word *)address = 0;
+						break;
+
+					case _field_long_flags:
+						*(long *)address = 0;
+						break;
+					}
+				}
+				else
+				{
+					printf("ERROR: no option named '%s' found in '%s' enum!\n", arg_values[arg_index], enum_definition->name);
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 	case _field_real:
 		if (arg_count != 1)
 			return false;
 		*(real *)address = strtof(arg_values[0], nullptr);
 		return true;
 
-	//
-	// TODO: implement parsing for all parseable field types
-	//
-
-	default:
-		return false;
+		//
+		// TODO: implement parsing for all parseable field types
+		//
 	}
+
+	return false;
 }
 
 void *struct_print(
 	s_struct_definition *definition,
-	void *address)
+	void *address,
+	char const *filter)
 {
 	if (definition->parent)
-		address = struct_print(definition->parent, address);
+		address = struct_print(definition->parent, address, filter);
 
 	for (auto field = &definition->fields[0];
 		field->type != _field_terminator;
 		field_next(&field, &address))
 	{
+		if (filter && !strstr(field->name, filter))
+			continue;
+
 		field_print(field->type, field->name, field->definition, address);
 	}
 
@@ -646,51 +905,9 @@ s_field_definition *struct_get_field(
 s_tag_group_definition *tag_group_definition_get(
 	tag group_tag)
 {
-	char tag_string[5];
+	for (auto i = 0; i < k_number_of_tag_group_definitions; i++)
+		if (group_tag == g_tag_group_definitions[i].group_tag)
+			return g_tag_group_definitions[i].definition;
 
-	switch (group_tag)
-	{
-	case k_camera_track_group_tag:
-		extern s_tag_group_definition camera_track_group;
-		return &camera_track_group;
-
-	case k_control_group_tag:
-		extern s_tag_group_definition control_group;
-		return &control_group;
-
-	case k_crate_group_tag:
-		extern s_tag_group_definition crate_group;
-		return &crate_group;
-
-	case k_device_group_tag:
-		extern s_tag_group_definition device_group;
-		return &device_group;
-
-	case k_item_group_tag:
-		extern s_tag_group_definition item_group;
-		return &item_group;
-
-	case k_machine_group_tag:
-		extern s_tag_group_definition machine_group;
-		return &machine_group;
-
-	case k_object_group_tag:
-		extern s_tag_group_definition object_group;
-		return &object_group;
-
-	case k_projectile_group_tag:
-		extern s_tag_group_definition projectile_group;
-		return &projectile_group;
-
-	case k_scenery_group_tag:
-		extern s_tag_group_definition scenery_group;
-		return &scenery_group;
-
-	case k_unit_group_tag:
-		extern s_tag_group_definition unit_group;
-		return &unit_group;
-
-	default:
-		return nullptr;
-	}
+	return nullptr;
 }
