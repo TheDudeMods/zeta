@@ -175,6 +175,7 @@ public:
 	c_cache_file(char const *filename);
 	~c_cache_file();
 
+	s_cache_file_header *get_header();
 	s_cache_file_tags_header *get_tags_header();
 
 	char const *get_string(string_id id) const;

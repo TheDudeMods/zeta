@@ -1,7 +1,7 @@
 #include <cseries/cseries.h>
 #include <cache/cache_files.h>
 #include <commands/commands.h>
-#include <commands/tag_commands.h>
+#include <commands/tags/tag_commands.h>
 
 /* ---------- globals */
 

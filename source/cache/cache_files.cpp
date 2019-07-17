@@ -164,6 +164,11 @@ c_cache_file::~c_cache_file()
 	if (m_memory_buffer) delete[] m_memory_buffer;
 }
 
+s_cache_file_header *c_cache_file::get_header()
+{
+	return &m_header;
+}
+
 s_cache_file_tags_header *c_cache_file::get_tags_header()
 {
 	return get_buffer_data<s_cache_file_tags_header>(m_header.tags_header_address);
