@@ -554,7 +554,7 @@ void field_print(
 	{
 		auto reference = (s_tag_reference *)address;
 		
-		if (reference->index == NONE || g_cache_file->get_tag_instance(reference->index)->group_index == NONE)
+		if (reference->index == NONE || g_cache_file->get_tag_instance(reference->index & k_word_maximum)->group_index == NONE)
 		{
 			printf("%s: tag_reference = none\n",
 				name,
@@ -563,11 +563,11 @@ void field_print(
 		}
 		else
 		{
-			auto tag_name = g_cache_file->get_tag_name(reference->index);
+			auto tag_name = g_cache_file->get_tag_name(reference->index & k_word_maximum);
 			auto instance = g_cache_file->get_tag_instance(reference->index & k_word_maximum);
 			auto group = g_cache_file->get_tag_group(instance->group_index);
 
-			printf("%s: tag_reference = (0x%li) %s.%s\n",
+			printf("%s: tag_reference = (0x%04lX) %s.%s\n",
 				name,
 				reference->index & k_word_maximum,
 				tag_name,
