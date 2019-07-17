@@ -1,7 +1,6 @@
 #include <devices/device_machines.h>
 
 extern s_tag_group_definition device_group;
-extern s_enum_definition scenery_pathfinding_policy_enum;
 
 /* ---------- definitions */
 
@@ -38,6 +37,16 @@ TAG_ENUM(
 	{ "discs", _machine_collision_response_discs },
 };
 
+TAG_ENUM(
+	machine_pathfinding_policy_enum,
+	k_number_of_machine_pathfinding_policies)
+{
+	{ "discs", _machine_pathfinding_policy_discs },
+	{ "sectors", _machine_pathfinding_policy_sectors },
+	{ "cut_out", _machine_pathfinding_policy_cut_out },
+	{ "none", _machine_pathfinding_policy_none },
+};
+
 TAG_PADDING(
 	_field_short_integer,
 	machine_post_pathfinding_policy_padding,
@@ -55,9 +64,10 @@ TAG_GROUP(
 	{ _field_fraction_bounds, "door_occlusion_bounds" },
 	{ _field_short_enum, "collision_response", &machine_collision_response_enum },
 	{ _field_short_integer, "elevator_node" },
-	{ _field_short_enum, "pathfinding_policy", &scenery_pathfinding_policy_enum },
+	{ _field_short_enum, "pathfinding_policy", &machine_pathfinding_policy_enum },
 	{ _field_padding, "post_pathfinding_policy_padding", &machine_post_pathfinding_policy_padding },
 	{ _field_string_id, "shield_name" },
 	{ _field_string_id, "shield_function" },
+	{ _field_terminator }
 };
 static_assert(sizeof(s_machine_definition) == sizeof(s_device_definition) + 0x20);

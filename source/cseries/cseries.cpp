@@ -13,10 +13,18 @@ long const k_string_id_set_offsets[k_number_of_string_id_sets] =
 
 char *tag_to_string(tag value, char *string)
 {
-	for (qword i = 0; i < sizeof(tag); i++)
-		string[sizeof(tag) - (i + 1)] = (char)((value >> (i * k_bits_per_byte)) & k_byte_maximum);
+	if (value == NONE)
+	{
+		memcpy(string, "none", 4);
+	}
+	else
+	{
+		for (qword i = 0; i < sizeof(tag); i++)
+			string[sizeof(tag) - (i + 1)] = (char)((value >> (i * k_bits_per_byte)) & k_byte_maximum);
+	}
 
 	string[sizeof(tag)] = '\0';
+
 	return string;
 }
 

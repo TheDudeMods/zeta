@@ -3,7 +3,6 @@
 #include <cseries/cseries.h>
 #include <tag_files/tag_groups.h>
 #include <devices/devices.h>
-#include <objects/scenery.h>
 
 /* ---------- constants */
 
@@ -44,6 +43,15 @@ enum e_machine_collision_response
 	k_number_of_machine_collision_responses
 };
 
+enum e_machine_pathfinding_policy
+{
+	_machine_pathfinding_policy_discs,
+	_machine_pathfinding_policy_sectors,
+	_machine_pathfinding_policy_cut_out,
+	_machine_pathfinding_policy_none,
+	k_number_of_machine_pathfinding_policies
+};
+
 /* ---------- structures */
 
 struct s_machine_definition : s_device_definition
@@ -54,7 +62,7 @@ struct s_machine_definition : s_device_definition
 	real_fraction_bounds door_occlusion_bounds;
 	c_enum<e_machine_collision_response, short> collision_response;
 	short elevator_node;
-	c_enum<e_scenery_pathfinding_policy, short> pathfinding_policy;
+	c_enum<e_machine_pathfinding_policy, short> pathfinding_policy;
 	short : 16;
 	string_id shield_name;
 	string_id shield_function;

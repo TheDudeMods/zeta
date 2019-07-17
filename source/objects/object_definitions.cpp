@@ -12,6 +12,7 @@
 #include <tag_files/tag_definitions.h>
 
 extern s_enum_definition object_type_enum;
+extern s_enum_definition water_density_enum;
 extern s_tag_block_definition water_physics_hull_surface_definition_block;
 extern s_tag_block_definition jetwash_definition_block;
 extern s_tag_block_definition multiplayer_object_definition_block;
@@ -376,6 +377,9 @@ TAG_GROUP(
 	{ _field_real, "horizontal_acceleration_scale" },
 	{ _field_real, "vertical_acceleration_scale" },
 	{ _field_real, "angular_acceleration_scale" },
+	{ _field_short_enum, "lightmap_shadow_mode", &object_lightmap_shadow_mode_enum },
+	{ _field_char_enum, "sweetener_size", &object_sweetener_size_enum },
+	{ _field_char_enum, "water_density", &water_density_enum },
 	{ _field_long_flags, "runtime_flags", &object_runtime_flags_enum },
 	{ _field_real, "dynamic_light_sphere_radius" },
 	{ _field_real_point3d, " dynamic_light_sphere_offset" },
