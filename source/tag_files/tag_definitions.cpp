@@ -190,7 +190,7 @@ void field_print_integer(
 		break;
 	}
 
-	printf("%s: %s = %ll\n", name, type_name, value);
+	printf("%s: %s = %lli\n", name, type_name, value);
 }
 
 void field_print_float(
@@ -200,6 +200,10 @@ void field_print_float(
 {
 	char const *type_name;
 	real value;
+
+	//
+	// TODO: finish implementing
+	//
 
 	printf("%s: %s = %g\n", name, type_name, value);
 }
@@ -288,6 +292,10 @@ void field_print(
 	void *address)
 {
 	char tag_string[5];
+
+	//
+	// TODO: finish reimplementing
+	//
 
 	switch (type)
 	{
@@ -552,7 +560,9 @@ void field_print(
 
 		for (auto i = 0; i < array_definition->length; i++)
 		{
-
+			//
+			// TODO: finish implementing
+			//
 		}
 
 		break;
@@ -567,6 +577,31 @@ void field_next(
 {
 	*out_address = ((char *)*out_address) + field_get_size((*out_field)->type, (*out_field)->definition);
 	(*out_field)++;
+}
+
+bool field_parse(
+	e_field_type type,
+	char const *name,
+	void *definition,
+	void *address,
+	long arg_count,
+	char const **arg_values)
+{
+	switch (type)
+	{
+	case _field_real:
+		if (arg_count != 1)
+			return false;
+		*(real *)address = strtof(arg_values[0], nullptr);
+		return true;
+
+	//
+	// TODO: implement parsing for all parseable field types
+	//
+
+	default:
+		return false;
+	}
 }
 
 void *struct_print(

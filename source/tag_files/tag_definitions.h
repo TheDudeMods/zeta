@@ -178,14 +178,9 @@ struct s_padding_definition
 /* ---------- prototypes/TAG_DEFINITIONS.CPP */
 
 qword field_get_size(e_field_type type, void *definition);
-
-void field_print_integer(e_field_type type, char const *name, void *address);
-void field_print_float(e_field_type type, char const *name, void *address);
-void field_print_enum(e_field_type type, char const *name, void *definition, void *address);
-void field_print_flags(e_field_type type, char const *name, void *definition, void *address);
-
 void field_print(e_field_type type, char const *name, void *definition, void *address);
 void field_next(s_field_definition **out_field, void **out_address);
+bool field_parse(e_field_type type, char const *name, void *definition, void *address, long arg_count, char const **arg_values);
 
 void *struct_print(s_struct_definition *definition, void *address);
 s_field_definition *struct_get_field(s_struct_definition *definition, char const *name, void **out_address);
