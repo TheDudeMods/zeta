@@ -9,9 +9,9 @@
 	s_enum_definition name = { #name, option_count, name##_options }; \
 	s_enum_option name##_options[option_count] =
 
-#define TAG_STRUCT(name, size) \
+#define TAG_STRUCT(name, size, ...) \
 	extern s_field_definition name##_fields[]; \
-	s_struct_definition name = { #name, size, name##_fields }; \
+	s_struct_definition name = { #name, NONE, size, name##_fields, __VA_ARGS__ }; \
 	s_field_definition name##_fields[] =
 
 #define TAG_ARRAY(type, name, count, ...) \
@@ -35,8 +35,8 @@
 	s_tag_group_definition name = { #name, group_tag, size, name##_fields, __VA_ARGS__ }; \
 	s_field_definition name##_fields[] =
 
-#define TAG_PADDING(type, name, length) \
-	s_padding_definition name = { type, #name, length }
+#define TAG_PADDING(type, name, length, ...) \
+	s_padding_definition name = { type, #name, length, __VA_ARGS__ }
 
 /* ---------- enumerators */
 
@@ -76,7 +76,6 @@ enum e_field_type
 	_field_real_euler_angles3d,
 	_field_real_plane2d,
 	_field_real_plane3d,
-	_field_real_orientation3d,
 	_field_real_matrix4x3,
 	_field_real_rgb_color,
 	_field_real_argb_color,
@@ -97,7 +96,6 @@ enum e_field_type
 	_field_data,
 	_field_struct,
 	_field_array,
-	_field_pointer,
 	_field_padding,
 	_field_skip,
 	_field_explanation,
@@ -130,8 +128,10 @@ struct s_enum_definition
 struct s_struct_definition
 {
 	char const *name;
+	tag group_tag;
 	long size;
 	s_field_definition *fields;
+	s_struct_definition *parent;
 };
 
 struct s_array_definition
@@ -163,13 +163,8 @@ struct s_tag_reference_definition
 	tag *group_tags;
 };
 
-struct s_tag_group_definition
+struct s_tag_group_definition : s_struct_definition
 {
-	char const *name;
-	tag group_tag;
-	long size;
-	s_field_definition *fields;
-	s_tag_group_definition *parent;
 };
 
 struct s_padding_definition
@@ -177,4 +172,9 @@ struct s_padding_definition
 	e_field_type type;
 	char const *name;
 	long length;
+	void const *definition;
 };
+
+/* ---------- prototypes/TAG_DEFINITIONS.CPP */
+
+s_tag_group_definition *tag_group_definition_get(tag group_tag);

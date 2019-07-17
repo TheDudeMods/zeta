@@ -32,3 +32,11 @@ public:
 	s_command *get_command(char const *name);
 	char *get_name(char *buffer) const;
 };
+
+/* ---------- globals/COMMANDS.CPP */
+
+extern c_command_context *g_command_context;
+
+/* ---------- prototypes/COMMANDS.CPP */
+
+void command_loop_execute();

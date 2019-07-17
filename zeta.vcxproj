@@ -135,9 +135,8 @@
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\camera\camera_track.cpp" />
     <ClCompile Include="source\commands\commands.cpp" />
-    <ClCompile Include="source\commands\tags\edit_tag.cpp" />
-    <ClCompile Include="source\commands\tags\list_tags.cpp" />
-    <ClCompile Include="source\commands\tags\tag_commands.cpp" />
+    <ClCompile Include="source\commands\editing_commands.cpp" />
+    <ClCompile Include="source\commands\tag_commands.cpp" />
     <ClCompile Include="source\cseries\cseries.cpp" />
     <ClCompile Include="source\devices\devices.cpp" />
     <ClCompile Include="source\devices\device_controls.cpp" />
@@ -171,7 +170,8 @@
     <ClInclude Include="source\cache\cache_files.h" />
     <ClInclude Include="source\camera\camera_track.h" />
     <ClInclude Include="source\commands\commands.h" />
-    <ClInclude Include="source\commands\tags\tag_commands.h" />
+    <ClInclude Include="source\commands\editing_commands.h" />
+    <ClInclude Include="source\commands\tag_commands.h" />
     <ClInclude Include="source\cseries\cseries.h" />
     <ClInclude Include="source\devices\devices.h" />
     <ClInclude Include="source\devices\device_controls.h" />
