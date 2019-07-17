@@ -18,7 +18,7 @@ struct s_command
 class c_command_context
 {
 private:
-	char const *m_name;
+	long_string m_name;
 	long m_command_count;
 	s_command *m_commands;
 	c_command_context *m_parent;

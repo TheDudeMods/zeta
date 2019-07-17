@@ -15,7 +15,7 @@ public:
 		s_struct_definition *definition,
 		c_command_context *parent = nullptr);
 
-	char *get_address();
+	void *get_address();
 	s_struct_definition *get_definition();
 
 protected:
@@ -26,3 +26,4 @@ protected:
 /* ---------- prototypes/EDITING_COMMANDS.CPP */
 
 bool list_fields_execute(long arg_count, char const **arg_values);
+bool set_field_execute(long arg_count, char const **arg_values);

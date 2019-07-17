@@ -47,9 +47,9 @@ s_command *c_command_context::get_command(
 char *c_command_context::get_name(char *buffer) const
 {
 	if (m_parent)
-		sprintf(buffer, "%s\\%s", m_parent->get_name(buffer), m_name);
+		sprintf(buffer, "%s\\%s", m_parent->get_name(buffer), m_name.ascii);
 	else
-		sprintf(buffer, "%s", m_name);
+		sprintf(buffer, "%s", m_name.ascii);
 
 	return buffer;
 }

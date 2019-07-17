@@ -109,7 +109,7 @@ struct s_field_definition
 {
 	e_field_type type;
 	char const *name;
-	void const *definition;
+	void *definition;
 };
 
 struct s_enum_option
@@ -139,7 +139,7 @@ struct s_array_definition
 	e_field_type type;
 	char const *name;
 	long length;
-	void const *definition;
+	void *definition;
 };
 
 struct s_tag_block_definition
@@ -172,17 +172,22 @@ struct s_padding_definition
 	e_field_type type;
 	char const *name;
 	long length;
-	void const *definition;
+	void *definition;
 };
 
 /* ---------- prototypes/TAG_DEFINITIONS.CPP */
 
-qword field_get_size(e_field_type type, void const *definition);
+qword field_get_size(e_field_type type, void *definition);
 
-void field_print_integer(e_field_type type, char const *name, void const *address);
-void field_print_float(e_field_type type, char const *name, void const *address);
-void field_print_enum(e_field_type type, char const *name, void const *definition, void const *address);
-void field_print_flags(e_field_type type, char const *name, void const *definition, void const *address);
-void const *struct_definition_print(s_struct_definition *definition, void const *address);
+void field_print_integer(e_field_type type, char const *name, void *address);
+void field_print_float(e_field_type type, char const *name, void *address);
+void field_print_enum(e_field_type type, char const *name, void *definition, void *address);
+void field_print_flags(e_field_type type, char const *name, void *definition, void *address);
+
+void field_print(e_field_type type, char const *name, void *definition, void *address);
+void field_next(s_field_definition **out_field, void **out_address);
+
+void *struct_print(s_struct_definition *definition, void *address);
+s_field_definition *struct_get_field(s_struct_definition *definition, char const *name, void **out_address);
 
 s_tag_group_definition *tag_group_definition_get(tag group_tag);
