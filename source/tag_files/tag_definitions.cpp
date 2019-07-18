@@ -1,6 +1,7 @@
 #include <tag_files/tag_definitions.h>
 #include <math/integer_math.h>
 #include <cache/cache_files.h>
+#include <cache/cache_file_tag_resources.h>
 #include <camera/camera_track.h>
 #include <objects/object_definitions.h>
 #include <objects/scenery.h>
@@ -12,15 +13,10 @@
 #include <items/projectiles.h>
 #include <units/unit_definitions.h>
 
-/* ---------- constants */
-
-enum
-{
-	k_number_of_tag_group_definitions = 10
-};
-
 /* ---------- globals */
 
+extern s_tag_group_definition cache_file_resource_gestalt_group;
+extern s_tag_group_definition cache_file_resource_layout_table_group;
 extern s_tag_group_definition camera_track_group;
 extern s_tag_group_definition control_group;
 extern s_tag_group_definition crate_group;
@@ -32,12 +28,14 @@ extern s_tag_group_definition projectile_group;
 extern s_tag_group_definition scenery_group;
 extern s_tag_group_definition unit_group;
 
-static struct
+static struct tag_definition
 {
 	tag group_tag;
 	s_tag_group_definition *definition;
-} g_tag_group_definitions[k_number_of_tag_group_definitions] =
+} g_tag_group_definitions[] =
 {
+	{ k_cache_file_resource_gestalt_group_tag, &cache_file_resource_gestalt_group },
+	{ k_cache_file_resource_layout_table_group_tag, &cache_file_resource_layout_table_group },
 	{ k_camera_track_group_tag, &camera_track_group },
 	{ k_control_group_tag, &control_group },
 	{ k_crate_group_tag, &crate_group },
@@ -48,6 +46,7 @@ static struct
 	{ k_projectile_group_tag, &projectile_group },
 	{ k_scenery_group_tag, &scenery_group },
 	{ k_unit_group_tag, &unit_group },
+	{ NONE }
 };
 
 /* ---------- code */
@@ -230,21 +229,6 @@ void field_print_integer(
 	}
 
 	printf("%s: %s = %lli\n", name, type_name, value);
-}
-
-void field_print_float(
-	e_field_type type,
-	char const *name,
-	void *address)
-{
-	char const *type_name;
-	real value;
-
-	//
-	// TODO: finish implementing
-	//
-
-	printf("%s: %s = %g\n", name, type_name, value);
 }
 
 void field_print_enum(
@@ -579,27 +563,37 @@ void field_print(
 	case _field_block:
 	{
 		auto block = (s_tag_block *)address;
-		printf("%s: tag_block = { count: %i, address: 0x%08lX }\n", name, block->count, block->address);
+		printf("%s: tag_block = { count: %i, address: 0x%08lX }\n",
+			name, block->count, block->address);
 		break;
 	}
 
+	/* ---------- TODO: implement */
 	case _field_char_block_index:
+		field_print_integer(_field_char_integer, name, address);
 		break;
 	case _field_short_block_index:
+		field_print_integer(_field_short_integer, name, address);
 		break;
 	case _field_long_block_index:
+		field_print_integer(_field_long_integer, name, address);
 		break;
 	case _field_byte_block_flags:
+		field_print_integer(_field_byte_integer, name, address);
 		break;
 	case _field_word_block_flags:
+		field_print_integer(_field_word_integer, name, address);
 		break;
 	case _field_long_block_flags:
+		field_print_integer(_field_long_integer, name, address);
 		break;
+	/* ---------- END TODO */
 
 	case _field_data:
 	{
 		auto data = (s_tag_data *)address;
-		printf("%s: tag_data = { size: %i, address: 0x%08lX }\n", name, data->size, data->address);
+		printf("%s: tag_data = { size: %i, address: 0x%08lX }\n",
+			name, data->size, data->address);
 		break;
 	}
 
@@ -613,14 +607,13 @@ void field_print(
 	case _field_array:
 	{
 		auto array_definition = (s_array_definition *)definition;
+		auto element_size = field_get_size(array_definition->type, array_definition->definition);
 
 		for (auto i = 0; i < array_definition->length; i++)
 		{
-			//
-			// TODO: finish implementing
-			//
+			printf("%s[%li]", name, i);
+			field_print(array_definition->type, "", definition, (char *)address + (i * element_size));
 		}
-
 		break;
 	}
 
@@ -1125,7 +1118,8 @@ s_field_definition *struct_get_field(
 s_tag_group_definition *tag_group_definition_get(
 	tag group_tag)
 {
-	for (auto i = 0; i < k_number_of_tag_group_definitions; i++)
+	auto definition = g_tag_group_definitions;
+	for (auto i = 0; definition->group_tag != NONE; definition++, i++)
 		if (group_tag == g_tag_group_definitions[i].group_tag)
 			return g_tag_group_definitions[i].definition;
 

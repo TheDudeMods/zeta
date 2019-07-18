@@ -92,7 +92,8 @@ void command_loop_execute()
 
 		if (command)
 		{
-			command->execute(g_command_arg_count, (char const **)g_command_arg_values);
+			if (!command->execute(g_command_arg_count, (char const **)g_command_arg_values))
+				printf("Usage: %s\n", command->usage);
 		}
 		else if (strcmp(input_buffer, "exit") == 0)
 		{

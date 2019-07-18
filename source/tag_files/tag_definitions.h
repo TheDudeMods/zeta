@@ -11,15 +11,15 @@
 
 #define TAG_STRUCT(name, size, ...) \
 	extern s_field_definition name##_fields[]; \
-	s_struct_definition name = { #name, NONE, size, name##_fields, __VA_ARGS__ }; \
+	s_struct_definition name = { #name, NONE, size, NONE, name##_fields, __VA_ARGS__ }; \
 	s_field_definition name##_fields[] =
 
 #define TAG_ARRAY(type, name, length, ...) \
 	s_array_definition name = { type, #name, length, __VA_ARGS__ }
 
-#define TAG_BLOCK(name, size, maximum_count) \
+#define TAG_BLOCK(name, size, maximum_count, ...) \
 	extern s_field_definition name##_fields[]; \
-	s_tag_block_definition name = { #name, size, maximum_count, name##_fields }; \
+	s_tag_block_definition name = { #name, NONE, size, maximum_count, name##_fields, __VA_ARGS__ }; \
 	s_field_definition name##_fields[] =
 
 #define TAG_DATA(name, maximum_size) \
@@ -32,7 +32,7 @@
 
 #define TAG_GROUP(name, group_tag, size, ...) \
 	extern s_field_definition name##_fields[]; \
-	s_tag_group_definition name = { #name, group_tag, size, name##_fields, __VA_ARGS__ }; \
+	s_tag_group_definition name = { #name, group_tag, size, NONE, name##_fields, __VA_ARGS__ }; \
 	s_field_definition name##_fields[] =
 
 #define TAG_PADDING(type, name, length, ...) \
@@ -130,6 +130,7 @@ struct s_struct_definition
 	char const *name;
 	tag group_tag;
 	long size;
+	long maximum_elements;
 	s_field_definition *fields;
 	s_struct_definition *parent;
 };
@@ -142,12 +143,10 @@ struct s_array_definition
 	void *definition;
 };
 
-struct s_tag_block_definition
+struct s_tag_block_definition :
+	s_struct_definition
 {
-	char const *name;
-	long element_size;
 	long maximum_count;
-	s_field_definition *fields;
 };
 
 struct s_tag_data_definition
@@ -163,7 +162,8 @@ struct s_tag_reference_definition
 	tag *group_tags;
 };
 
-struct s_tag_group_definition : s_struct_definition
+struct s_tag_group_definition :
+	s_struct_definition
 {
 };
 

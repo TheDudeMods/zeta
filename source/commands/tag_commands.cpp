@@ -52,8 +52,11 @@ bool list_tags_execute(
 	{
 		auto instance = g_cache_file->get_tag_instance(i);
 
-		if (!instance || !instance->address || instance->group_index == NONE)
+		if (!instance || instance->group_index == NONE)
 			continue;
+
+		auto tag_name = g_cache_file->get_tag_name(i);
+		auto tag_name_length = strlen(tag_name);
 
 		auto group = g_cache_file->get_tag_group(instance->group_index);
 		auto cache_file_header = g_cache_file->get_header();
@@ -62,7 +65,7 @@ bool list_tags_execute(
 			printf("[Index: 0x%04lX, Offset: 0x%llX] %s.%s\n",
 				i,
 				cache_file_header->memory_buffer_offset + g_cache_file->get_page_offset(instance->address),
-				g_cache_file->get_tag_name(i),
+				tag_name_length == 0 ? "<unnamed>" : tag_name,
 				g_cache_file->get_string(group->name));
 	}
 
@@ -79,11 +82,11 @@ bool edit_tag_execute(
 	s_tag_reference reference;
 	field_parse(_field_tag_reference, "reference", nullptr, &reference, arg_count, arg_values);
 
-	auto instance = g_cache_file->get_tag_instance(reference.index);
+	auto instance = g_cache_file->get_tag_instance(reference.index & k_word_maximum);
 
 	if (!instance || !instance->address || instance->group_index == NONE)
 	{
-		printf("ERROR: tag instance 0x%04lX is null!", reference.index);
+		printf("ERROR: tag instance 0x%04lX is null!", reference.index & k_word_maximum);
 		return true;
 	}
 
@@ -91,7 +94,7 @@ bool edit_tag_execute(
 
 	if (!group)
 	{
-		printf("ERROR: failed to get tag group of tag instance 0x%04lX!", reference.index);
+		printf("ERROR: failed to get tag group of tag instance 0x%04lX!", reference.index & k_word_maximum);
 		return true;
 	}
 
@@ -104,9 +107,21 @@ bool edit_tag_execute(
 		return true;
 	}
 
+	long_string tag_name_string;
+
+	auto tag_name = g_cache_file->get_tag_name(reference.index & k_word_maximum);
+	auto group_name = g_cache_file->get_string(group->name);
+	
+	auto separator = strrchr(tag_name, '\\');
+	
+	if (separator)
+		tag_name = separator + 1;
+
+	sprintf(tag_name_string.ascii, "(0x%04lX) %s.%s", reference.index & k_word_maximum, tag_name, group_name);
+
 	g_command_context = new c_editing_command_context(
-		g_cache_file->get_tag_name(reference.index),
-		g_cache_file->get_tag_definition<void>(reference.index),
+		tag_name_string.ascii,
+		g_cache_file->get_tag_definition<void>(reference.index & k_word_maximum),
 		group_definition,
 		g_command_context);
 

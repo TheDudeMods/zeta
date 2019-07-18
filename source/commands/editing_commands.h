@@ -27,3 +27,4 @@ protected:
 
 bool list_fields_execute(long arg_count, char const **arg_values);
 bool set_field_execute(long arg_count, char const **arg_values);
+bool edit_block_execute(long arg_count, char const **arg_values);

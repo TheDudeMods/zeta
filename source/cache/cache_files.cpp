@@ -1,4 +1,5 @@
 #include <cache/cache_files.h>
+#include <tag_files/string_ids.h>
 
 /* ---------- globals */
 
@@ -177,20 +178,15 @@ s_cache_file_tags_header *c_cache_file::get_tags_header()
 char const *c_cache_file::get_string(string_id id) const
 {
 	auto set_min = (unsigned long)0x4C8;
-	auto set_max = (unsigned long)0xFFFF;
+	auto set_max = (unsigned long)0x1FFFF;
 	auto set = STRING_ID_SET(id);
 	auto index = STRING_ID_INDEX(id);
-
-	if (set == 0 && (index < set_min || index > set_max))
-		return m_string_ids_buffer + m_string_id_indices[index];
 
 	if (set < 0 || set >= k_number_of_string_id_sets)
 		return nullptr;
 
-	if (set == 0)
-		index -= set_min;
-	else
-		index += set_min;
+	if (set == 0 && index >= set_max)
+		return m_string_ids_buffer + m_string_id_indices[index];
 
 	return m_string_ids_buffer + m_string_id_indices[index + k_string_id_set_offsets[set]];
 }

@@ -8,12 +8,13 @@
 
 enum
 {
-	k_model_group_tag = 'hlmt'
+	k_render_model_group_tag = 'mode'
 };
+
+/* ---------- enumerators */
 
 /* ---------- structures */
 
-struct s_model_definition
+struct s_render_model_definition
 {
-
 };

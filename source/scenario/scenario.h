@@ -19,7 +19,7 @@ enum e_scenario_type
 enum e_scenario_load_type
 {
 	_scenario_load_none = NONE,
-	_scenario_load_mainmenu,
+	_scenario_load_default,
 	_scenario_load_shared,
 	_scenario_load_shared_campaign,
 	_scenario_load_shared_multiplayer,

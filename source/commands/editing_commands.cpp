@@ -1,3 +1,4 @@
+#include <cache/cache_files.h>
 #include <commands/editing_commands.h>
 #include <math/integer_math.h>
 #include <math/real_math.h>
@@ -7,7 +8,7 @@
 
 enum
 {
-	k_number_of_editing_commands = 2
+	k_number_of_editing_commands = 3
 };
 
 /* ---------- globals */
@@ -27,6 +28,13 @@ static s_command g_editing_commands[k_number_of_editing_commands] =
 		"Sets the value of field_name in the current structure to field_value.",
 		false,
 		set_field_execute
+	},
+	{
+		"edit_block",
+		"edit_block <field_name> [element_index]",
+		"Opens the specified block/structure for editing.",
+		false,
+		edit_block_execute
 	}
 };
 
@@ -69,6 +77,7 @@ bool list_fields_execute(
 	auto address = editing_context->get_address();
 	auto definition = editing_context->get_definition();
 
+	puts("");
 	struct_print(definition, address, arg_count == 1 ? arg_values[0] : nullptr);
 	puts("");
 
@@ -104,6 +113,64 @@ bool set_field_execute(
 	}
 
 	field_print(field->type, field->name, field->definition, address);
+
+	return true;
+}
+
+bool edit_block_execute(
+	long arg_count,
+	char const **arg_values)
+{
+	if (arg_count < 1)
+		return false;
+
+	auto field_name = arg_values[0];
+
+	auto editing_context = (c_editing_command_context *)g_command_context;
+
+	auto address = editing_context->get_address();
+	auto definition = editing_context->get_definition();
+
+	auto field = struct_get_field(definition, field_name, &address);
+
+	long_string context_name;
+
+	switch (field->type)
+	{
+	case _field_block:
+	{
+		if (arg_count != 2)
+			return false;
+		
+		auto index = strtoul(arg_values[1], nullptr, 0);
+		
+		auto block = (s_tag_block *)address;
+		auto block_definition = (s_tag_block_definition *)field->definition;
+
+		address = g_cache_file->get_page_data<char>(block->address) + (index * block_definition->size);
+		sprintf(context_name.ascii, "%s[%u]", field->name, index);
+		break;
+	}
+
+	case _field_struct:
+	{
+		if (arg_count != 1)
+			return false;
+
+		sprintf(context_name.ascii, "%s", field->name);
+		break;
+	}
+
+	default:
+		printf("ERROR: cannot edit '%s' field in '%s'!\n", field->name, definition->name);
+		return false;
+	}
+
+	g_command_context = new c_editing_command_context(
+		context_name.ascii,
+		address,
+		(s_struct_definition *)field->definition,
+		g_command_context);
 
 	return true;
 }
