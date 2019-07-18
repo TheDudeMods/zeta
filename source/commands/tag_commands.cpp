@@ -52,7 +52,7 @@ bool list_tags_execute(
 	{
 		auto instance = g_cache_file->get_tag_instance(i);
 
-		if (!instance || instance->group_index == NONE)
+		if (!instance || !instance->address || instance->group_index == NONE)
 			continue;
 
 		auto tag_name = g_cache_file->get_tag_name(i);
