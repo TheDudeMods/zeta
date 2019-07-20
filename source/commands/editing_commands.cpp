@@ -77,10 +77,8 @@ bool list_fields_execute(
 	auto address = editing_context->get_address();
 	auto definition = editing_context->get_definition();
 
-	puts("");
 	struct_print(definition, address, arg_count == 1 ? arg_values[0] : nullptr);
-	puts("");
-
+	
 	return true;
 }
 

@@ -245,5 +245,8 @@ TAG_GROUP(
 	{ _field_block, "resource_structure_types", &cache_file_resource_structure_type_block },
 	{ _field_struct, "layout_table", &cache_file_resource_layout_table_group },
 	{ _field_block, "tag_resources", &cache_file_tag_resource_block },
+	//
+	// TODO: finish
+	//
 	{ _field_terminator }
 };

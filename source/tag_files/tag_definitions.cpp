@@ -1,5 +1,6 @@
 #include <tag_files/tag_definitions.h>
 #include <math/integer_math.h>
+#include <bitmaps/bitmaps.h>
 #include <cache/cache_files.h>
 #include <cache/cache_file_tag_resources.h>
 #include <camera/camera_track.h>
@@ -15,6 +16,7 @@
 
 /* ---------- globals */
 
+extern s_tag_group_definition bitmap_group;
 extern s_tag_group_definition cache_file_resource_gestalt_group;
 extern s_tag_group_definition cache_file_resource_layout_table_group;
 extern s_tag_group_definition camera_track_group;
@@ -34,6 +36,7 @@ static struct tag_definition
 	s_tag_group_definition *definition;
 } g_tag_group_definitions[] =
 {
+	{ k_bitmap_group_tag, &bitmap_group },
 	{ k_cache_file_resource_gestalt_group_tag, &cache_file_resource_gestalt_group },
 	{ k_cache_file_resource_layout_table_group_tag, &cache_file_resource_layout_table_group },
 	{ k_camera_track_group_tag, &camera_track_group },

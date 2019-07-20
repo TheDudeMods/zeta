@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\ai\ai.cpp" />
+    <ClCompile Include="source\bitmaps\bitmaps.cpp" />
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\cache\cache_file_tag_resources.cpp" />
     <ClCompile Include="source\camera\camera_track.cpp" />
@@ -173,6 +174,7 @@
   <ItemGroup>
     <ClInclude Include="source\ai\ai.h" />
     <ClInclude Include="source\ai\character_definitions.h" />
+    <ClInclude Include="source\bitmaps\bitmaps.h" />
     <ClInclude Include="source\cache\cache_files.h" />
     <ClInclude Include="source\cache\cache_file_tag_resources.h" />
     <ClInclude Include="source\camera\camera_track.h" />

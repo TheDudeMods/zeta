@@ -192,4 +192,7 @@ struct s_cache_file_resource_gestalt
 	c_tag_block<s_cache_file_resource_structure_type> resource_structure_types;
 	s_cache_file_resource_layout_table layout_table;
 	c_tag_block<s_cache_file_tag_resource> tag_resources;
+	//
+	// TODO: finish
+	//
 };

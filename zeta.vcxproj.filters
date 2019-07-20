@@ -117,6 +117,9 @@
     <ClCompile Include="source\cache\cache_file_tag_resources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\bitmaps\bitmaps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ai\ai.h">
@@ -273,6 +276,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\tag_files\string_ids.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\bitmaps\bitmaps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
