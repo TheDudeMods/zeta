@@ -97,6 +97,7 @@ bool c_cache_file::tag_resource_try_and_get(
 	auto entry = page->shared_cache_file.resolve(&definition->layout_table.physical_locations);
 
 	char resource_cache_file_path[1024];
+	memset(resource_cache_file_path, 0, 1024);
 
 	if (entry)
 	{
@@ -111,32 +112,39 @@ bool c_cache_file::tag_resource_try_and_get(
 	}
 
 	auto resource_data_offset = m_header.interop.debug_section_size + page->block_offset;
-	auto resource_data_address = (byte *)&m_memory_buffer[resource_data_offset];
-
-	auto data = new byte[length];
+	
+	auto compressed_data = new byte[page->compressed_block_size];
+	auto uncompressed_data = new byte[length];
 
 	if (out_address)
-		*out_address = data;
+		*out_address = uncompressed_data;
+
+	FILE *stream = fopen(resource_cache_file_path, "rb+");
+	fseek(stream, resource_data_offset, SEEK_SET);
 
 	if (page->compression_codec.operator char() == NONE)
 	{
-		memcpy(data, resource_data_address, length);
+		fread(uncompressed_data, length, 1, stream);
 	}
 	else
 	{
+		fread(compressed_data, page->compressed_block_size, 1, stream);
+
 		z_stream infstream;
 		infstream.zalloc = Z_NULL;
 		infstream.zfree = Z_NULL;
 		infstream.opaque = Z_NULL;
 		infstream.avail_in = page->compressed_block_size;
-		infstream.next_in = resource_data_address;
+		infstream.next_in = compressed_data;
 		infstream.avail_out = page->uncompressed_block_size;
-		infstream.next_out = data;
+		infstream.next_out = uncompressed_data;
 
 		inflateInit(&infstream);
 		inflate(&infstream, Z_NO_FLUSH);
 		inflateEnd(&infstream);
 	}
+
+	fclose(stream);
 
 	return true;
 }
