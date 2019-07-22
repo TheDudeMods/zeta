@@ -32,5 +32,6 @@ public:
 	}
 
 	inline operator t_index() const { return m_index; }
+	inline operator bool() const { return m_index != (t_index)NONE; }
 };
 static_assert(sizeof(c_tag_block_index<void, long>) == sizeof(long));

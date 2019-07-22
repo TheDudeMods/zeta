@@ -79,7 +79,7 @@ bool c_cache_file::tag_resource_try_and_get(
 		return false;
 	}
 
-	if (definition->layout_table.pages[page_index].block_offset == NONE)
+	if (page_index.resolve(&definition->layout_table.pages)->block_offset == NONE)
 	{
 		page_index = segment->primary_page;
 		segment_offset = segment->primary_segment_offset;
@@ -91,18 +91,14 @@ bool c_cache_file::tag_resource_try_and_get(
 		(page->uncompressed_block_size - segment_offset) :
 		length;
 
-	if (!page->shared_cache_file)
-		return false;
-
-	auto entry = page->shared_cache_file.resolve(&definition->layout_table.physical_locations);
-
 	char resource_cache_file_path[1024];
 	memset(resource_cache_file_path, 0, 1024);
 
-	if (entry)
+	if (page->shared_cache_file)
 	{
 		memcpy(resource_cache_file_path, g_cache_file_path, strrchr(g_cache_file_path, '\\') - g_cache_file_path);
 
+		auto entry = page->shared_cache_file.resolve(&definition->layout_table.physical_locations);
 		auto file_path = strrchr(entry->path.ascii, '\\');
 		memcpy(resource_cache_file_path + strlen(resource_cache_file_path), file_path, strlen(file_path));
 	}
@@ -113,7 +109,6 @@ bool c_cache_file::tag_resource_try_and_get(
 
 	auto resource_data_offset = m_header.interop.debug_section_size + page->block_offset;
 	
-	auto compressed_data = new byte[page->compressed_block_size];
 	auto uncompressed_data = new byte[length];
 
 	if (out_address)
@@ -122,12 +117,13 @@ bool c_cache_file::tag_resource_try_and_get(
 	FILE *stream = fopen(resource_cache_file_path, "rb+");
 	fseek(stream, resource_data_offset, SEEK_SET);
 
-	if (page->compression_codec.operator char() == NONE)
+	if (!page->compression_codec)
 	{
 		fread(uncompressed_data, length, 1, stream);
 	}
 	else
 	{
+		auto compressed_data = new byte[page->compressed_block_size];
 		fread(compressed_data, page->compressed_block_size, 1, stream);
 
 		z_stream infstream;
@@ -142,6 +138,8 @@ bool c_cache_file::tag_resource_try_and_get(
 		inflateInit(&infstream);
 		inflate(&infstream, Z_NO_FLUSH);
 		inflateEnd(&infstream);
+
+		delete[] compressed_data;
 	}
 
 	fclose(stream);
