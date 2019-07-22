@@ -16,14 +16,36 @@ static char *g_command_arg_values[64];
 
 c_command_context::c_command_context(
 	char const *name,
-	long command_count,
-	s_command *commands,
+	long command_set_count,
+	s_command_set *command_sets,
 	c_command_context *parent) :
 	m_name(name),
-	m_command_count(command_count),
-	m_commands(commands),
+	m_command_set_count(command_set_count),
+	m_command_sets(command_sets),
 	m_parent(parent)
 {
+}
+
+char *c_command_context::get_name(
+	char *buffer) const
+{
+	if (m_parent)
+		sprintf(buffer, "%s\\%s", m_parent->get_name(buffer), m_name.ascii);
+	else
+		sprintf(buffer, "%s", m_name.ascii);
+
+	return buffer;
+
+}
+
+long c_command_context::get_command_count() const
+{
+	long count = 0;
+
+	for (auto i = 0; i < m_command_set_count; i++)
+		count += m_command_sets[i].command_count;
+
+	return count;
 }
 
 s_command *c_command_context::get_command(
@@ -32,26 +54,24 @@ s_command *c_command_context::get_command(
 	if (!name)
 		return nullptr;
 
-	for (auto i = 0; i < m_command_count; i++)
-		if (strcmp(name, m_commands[i].name) == 0)
-			return &m_commands[i];
+	for (auto i = 0; i < m_command_set_count; i++)
+	{
+		auto command_set = &m_command_sets[i];
 
-	for (auto parent = m_parent; parent; parent = parent->m_parent)
-		for (auto i = 0; i < parent->m_command_count; i++)
-			if (strcmp(name, parent->m_commands[i].name) == 0)
-				return &parent->m_commands[i];
+		for (auto j = 0; j < command_set->command_count; j++)
+			if (strcmp(name, command_set->commands[j].name) == 0)
+				return &command_set->commands[j];
+	}
+
+	if (m_parent)
+		return m_parent->get_command(name);
 
 	return nullptr;
 }
 
-char *c_command_context::get_name(char *buffer) const
+c_command_context *c_command_context::get_parent() const
 {
-	if (m_parent)
-		sprintf(buffer, "%s\\%s", m_parent->get_name(buffer), m_name.ascii);
-	else
-		sprintf(buffer, "%s", m_name.ascii);
-
-	return buffer;
+	return m_parent;
 }
 
 void command_loop_execute()

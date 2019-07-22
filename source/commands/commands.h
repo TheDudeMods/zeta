@@ -13,24 +13,29 @@ struct s_command
 	bool(*execute)(long arg_count, char const **arg_values);
 };
 
+struct s_command_set
+{
+	long command_count;
+	s_command *commands;
+};
+
 /* ---------- classes */
 
 class c_command_context
 {
-private:
+protected:
 	long_string m_name;
-	long m_command_count;
-	s_command *m_commands;
+	long m_command_set_count;
+	s_command_set *m_command_sets;
 	c_command_context *m_parent;
 
 public:
-	c_command_context(char const *name, long command_count, s_command *commands, c_command_context *parent = nullptr);
+	c_command_context(char const *name, long command_set_count, s_command_set *command_sets, c_command_context *parent = nullptr);
 
-	inline long get_command_count() const { return m_command_count; }
-	inline c_command_context *get_parent() const { return m_parent; }
-
-	s_command *get_command(char const *name);
 	char *get_name(char *buffer) const;
+	long get_command_count() const;
+	s_command *get_command(char const *name);
+	c_command_context *get_parent() const;
 };
 
 /* ---------- globals/COMMANDS.CPP */

@@ -93,8 +93,8 @@ struct s_cache_file_resource_page
 	c_tag_block_index<s_cache_file_resource_physical_location, short> shared_cache_file;
 	short : 16;
 	dword block_offset;
-	dword compressed_block_size;
-	dword uncompressed_block_size;
+	long compressed_block_size;
+	long uncompressed_block_size;
 	long crc;
 	long sha1_a[5];
 	long sha1_b[5];

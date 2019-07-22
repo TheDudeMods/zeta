@@ -4,6 +4,17 @@
 #include <commands/commands.h>
 #include <tag_files/tag_definitions.h>
 
+/* ---------- constants */
+
+enum
+{
+	k_number_of_editing_commands = 3
+};
+
+/* ---------- globals */
+
+extern s_command g_editing_commands[k_number_of_editing_commands];
+
 /* ---------- classes */
 
 class c_editing_command_context : public c_command_context

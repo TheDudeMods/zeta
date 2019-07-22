@@ -4,15 +4,15 @@ template <typename t_element>
 class c_tag_block : public s_tag_block
 {
 public:
-	inline bool try_get_element(int index, t_element **out_element)
+	bool try_get_element(int index, t_element **out_element)
 	{
 		if (index < 0 || index >= count || !out_element)
 			return false;
-		*out_element = &((t_element *)address)[index];
+		*out_element = &g_cache_file->get_page_data<t_element>(address)[index];
 		return true;
 	}
 
-	inline t_element *get_element(int index)
+	t_element *get_element(int index)
 	{
 		t_element *result = nullptr;
 		if (try_get_element(index, &result))
@@ -20,22 +20,22 @@ public:
 		return nullptr;
 	}
 
-	inline t_element &operator[](int index)
+	t_element &operator[](int index)
 	{
 		return *get_element(index);
 	}
 
-	inline t_element *begin()
+	t_element *begin()
 	{
-		return &((t_element *)address)[0];
+		return g_cache_file->get_page_data<t_element>(address);
 	}
 
-	inline t_element *end()
+	t_element *end()
 	{
-		return &((t_element *)address)[count];
+		*out_element = &g_cache_file->get_page_data<t_element>(address)[count];
 	}
 
-	inline t_element *operator->()
+	t_element *operator->()
 	{
 		return get_element(0);
 	}

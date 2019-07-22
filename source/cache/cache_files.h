@@ -184,6 +184,8 @@ public:
 	s_tag_group *get_tag_group(long index);
 	s_cache_file_tag_instance *get_tag_instance(long index);
 
+	bool tag_resource_try_and_get(long index, long length, void **out_address);
+
 	template <typename t_data>
 	t_data *get_buffer_data(qword address)
 	{

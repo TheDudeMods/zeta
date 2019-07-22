@@ -1,3 +1,5 @@
+#include <bitmaps/bitmaps.h>
+#include <commands/bitmap_commands.h>
 #include <commands/editing_commands.h>
 #include <commands/tag_commands.h>
 
@@ -5,12 +7,12 @@
 
 enum
 {
-	k_number_of_tag_commands = 2
+	k_number_of_tag_command_sets = 1
 };
 
 /* ---------- globals */
 
-static s_command g_tag_commands[k_number_of_tag_commands] =
+s_command g_tag_commands[k_number_of_tag_commands] =
 {
 	{
 		"list_tags",
@@ -28,12 +30,17 @@ static s_command g_tag_commands[k_number_of_tag_commands] =
 	}
 };
 
+static s_command_set g_tag_command_sets[k_number_of_tag_command_sets] =
+{
+	{ k_number_of_tag_commands, g_tag_commands }
+};
+
 /* ---------- code */
 
 c_command_context *create_tag_command_context(
 	c_command_context *parent)
 {
-	 return new c_command_context("tags", k_number_of_tag_commands, g_tag_commands, parent);
+	 return new c_command_context("tags", k_number_of_tag_command_sets, g_tag_command_sets, parent);
 }
 
 bool list_tags_execute(
@@ -119,11 +126,23 @@ bool edit_tag_execute(
 
 	sprintf(tag_name_string.ascii, "(0x%04lX) %s.%s", reference.index & k_word_maximum, tag_name, group_name);
 
-	g_command_context = new c_editing_command_context(
-		tag_name_string.ascii,
-		g_cache_file->get_tag_definition<void>(reference.index & k_word_maximum),
-		group_definition,
-		g_command_context);
+	auto tag_definition = g_cache_file->get_tag_definition<void>(reference.index & k_word_maximum);
+
+	if (group->is_in_group(k_bitmap_group_tag))
+	{
+		g_command_context = new c_bitmap_command_context(
+			tag_name_string.ascii,
+			(s_bitmap_definition *)tag_definition,
+			g_command_context);
+	}
+	else
+	{
+		g_command_context = new c_editing_command_context(
+			tag_name_string.ascii,
+			tag_definition,
+			group_definition,
+			g_command_context);
+	}
 
 	return true;
 }
