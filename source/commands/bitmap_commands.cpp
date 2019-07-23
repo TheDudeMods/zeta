@@ -67,17 +67,22 @@ bool extract_bitmap_execute(
 	auto definition = editing_context->get_definition();
 
 	auto resource_entry = &editing_context->get_bitmap()->resources[image_index];
+
+	long resource_length = 0;
 	byte *resource_data = nullptr;
-	
-	if (!g_cache_file->tag_resource_try_and_get(resource_entry->resource_index, NONE, (void **)&resource_data))
+
+	if (!g_cache_file->tag_resource_try_and_get(resource_entry->resource_index, &resource_length, (void **)&resource_data))
 	{
 		printf("ERROR: failed to retrieve tag resource 0x%08lX!\n", resource_entry->resource_index);
 		return true;
 	}
 
-	//
-	// TODO: Set up dds here
-	//
+	FILE *stream = fopen(arg_values[1], "wb+");
+	fwrite(resource_data, resource_length, 1, stream);
+	fclose(stream);
+
+	printf("Wrote \"%s\" successfully.\n", arg_values[1]);
+
 
 	if (resource_data)
 		delete[] resource_data;
