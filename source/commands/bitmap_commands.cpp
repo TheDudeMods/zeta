@@ -5,6 +5,7 @@
 
 enum
 {
+	k_number_of_bitmap_commands = 1,
 	k_number_of_bitmap_command_sets = 2
 };
 
@@ -82,7 +83,6 @@ bool extract_bitmap_execute(
 	fclose(stream);
 
 	printf("Wrote \"%s\" successfully.\n", arg_values[1]);
-
 
 	if (resource_data)
 		delete[] resource_data;

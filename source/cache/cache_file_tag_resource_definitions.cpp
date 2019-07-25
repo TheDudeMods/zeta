@@ -248,5 +248,48 @@ TAG_GROUP(
 	//
 	// TODO: finish
 	//
+	{ _field_block, "designer_zonesets" },
+	{ _field_block, "global_zoneset" },
+	{ _field_block, "unknown_zoneset1" },
+	{ _field_block, "unattached_zoneset" },
+	{ _field_block, "disc_forbidden_zoneset" },
+	{ _field_block, "disc_always_streaming_zoneset" },
+	{ _field_block, "bsp_zonesets1" },
+	{ _field_block, "bsp_zonesets2" },
+	{ _field_block, "bsp_zonesets3" },
+	{ _field_block, "cinematic_zonesets" },
+	{ _field_block, "scenario_zonesets" },
+	{ _field_block, "unknown_zonesets2" },
+	{ _field_block, "unknown_zonesets3" },
+	{ _field_block, "scenario_zoneset_groups" },
+	{ _field_block, "scenario_bsps" },
+	{ _field_block, "unknown_block1" },
+	{ _field_block, "unknown_block2" },
+	{ _field_block, "unknown_block3" },
+	{ _field_data, "definition_data" },
+	{ _field_long_integer, "unknown1" },
+	{ _field_long_integer, "unknown2" },
+	{ _field_long_integer, "unknown3" },
+	{ _field_long_integer, "unknown4" },
+	{ _field_long_integer, "unknown5" },
+	{ _field_block, "unknown_block4" },
+	{ _field_block, "unknown_block5" },
+	{ _field_block, "unknown_block6" },
+	{ _field_block, "unknown_block7" },
+	{ _field_block, "unknown_block8" },
+	{ _field_block, "unknown_block9" },
+	{ _field_block, "unknown_block10" },
+	{ _field_block, "unknown_block11" },
+	{ _field_block, "unknown_block12" },
+	{ _field_block, "block_a" },
+	{ _field_block, "block_b" },
+	{ _field_block, "block_c" },
+	{ _field_block, "block_d1" },
+	{ _field_block, "block_d2" },
+	//
+	// END TODO
+	//
+	{ _field_long_integer, "campaign_id" },
+	{ _field_long_integer, "map_id" },
 	{ _field_terminator }
 };

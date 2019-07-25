@@ -93,16 +93,10 @@
     <ClCompile Include="source\devices\device_controls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\items\items.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\objects\damage_new.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\commands\commands.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\items\projectiles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\commands\tag_commands.cpp">
@@ -169,6 +163,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\commands\bitmap_commands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\items\projectile_definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\items\item_definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\geometry\geometry_definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\models\render_model_definitions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -302,15 +308,6 @@
     <ClInclude Include="source\devices\device_controls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\items\weapons.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\items\items.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\items\projectiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\effects\effects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -366,6 +363,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\commands\bitmap_commands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\geometry\geometry_definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\items\projectile_definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\items\item_definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\items\weapon_definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\render_methods.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\game\game_globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cseries\language.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\memory\data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

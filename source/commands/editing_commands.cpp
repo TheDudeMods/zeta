@@ -136,6 +136,13 @@ bool edit_block_execute(
 
 	auto field = struct_get_field(definition, field_name, &address);
 
+	if (!field)
+	{
+		printf("ERROR: %s does not contain a field named \"%s\"!\n",
+			definition->name, field_name);
+		return true;
+	}
+
 	long_string context_name;
 
 	switch (field->type)
@@ -145,10 +152,19 @@ bool edit_block_execute(
 		if (arg_count != 2)
 			return false;
 		
-		auto index = strtoul(arg_values[1], nullptr, 0);
-		
 		auto block = (s_tag_block *)address;
 		auto block_definition = (s_tag_block_definition *)field->definition;
+
+		auto index = strcmp(arg_values[1], "*") != 0 ?
+			strtoul(arg_values[1], nullptr, 0) :
+			block->count - 1;
+
+		if (index < 0 || index >= block->count)
+		{
+			printf("ERROR: invalid %s index: %i (valid range: 0-%i)\n",
+				block_definition->name, index, block->count);
+			return true;
+		}
 
 		address = g_cache_file->get_page_data<char>(block->address) + (index * block_definition->size);
 		sprintf(context_name.ascii, "%s[%u]", field->name, index);

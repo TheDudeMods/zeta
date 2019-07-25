@@ -92,7 +92,7 @@ struct s_cache_file_resource_page
 	c_tag_block_index<s_cache_file_resource_compression_codec, char> compression_codec;
 	c_tag_block_index<s_cache_file_resource_physical_location, short> shared_cache_file;
 	short : 16;
-	dword block_offset;
+	long block_offset;
 	long compressed_block_size;
 	long uncompressed_block_size;
 	long crc;
@@ -195,4 +195,48 @@ struct s_cache_file_resource_gestalt
 	//
 	// TODO: finish
 	//
+	s_tag_block designer_zonesets;
+	s_tag_block global_zoneset;
+	s_tag_block unknown_zoneset1;
+	s_tag_block unattached_zoneset;
+	s_tag_block disc_forbidden_zoneset;
+	s_tag_block disc_always_streaming_zoneset;
+	s_tag_block bsp_zonesets1;
+	s_tag_block bsp_zonesets2;
+	s_tag_block bsp_zonesets3;
+	s_tag_block cinematic_zonesets;
+	s_tag_block scenario_zonesets;
+	s_tag_block unknown_zonesets2;
+	s_tag_block unknown_zonesets3;
+	s_tag_block scenario_zoneset_groups;
+	s_tag_block scenario_bsps;
+	s_tag_block unknown_block1;
+	s_tag_block unknown_block2;
+	s_tag_block unknown_block3;
+	s_tag_data definition_data;
+	long unknown1;
+	long unknown2;
+	long unknown3;
+	long unknown4;
+	long unknown5;
+	s_tag_block unknown_block4;
+	s_tag_block unknown_block5;
+	s_tag_block unknown_block6;
+	s_tag_block unknown_block7;
+	s_tag_block unknown_block8;
+	s_tag_block unknown_block9;
+	s_tag_block unknown_block10;
+	s_tag_block unknown_block11;
+	s_tag_block unknown_block12;
+	s_tag_block block_a;
+	s_tag_block block_b;
+	s_tag_block block_c;
+	s_tag_block block_d1;
+	s_tag_block block_d2;
+	//
+	// END TODO
+	//
+	long campaign_id;
+	long map_id;
 };
+//static_assert(sizeof(s_cache_file_resource_gestalt) == 0x214);

@@ -4,14 +4,16 @@
 #include <cache/cache_files.h>
 #include <cache/cache_file_tag_resources.h>
 #include <camera/camera_track.h>
+#include <memory/data.h>
+#include <models/render_model_definitions.h>
 #include <objects/object_definitions.h>
 #include <objects/scenery.h>
 #include <objects/crates.h>
 #include <devices/devices.h>
 #include <devices/device_controls.h>
 #include <devices/device_machines.h>
-#include <items/items.h>
-#include <items/projectiles.h>
+#include <items/item_definitions.h>
+#include <items/projectile_definitions.h>
 #include <units/unit_definitions.h>
 
 /* ---------- globals */
@@ -27,6 +29,7 @@ extern s_tag_group_definition item_group;
 extern s_tag_group_definition machine_group;
 extern s_tag_group_definition object_group;
 extern s_tag_group_definition projectile_group;
+extern s_tag_group_definition render_model_group;
 extern s_tag_group_definition scenery_group;
 extern s_tag_group_definition unit_group;
 
@@ -47,6 +50,7 @@ static struct tag_definition
 	{ k_machine_group_tag, &machine_group },
 	{ k_object_group_tag, &object_group },
 	{ k_projectile_group_tag, &projectile_group },
+	{ k_render_model_group_tag, &render_model_group },
 	{ k_scenery_group_tag, &scenery_group },
 	{ k_unit_group_tag, &unit_group },
 	{ NONE }
@@ -164,6 +168,8 @@ qword field_get_size(
 		return sizeof(long);
 	case _field_data:
 		return sizeof(s_tag_data);
+	case _field_datum_index:
+		return sizeof(long);
 	case _field_struct:
 		return ((s_struct_definition *)definition)->size;
 	case _field_array:
@@ -600,6 +606,16 @@ void field_print(
 		break;
 	}
 
+	case _field_datum_index:
+	{
+		auto datum_index = *(long *)address;
+		printf("%s: datum_index = { identifier: 0x%04X, index: %i }\n",
+			name,
+			DATUM_INDEX_TO_IDENTIFIER(datum_index),
+			DATUM_INDEX_TO_ABSOLUTE_INDEX(datum_index));
+		break;
+	}
+
 	case _field_struct:
 	{
 		auto struct_definition = (s_struct_definition *)definition;
@@ -783,6 +799,8 @@ bool field_parse_tag_reference(
 		*group_name = '\0';
 		group_name++;
 
+		auto tag_name_is_wildcard = strcmp(tag_name, "*") == 0;
+
 		for (auto i = 0; i < tags_header->tag_count; i++)
 		{
 			auto current_instance = g_cache_file->get_tag_instance(i);
@@ -796,7 +814,7 @@ bool field_parse_tag_reference(
 			if (strcmp(group_name, g_cache_file->get_string(group->name)) == 0 ||
 				strcmp(group_name, tag_to_string(group->tags[0], tag_string)) == 0)
 			{
-				if (strcmp(tag_name, g_cache_file->get_tag_name(i)) == 0)
+				if (tag_name_is_wildcard || strcmp(tag_name, g_cache_file->get_tag_name(i)) == 0)
 				{
 					reference->group_tag = group->tags[0];
 					reference->index = i;
@@ -812,6 +830,27 @@ bool field_parse_tag_reference(
 		auto group = g_cache_file->get_tag_group(instance->group_index);
 		reference->group_tag = group->tags[0];
 		return true;
+	}
+	else if (strcmp(tag_name, "*") == 0)
+	{
+		long last_index = NONE;
+
+		for (auto i = 0; i < tags_header->tag_count; i++)
+		{
+			auto current_instance = g_cache_file->get_tag_instance(i);
+
+			if (current_instance && current_instance->group_index != NONE && current_instance->address)
+				last_index = i;
+		}
+
+		if (last_index != NONE)
+		{
+			auto instance = g_cache_file->get_tag_instance(last_index);
+			auto group = g_cache_file->get_tag_group(instance->group_index);
+			reference->group_tag = group->tags[0];
+			reference->index = last_index;
+			return true;
+		}
 	}
 	else if (strcmp(tag_name, "none") == 0)
 	{
@@ -874,6 +913,7 @@ bool field_parse(
 
 	case _field_long_integer:
 	case _field_long_block_index:
+	case _field_datum_index:
 		if (arg_count != 1)
 			return false;
 		*(long *)address = strtol(arg_values[0], nullptr, 0);
@@ -1122,6 +1162,7 @@ s_tag_group_definition *tag_group_definition_get(
 	tag group_tag)
 {
 	auto definition = g_tag_group_definitions;
+
 	for (auto i = 0; definition->group_tag != NONE; definition++, i++)
 		if (group_tag == g_tag_group_definitions[i].group_tag)
 			return g_tag_group_definitions[i].definition;

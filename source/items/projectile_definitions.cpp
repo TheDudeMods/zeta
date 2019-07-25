@@ -1,6 +1,6 @@
 
 #include <effects/effects.h>
-#include <items/projectiles.h>
+#include <items/projectile_definitions.h>
 #include <objects/damage.h>
 #include <objects/damage_new.h>
 #include <physics/grounded_friction.h>

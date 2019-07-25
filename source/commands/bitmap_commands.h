@@ -6,17 +6,6 @@
 #include <tag_files/tag_definitions.h>
 #include <bitmaps/bitmaps.h>
 
-/* ---------- constants */
-
-enum
-{
-	k_number_of_bitmap_commands = 4
-};
-
-/* ---------- globals */
-
-extern s_command g_bitmap_commands[k_number_of_bitmap_commands];
-
 /* ---------- classes */
 
 class c_bitmap_command_context : public c_editing_command_context

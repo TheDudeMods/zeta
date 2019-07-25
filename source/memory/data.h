@@ -1,0 +1,6 @@
+#pragma once
+
+/* ---------- macros */
+
+#define DATUM_INDEX_TO_ABSOLUTE_INDEX(DATUM_INDEX) ((DATUM_INDEX) & 0xFFFF)
+#define DATUM_INDEX_TO_IDENTIFIER(DATUM_INDEX) (((DATUM_INDEX) >> 16) & 0xFFFF)

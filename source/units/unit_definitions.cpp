@@ -3,7 +3,7 @@
 #include <effects/effects.h>
 #include <effects/screen_effect.h>
 #include <interface/chud/chud_definitions.h>
-#include <items/weapons.h>
+#include <items/weapon_definitions.h>
 #include <objects/damage.h>
 #include <objects/damage_new.h>
 #include <physics/havok_collision_damage.h>

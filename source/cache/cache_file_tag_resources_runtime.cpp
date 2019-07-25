@@ -1,6 +1,90 @@
 #include <cache/cache_file_tag_resources.h>
 #include <zlib/zlib.h>
 
+/* ---------- prototypes */
+
+void *c_cache_file::get_resource_page_data(
+	s_cache_file_resource_physical_location *location,
+	s_cache_file_resource_page *page)
+{
+	static s_cache_file_header resource_cache_header;
+	static char resource_cache_file_path[1024];
+
+	memset(resource_cache_file_path, 0, 1024);
+
+	if (location)
+	{
+		memcpy(resource_cache_file_path, g_cache_file_path, strrchr(g_cache_file_path, '\\') - g_cache_file_path);
+
+		auto file_path = strrchr(location->path.ascii, '\\');
+		memcpy(resource_cache_file_path + strlen(resource_cache_file_path), file_path, strlen(file_path));
+	}
+	else
+	{
+		memcpy(resource_cache_file_path, g_cache_file_path, strlen(g_cache_file_path));
+	}
+
+	s_cache_file_header *cache_header = nullptr;
+
+	auto stream = fopen(resource_cache_file_path, "rb+");
+
+	if (location)
+	{
+		cache_header = &resource_cache_header;
+		fseek(stream, 0, SEEK_SET);
+		fread(cache_header, sizeof(s_cache_file_header), 1, stream);
+	}
+	else
+	{
+		cache_header = &m_header;
+	}
+
+	fseek(stream, cache_header->interop.debug_section_size + page->block_offset, SEEK_SET);
+
+	auto uncompressed_data = new byte[page->uncompressed_block_size];
+	memset(uncompressed_data, 0, page->uncompressed_block_size);
+
+	if (!page->compression_codec)
+	{
+		fread(uncompressed_data, page->uncompressed_block_size, 1, stream);
+	}
+	else
+	{
+		auto compressed_data = new byte[page->compressed_block_size];
+		memset(compressed_data, 0, page->compressed_block_size);
+
+		fread(compressed_data, page->compressed_block_size, 1, stream);
+		
+		delete[] uncompressed_data;
+		return compressed_data;
+
+		/*z_stream inflate_stream;
+		inflate_stream.zalloc = Z_NULL;
+		inflate_stream.zfree = Z_NULL;
+		inflate_stream.opaque = Z_NULL;
+		inflate_stream.next_in = compressed_data;
+		inflate_stream.avail_in = 0;
+		inflate_stream.next_out = uncompressed_data;
+
+		inflateInit(&inflate_stream);
+		
+		while (inflate_stream.total_out < page->uncompressed_block_size
+			&& inflate_stream.total_in < page->compressed_block_size)
+		{
+			inflate_stream.avail_in = inflate_stream.avail_out = 1;
+			inflate(&inflate_stream, Z_NO_FLUSH);
+		}
+
+		inflateEnd(&inflate_stream);
+
+		delete[] compressed_data;*/
+	}
+
+	fclose(stream);
+
+	return uncompressed_data;
+}
+
 /* ---------- code */
 
 bool c_cache_file::tag_resource_try_and_get(
@@ -8,11 +92,8 @@ bool c_cache_file::tag_resource_try_and_get(
 	long *out_length,
 	void **out_address)
 {
-	if (out_length)
-		*out_length = 0;
-	
-	if (out_address)
-		*out_address = nullptr;
+	if (out_length) *out_length = 0;
+	if (out_address) *out_address = nullptr;
 
 	if (resource_index == NONE)
 		return false;
@@ -72,65 +153,25 @@ bool c_cache_file::tag_resource_try_and_get(
 	{
 		page_index = segment->primary_page;
 		segment_offset = segment->primary_segment_offset;
-	}
 
-	char resource_cache_file_path[1024];
-	memset(resource_cache_file_path, 0, 1024);
-
-	if (page->shared_cache_file)
-	{
-		memcpy(resource_cache_file_path, g_cache_file_path, strrchr(g_cache_file_path, '\\') - g_cache_file_path);
-
-		s_cache_file_resource_physical_location *entry = nullptr;
-		if (!page->shared_cache_file.try_resolve(&definition->layout_table.physical_locations, &entry))
+		if (!page_index.try_resolve(&definition->layout_table.pages, &page))
 			return false;
-
-		auto file_path = strrchr(entry->path.ascii, '\\');
-		memcpy(resource_cache_file_path + strlen(resource_cache_file_path), file_path, strlen(file_path));
-	}
-	else
-	{
-		memcpy(resource_cache_file_path, g_cache_file_path, strlen(g_cache_file_path));
 	}
 
-	auto uncompressed_length = page->uncompressed_block_size - segment_offset;
-	auto uncompressed_data = new byte[uncompressed_length];
+	auto location = page->shared_cache_file.resolve(&definition->layout_table.physical_locations);
+	auto page_data = get_resource_page_data(location, page);
 
-	if (out_length)
-		*out_length = uncompressed_length;
+	if (!page_data)
+		return false;
 
-	if (out_address)
-		*out_address = uncompressed_data;
+	auto length = page->compressed_block_size - segment_offset;
+	auto data = new byte[length];
+	memcpy(data, (char *)page_data + segment_offset, length);
 
-	FILE *stream = fopen(resource_cache_file_path, "rb+");
-	fseek(stream, page->block_offset + m_header.interop.debug_section_size, SEEK_SET);
+	if (out_length) *out_length = length;
+	if (out_address) *out_address = data;
 
-	if (!page->compression_codec)
-	{
-		fread(uncompressed_data, uncompressed_length, 1, stream);
-	}
-	else
-	{
-		auto compressed_data = new byte[page->compressed_block_size];
-		fread(compressed_data, page->compressed_block_size, 1, stream);
-
-		z_stream infstream;
-		infstream.zalloc = Z_NULL;
-		infstream.zfree = Z_NULL;
-		infstream.opaque = Z_NULL;
-		infstream.avail_in = page->compressed_block_size;
-		infstream.next_in = compressed_data;
-		infstream.avail_out = uncompressed_length;
-		infstream.next_out = uncompressed_data;
-
-		inflateInit(&infstream);
-		inflate(&infstream, Z_NO_FLUSH);
-		inflateEnd(&infstream);
-
-		delete[] compressed_data;
-	}
-
-	fclose(stream);
+	if (page_data) delete[] page_data;
 
 	return true;
 }

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cseries/cseries.h>
-#include <scenario/scenario.h>
 #include <tag_files/tag_groups.h>
+#include <scenario/scenario.h>
 
 /* ---------- constants */
 
@@ -127,7 +127,7 @@ struct s_cache_file_header
 	long rsa[64];
 	s_cache_file_interop interop;
 	long guid[4];
-	long unknown32[0x26BE];
+	long unknown34[0x26BE];
 	tag footer_signature;
 };
 static_assert(sizeof(s_cache_file_header) == 0xA000);
@@ -188,6 +188,10 @@ public:
 		long resource_index,
 		long *out_length,
 		void **out_address);
+	
+	void *get_resource_page_data(
+		struct s_cache_file_resource_physical_location *location,
+		struct s_cache_file_resource_page *page);
 
 	template <typename t_data>
 	t_data *get_buffer_data(qword address)

@@ -389,7 +389,7 @@ TAG_BLOCK(
 	sizeof(s_bitmap_resource_info),
 	k_maximum_number_of_bitmap_images)
 {
-	{ _field_long_integer, "resource_index" },
+	{ _field_datum_index, "resource_index" },
 	{ _field_padding, "post_resource_index_padding", &bitmap_resource_info_post_resource_index_padding },
 	{ _field_terminator }
 };

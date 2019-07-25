@@ -94,6 +94,7 @@ enum e_field_type
 	_field_word_block_flags,
 	_field_long_block_flags,
 	_field_data,
+	_field_datum_index,
 	_field_struct,
 	_field_array,
 	_field_padding,
