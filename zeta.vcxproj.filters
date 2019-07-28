@@ -108,9 +108,6 @@
     <ClCompile Include="source\tag_files\string_ids.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\bitmaps\bitmaps.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\cache\cache_file_tag_resource_definitions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -175,6 +172,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\models\render_model_definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\bitmaps\dds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cseries\errors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\bitmaps\bitmap_definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\bitmaps\bitmaps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -326,9 +335,6 @@
     <ClInclude Include="source\tag_files\string_ids.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\bitmaps\bitmaps.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\zlib\crc32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -387,6 +393,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\memory\data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\bitmaps\dds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cseries\errors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\bitmaps\bitmap_definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\bitmaps\bitmaps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

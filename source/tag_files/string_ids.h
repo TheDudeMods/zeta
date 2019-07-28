@@ -9,6 +9,12 @@ enum
 	k_number_of_string_ids = 0x173B
 };
 
+/* ---------- macros */
+
+#define STRING_ID_INDEX(id) ((id) & ((1 << 17) - 1))
+#define STRING_ID_SET(id) (((id) >> 17) & ((1 << 8) - 1))
+#define STRING_ID_LENGTH(id) (((id) >> (17 + 8)) & ((1 << 7) - 1))
+
 /* ---------- enumerators */
 
 enum e_string_id_set

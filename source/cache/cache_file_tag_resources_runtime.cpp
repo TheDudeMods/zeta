@@ -39,7 +39,7 @@ void *c_cache_file::get_resource_page_data(
 		cache_header = &m_header;
 	}
 
-	fseek(stream, cache_header->interop.debug_section_size + page->block_offset, SEEK_SET);
+	fseek(stream, page->block_offset, SEEK_SET);
 
 	auto uncompressed_data = new byte[page->uncompressed_block_size];
 	memset(uncompressed_data, 0, page->uncompressed_block_size);
@@ -54,30 +54,22 @@ void *c_cache_file::get_resource_page_data(
 		memset(compressed_data, 0, page->compressed_block_size);
 
 		fread(compressed_data, page->compressed_block_size, 1, stream);
-		
-		delete[] uncompressed_data;
-		return compressed_data;
 
-		/*z_stream inflate_stream;
+		z_stream inflate_stream;
 		inflate_stream.zalloc = Z_NULL;
 		inflate_stream.zfree = Z_NULL;
 		inflate_stream.opaque = Z_NULL;
+
+		inflate_stream.total_in = inflate_stream.avail_in = page->compressed_block_size;
+		inflate_stream.total_out = inflate_stream.avail_out = page->uncompressed_block_size;
 		inflate_stream.next_in = compressed_data;
-		inflate_stream.avail_in = 0;
 		inflate_stream.next_out = uncompressed_data;
 
-		inflateInit(&inflate_stream);
-		
-		while (inflate_stream.total_out < page->uncompressed_block_size
-			&& inflate_stream.total_in < page->compressed_block_size)
-		{
-			inflate_stream.avail_in = inflate_stream.avail_out = 1;
-			inflate(&inflate_stream, Z_NO_FLUSH);
-		}
-
+		inflateInit2(&inflate_stream, -15);
+		inflate(&inflate_stream, Z_FINISH);
 		inflateEnd(&inflate_stream);
 
-		delete[] compressed_data;*/
+		delete[] compressed_data;
 	}
 
 	fclose(stream);

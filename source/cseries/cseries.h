@@ -1,29 +1,19 @@
 #pragma once
 
-#include <cassert>
+#include <cctype>
+#include <climits>
+#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cuchar>
 
 #include <cseries/enum.inl>
 #include <cseries/flags.inl>
 #include <cseries/static_array.inl>
 #include <cseries/static_string.inl>
 
-/* ---------- macros */
-
-#define FLAG(BIT) \
-	(1 << (BIT))
-
-#define TEST_FLAG(FLAGS, BIT) \
-	((FLAGS) & FLAG(BIT))
-
-#define SET_FLAG(FLAGS, BIT, VALUE) \
-	((FLAGS) = ((VALUE) ? ((FLAGS) | FLAG(BIT)) : ((FLAGS) & ~FLAG(BIT))))
-
-#define STRING_ID_INDEX(id) ((id) & ((1 << 17) - 1))
-#define STRING_ID_SET(id) (((id) >> 17) & ((1 << 8) - 1))
-#define STRING_ID_LENGTH(id) (((id) >> (17 + 8)) & ((1 << 7) - 1))
+#include <cseries/errors.h>
 
 /* ---------- constants */
 
@@ -31,13 +21,17 @@ enum
 {
 	NONE = -1,
 
+	k_maximum_temporary_string_length = 1024,
+
 	k_maximum_short_string_length = 32,
-	k_maximum_short_string_ascii_length = k_maximum_short_string_length / sizeof(char),
-	k_maximum_short_string_unicode_length = k_maximum_short_string_length / sizeof(wchar_t),
+	k_maximum_short_string_utf8_length = k_maximum_short_string_length / sizeof(char),
+	k_maximum_short_string_utf16_length = k_maximum_short_string_length / sizeof(char16_t),
+	k_maximum_short_string_utf32_length = k_maximum_short_string_length / sizeof(char32_t),
 
 	k_maximum_long_string_length = 256,
-	k_maximum_long_string_ascii_length = k_maximum_long_string_length / sizeof(char),
-	k_maximum_long_string_unicode_length = k_maximum_long_string_length / sizeof(wchar_t),
+	k_maximum_long_string_utf8_length = k_maximum_long_string_length / sizeof(char),
+	k_maximum_long_string_utf16_length = k_maximum_long_string_length / sizeof(char16_t),
+	k_maximum_long_string_utf32_length = k_maximum_long_string_length / sizeof(char32_t),
 };
 
 enum : char
@@ -92,6 +86,38 @@ enum : unsigned long long
 	k_bits_per_qword = 64
 };
 
+/* ---------- macros */
+
+#define FLAG(BIT) (1 << (BIT))
+#define TEST_FLAG(FLAGS, BIT) ((FLAGS) & FLAG(BIT))
+#define SWAP_FLAG(FLAGS, BIT) ((FLAGS) ^= FLAG(BIT))
+#define SET_FLAG(FLAGS, BIT, VALUE) ((VALUE) ? ((FLAGS) |= FLAG(BIT)) : ((FLAGS) &= ~FLAG(BIT)))
+#define FLAG_RANGE(FIRST_BIT, LAST_BIT) ((FLAG((LAST_BIT) + 1 - (FIRST_BIT)) - 1) << (FIRST_BIT))
+
+#define HIWORD(N) (((N) >> 16) & USHRT_MAX)
+#define SET_HIWORD(N, V) ((N) = (((N) & USHRT_MAX) | (((V) & USHRT_MAX) << 16)))
+
+#define LOWORD(N) ((N) & USHRT_MAX)
+#define SET_LOWORD(N, V) ((N) = (((N) & (USHRT_MAX << 16)) | ((V) & USHRT_MAX)))
+
+#undef assert
+#ifdef _DEBUG
+#	define assert(EXPR) \
+	(void)((!!(EXPR)) || \
+		(display_assert(#EXPR, __FILE__, __LINE__, true), \
+		0))
+#	define vassert(EXPR, FORMAT, ...) \
+	(void)((!!(EXPR)) || \
+		(memset(g_temporary_string, 0, k_maximum_temporary_string_length), \
+		sprintf(g_temporary_string, FORMAT, __VA_ARGS__), \
+		display_assert(g_temporary_string, __FILE__, __LINE__, true), \
+		0))
+#else
+#	define assert(EXPR)
+#	define vassert(EXPR, FORMAT, ...)
+#endif
+
+
 /* ---------- types */
 
 typedef unsigned char byte;
@@ -118,7 +144,13 @@ static_assert(sizeof(long_string) == k_maximum_long_string_length);
 typedef unsigned long string_id;
 static_assert(sizeof(string_id) == 0x4);
 
+/* ---------- globals */
+
+extern char g_temporary_string[k_maximum_temporary_string_length];
+
 /* ---------- prototypes/CSERIES.CPP */
 
 char *tag_to_string(tag value, char *string);
 tag string_to_tag(const char *string);
+
+void display_assert(char const *reason, char const *file, long line, bool halt);

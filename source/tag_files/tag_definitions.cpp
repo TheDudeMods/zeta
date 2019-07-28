@@ -880,13 +880,13 @@ bool field_parse(
 		return true;
 
 	case _field_short_string:
-		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_short_string_ascii_length)
+		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_short_string_utf8_length)
 			return false;
 		strcpy(((short_string *)address)->ascii, arg_values[0]);
 		return true;
 
 	case _field_long_string:
-		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_long_string_ascii_length)
+		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_long_string_utf8_length)
 			return false;
 		strcpy(((long_string *)address)->ascii, arg_values[0]);
 		return true;

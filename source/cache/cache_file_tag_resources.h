@@ -239,4 +239,4 @@ struct s_cache_file_resource_gestalt
 	long campaign_id;
 	long map_id;
 };
-//static_assert(sizeof(s_cache_file_resource_gestalt) == 0x214);
+static_assert(sizeof(s_cache_file_resource_gestalt) == 0x220);

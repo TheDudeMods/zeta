@@ -137,6 +137,8 @@
   <ItemGroup>
     <ClCompile Include="source\ai\ai.cpp" />
     <ClCompile Include="source\bitmaps\bitmaps.cpp" />
+    <ClCompile Include="source\bitmaps\bitmap_definitions.cpp" />
+    <ClCompile Include="source\bitmaps\dds.cpp" />
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\cache\cache_file_tag_resources_runtime.cpp" />
     <ClCompile Include="source\cache\cache_file_tag_resource_definitions.cpp" />
@@ -146,6 +148,7 @@
     <ClCompile Include="source\commands\editing_commands.cpp" />
     <ClCompile Include="source\commands\tag_commands.cpp" />
     <ClCompile Include="source\cseries\cseries.cpp" />
+    <ClCompile Include="source\cseries\errors.cpp" />
     <ClCompile Include="source\devices\devices.cpp" />
     <ClCompile Include="source\devices\device_controls.cpp" />
     <ClCompile Include="source\devices\device_machines.cpp" />
@@ -194,6 +197,8 @@
     <ClInclude Include="source\ai\ai.h" />
     <ClInclude Include="source\ai\character_definitions.h" />
     <ClInclude Include="source\bitmaps\bitmaps.h" />
+    <ClInclude Include="source\bitmaps\bitmap_definitions.h" />
+    <ClInclude Include="source\bitmaps\dds.h" />
     <ClInclude Include="source\cache\cache_files.h" />
     <ClInclude Include="source\cache\cache_file_tag_resources.h" />
     <ClInclude Include="source\camera\camera_track.h" />
@@ -202,6 +207,7 @@
     <ClInclude Include="source\commands\editing_commands.h" />
     <ClInclude Include="source\commands\tag_commands.h" />
     <ClInclude Include="source\cseries\cseries.h" />
+    <ClInclude Include="source\cseries\errors.h" />
     <ClInclude Include="source\cseries\language.h" />
     <ClInclude Include="source\devices\devices.h" />
     <ClInclude Include="source\devices\device_controls.h" />
