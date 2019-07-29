@@ -4,6 +4,7 @@
 #include <math/integer_math.h>
 #include <math/real_math.h>
 #include <tag_files/tag_groups.h>
+#include <tag_files/tag_resource_internals.h>
 
 /* ---------- constants */
 
@@ -135,6 +136,7 @@ enum e_bitmap_curve_mode
 
 enum e_bitmap_format
 {
+	_bitmap_format_invalid = NONE,
 	_bitmap_format_a8,
 	_bitmap_format_y8,
 	_bitmap_format_ay8,
@@ -446,3 +448,23 @@ struct s_bitmap_definition
 	c_tag_block<s_bitmap_resource_info> interleaved_resources;
 };
 static_assert(sizeof(s_bitmap_definition) == 0xC0);
+
+struct s_bitmap_texture_resource
+{
+	s_tag_data data;
+	s_tag_data import_data;
+	short width;
+	short height;
+	char depth;
+	char mipmap_count;
+	c_enum<e_bitmap_type, char> type;
+	char unused;
+	c_enum<e_bitmap_format, long> format;
+};
+static_assert(sizeof(s_bitmap_texture_resource) == 0x34);
+
+struct s_bitmap_texture_interop_resource
+{
+	c_tag_resource_structure<s_bitmap_texture_resource> bitmap;
+};
+static_assert(sizeof(s_bitmap_texture_interop_resource) == 0xC);

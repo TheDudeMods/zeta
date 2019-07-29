@@ -3,6 +3,13 @@
 #include <cseries/cseries.h>
 #include <bitmaps/bitmaps.h>
 
+/* ---------- constants */
+
+enum
+{
+	k_dds_signature = 'DDS ',
+};
+
 /* ---------- enumerators */
 
 enum e_dds_format_type
@@ -58,7 +65,7 @@ enum e_dds_header_flags
 	_dds_header_unused14_bit,
 	_dds_header_unused15_bit,
 	_dds_header_unused16_bit,
-	_dds_header_mip_map_count_bit,
+	_dds_header_mipmap_count_bit,
 	_dds_header_unused18_bit,
 	_dds_header_linear_size_bit,
 	_dds_header_unused20_bit,
@@ -75,8 +82,8 @@ struct s_dds_pixel_format
 	dword size;
 	c_flags<e_dds_format_flags, long> flags;
 	dword four_cc;
-	dword rgb_bit_count;
 	long r_bitmask;
+	dword bits_per_pixel;
 	long g_bitmask;
 	long b_bitmask;
 	long a_bitmask;
@@ -85,16 +92,17 @@ static_assert(sizeof(s_dds_pixel_format) == 0x20);
 
 struct s_dds_header
 {
+	tag signature;
 	dword size;
 	c_enum<e_dds_header_flags, long> flags;
 	dword height;
 	dword width;
 	dword pitch_or_linear_size;
 	dword depth;
-	dword mip_map_count;
+	dword mipmap_count;
 	dword reserved1[11];
 	s_dds_pixel_format pixel_format;
 	dword caps[4];
 	dword reserved2;
 };
-static_assert(sizeof(s_dds_header) == 0x7C);
+static_assert(sizeof(s_dds_header) == 0x80);

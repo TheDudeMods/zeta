@@ -184,6 +184,22 @@ public:
 	s_tag_group *get_tag_group(long index);
 	s_cache_file_tag_instance *get_tag_instance(long index);
 
+	bool tag_resource_definition_try_and_get(
+		long resource_index,
+		void **out_address);
+
+	template <typename t_definition>
+	inline t_definition *tag_resource_definition_get(
+		long resource_index)
+	{
+		t_definition *definition = nullptr;
+		
+		if (!tag_resource_definition_try_and_get(resource_index, (void **)&definition))
+			return nullptr;
+
+		return definition;
+	}
+
 	bool tag_resource_try_and_get(
 		long resource_index,
 		long *out_length,
@@ -203,6 +219,7 @@ public:
 	}
 
 	qword get_page_offset(dword address);
+	dword make_page_offset(qword address);
 
 	template <typename t_data>
 	t_data *get_page_data(dword address)

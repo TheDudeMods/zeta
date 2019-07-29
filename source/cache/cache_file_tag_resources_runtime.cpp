@@ -1,7 +1,132 @@
 #include <cache/cache_file_tag_resources.h>
+#include <memory/data.h>
+#include <tag_files/tag_files.h>
 #include <zlib/zlib.h>
 
-/* ---------- prototypes */
+/* ---------- code */
+
+bool c_cache_file::tag_resource_definition_try_and_get(
+	long resource_index,
+	void **out_address)
+{
+	if (out_address) *out_address = nullptr;
+
+	if (resource_index == NONE)
+		return false;
+
+	auto resource_gestalt_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>().next();
+	if (resource_gestalt_index == NONE)
+		return false;
+
+	auto resource_gestalt = get_tag_definition<s_cache_file_resource_gestalt>(resource_gestalt_index);
+
+	auto resource_absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(resource_index);
+	auto resource_identifier = DATUM_INDEX_TO_IDENTIFIER(resource_index);
+
+	if (resource_absolute_index < 0 || resource_absolute_index >= resource_gestalt->tag_resources.count)
+		return false;
+
+	auto tag_resource = &resource_gestalt->tag_resources[resource_absolute_index];
+
+	if (resource_identifier != tag_resource->identifier)
+		return false;
+
+	auto gestalt_definition_data = g_cache_file->get_page_data<char>(resource_gestalt->definition_data.address);
+	auto definition_data = &gestalt_definition_data[tag_resource->definition_data_offset];
+
+	auto fixups = g_cache_file->get_page_data<s_cache_file_tag_resource_fixup>(tag_resource->resource_fixups.address);
+	auto definition_offset = tag_resource->definition_address & 0x1FFFFFFF;
+
+	for (auto i = 0; i < tag_resource->resource_fixups.count; i++)
+	{
+		auto address = fixups[i].address;
+		auto type = (long)((address >> 28) & 0xF);
+		auto offset = (long)(address & 0xFFFFFFF);
+
+		if (type != 4)
+		{
+			offset -= (long)definition_offset;
+			address = (dword)((type << 28) | (((offset < 0) ? ((-offset & 0x7FFFFFF) | (1 << 27)) : (offset & 0x7FFFFFF))));
+		}
+
+		*(dword *)&definition_data[fixups[i].block_offset] = address;
+	}
+
+	if (out_address)
+		*out_address = &definition_data[definition_offset];
+
+	return true;
+}
+
+bool c_cache_file::tag_resource_try_and_get(
+	long resource_index,
+	long *out_length,
+	void **out_address)
+{
+	if (out_length) *out_length = 0;
+	if (out_address) *out_address = nullptr;
+
+	if (resource_index == NONE)
+		return false;
+
+	auto zone_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>().next();
+	if (zone_index == NONE)
+		return false;
+
+	auto definition = get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
+	auto resource = &definition->tag_resources[resource_index & k_word_maximum];
+
+	if (!resource->segment_index)
+		return false;
+
+	s_cache_file_resource_segment *segment = nullptr;
+	if (!resource->segment_index.try_resolve(&definition->layout_table.segments, &segment))
+		return false;
+
+	if (!segment->primary_page || segment->primary_segment_offset == NONE)
+		return false;
+
+	auto page_index = (segment->secondary_page) ?
+		segment->secondary_page :
+		segment->primary_page;
+
+	auto segment_offset = (segment->secondary_segment_offset != NONE) ?
+		segment->secondary_segment_offset :
+		segment->primary_segment_offset;
+
+	if (!page_index || segment_offset == NONE)
+		return false;
+
+	s_cache_file_resource_page *page = nullptr;
+	if (!page_index.try_resolve(&definition->layout_table.pages, &page))
+		return false;
+
+	if (page->block_offset == NONE)
+	{
+		page_index = segment->primary_page;
+		segment_offset = segment->primary_segment_offset;
+
+		if (!page_index.try_resolve(&definition->layout_table.pages, &page))
+			return false;
+	}
+
+	auto location = page->shared_cache_file.resolve(&definition->layout_table.physical_locations);
+	auto page_data = get_resource_page_data(location, page);
+
+	if (!page_data)
+		return false;
+
+	auto length = page->compressed_block_size - segment_offset;
+	auto data = new byte[length];
+	memcpy(data, (char *)page_data + segment_offset, length);
+
+	if (out_length) *out_length = length;
+	if (out_address) *out_address = data;
+
+	if (page_data) delete[] page_data;
+
+	return true;
+}
 
 void *c_cache_file::get_resource_page_data(
 	s_cache_file_resource_physical_location *location,
@@ -75,95 +200,4 @@ void *c_cache_file::get_resource_page_data(
 	fclose(stream);
 
 	return uncompressed_data;
-}
-
-/* ---------- code */
-
-bool c_cache_file::tag_resource_try_and_get(
-	long resource_index,
-	long *out_length,
-	void **out_address)
-{
-	if (out_length) *out_length = 0;
-	if (out_address) *out_address = nullptr;
-
-	if (resource_index == NONE)
-		return false;
-
-	long zone_index = NONE;
-	long tag_count = get_tags_header()->tag_count;
-
-	for (auto i = 0; i < tag_count; i++)
-	{
-		auto instance = get_tag_instance(i);
-
-		if (!instance || !instance->address || instance->group_index == NONE)
-			continue;
-
-		auto group = get_tag_group(instance->group_index);
-		if (!group) continue;
-
-		if (group->is_in_group(k_cache_file_resource_gestalt_group_tag))
-		{
-			zone_index = i;
-			break;
-		}
-	}
-
-	if (zone_index == NONE)
-		return false;
-
-	auto definition = get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
-	auto resource = &definition->tag_resources[resource_index & k_word_maximum];
-
-	if (!resource->segment_index)
-		return false;
-
-	s_cache_file_resource_segment *segment = nullptr;
-	if (!resource->segment_index.try_resolve(&definition->layout_table.segments, &segment))
-		return false;
-
-	if (!segment->primary_page || segment->primary_segment_offset == NONE)
-		return false;
-
-	auto page_index = (segment->secondary_page) ?
-		segment->secondary_page :
-		segment->primary_page;
-
-	auto segment_offset = (segment->secondary_segment_offset != NONE) ?
-		segment->secondary_segment_offset :
-		segment->primary_segment_offset;
-
-	if (!page_index || segment_offset == NONE)
-		return false;
-
-	s_cache_file_resource_page *page = nullptr;
-	if (!page_index.try_resolve(&definition->layout_table.pages, &page))
-		return false;
-
-	if (page->block_offset == NONE)
-	{
-		page_index = segment->primary_page;
-		segment_offset = segment->primary_segment_offset;
-
-		if (!page_index.try_resolve(&definition->layout_table.pages, &page))
-			return false;
-	}
-
-	auto location = page->shared_cache_file.resolve(&definition->layout_table.physical_locations);
-	auto page_data = get_resource_page_data(location, page);
-
-	if (!page_data)
-		return false;
-
-	auto length = page->compressed_block_size - segment_offset;
-	auto data = new byte[length];
-	memcpy(data, (char *)page_data + segment_offset, length);
-
-	if (out_length) *out_length = length;
-	if (out_address) *out_address = data;
-
-	if (page_data) delete[] page_data;
-
-	return true;
 }

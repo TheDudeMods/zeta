@@ -1,5 +1,6 @@
 #include <commands/bitmap_commands.h>
 #include <cache/cache_files.h>
+#include <cache/cache_file_tag_resources.h>
 
 /* ---------- constants */
 
@@ -67,7 +68,13 @@ bool extract_bitmap_execute(
 	auto address = editing_context->get_address();
 	auto definition = editing_context->get_definition();
 
-	auto resource_entry = &editing_context->get_bitmap()->resources[image_index];
+	auto bitmap = editing_context->get_bitmap();
+
+	auto image_entry = &bitmap->images[image_index];
+	auto resource_entry = &bitmap->resources[image_index];
+
+	auto bitmap_resource_definition = g_cache_file->tag_resource_definition_get<s_bitmap_texture_interop_resource>(
+		resource_entry->resource_index);
 
 	long resource_length = 0;
 	byte *resource_data = nullptr;
@@ -78,8 +85,15 @@ bool extract_bitmap_execute(
 		return true;
 	}
 
+	c_cache_file_tag_resource<s_bitmap_texture_interop_resource> resource(bitmap_resource_definition, resource_data);
+	auto bitmap_resource = (s_bitmap_texture_resource *)resource.get_address(bitmap_resource_definition->bitmap.address);
+
+	s_dds_header dds_header;
+	bitmap_texture_initialize_dds_header(image_entry, bitmap_resource, &dds_header);
+
 	FILE *stream = fopen(arg_values[1], "wb+");
-	fwrite(resource_data, resource_length, 1, stream);
+	fwrite(&dds_header, sizeof(s_dds_header), 1, stream);
+	fwrite(resource.get_address(bitmap_resource->data.address), bitmap_resource->data.size, 1, stream);
 	fclose(stream);
 
 	printf("Wrote \"%s\" successfully.\n", arg_values[1]);

@@ -210,3 +210,8 @@ qword c_cache_file::get_page_offset(dword address)
 {
 	return ((qword)address * 4) - (m_header.virtual_base_address - 0x10000000);
 }
+
+dword c_cache_file::make_page_offset(qword address)
+{
+	return (dword)((address + (m_header.virtual_base_address - 0x10000000)) / 4);
+}

@@ -324,6 +324,7 @@ void field_print(
 	void *address)
 {
 	char tag_string[5];
+	long_string temp_string;
 
 	//
 	// TODO: finish reimplementing
@@ -344,7 +345,7 @@ void field_print(
 		break;
 
 	case _field_string_id:
-		printf("%s: string_id = 0x%08lX\n", name, *(string_id *)address);
+		printf("%s: string_id = %s\n", name, g_cache_file->get_string(*(string_id *)address));
 		break;
 
 	case _field_char_integer:

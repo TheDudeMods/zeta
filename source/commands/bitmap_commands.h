@@ -5,6 +5,7 @@
 #include <commands/editing_commands.h>
 #include <tag_files/tag_definitions.h>
 #include <bitmaps/bitmaps.h>
+#include <bitmaps/bitmap_definitions.h>
 
 /* ---------- classes */
 

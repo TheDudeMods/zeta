@@ -369,3 +369,14 @@ struct s_render_geometry
 	c_tag_block<s_mesh_resource_group> mesh_resource_groups;
 };
 static_assert(sizeof(s_render_geometry) == 0xA8);
+
+
+
+struct s_render_geometry_api_resource_definition
+{
+	s_tag_block unused1;
+	s_tag_block unused2;
+	//
+	// TODO
+	//
+};

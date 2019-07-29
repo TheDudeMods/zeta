@@ -175,6 +175,7 @@
     <ClCompile Include="source\simulation\game_interface\simulation_game_position_updates.cpp" />
     <ClCompile Include="source\tag_files\string_ids.cpp" />
     <ClCompile Include="source\tag_files\tag_definitions.cpp" />
+    <ClCompile Include="source\tag_files\tag_files.cpp" />
     <ClCompile Include="source\tag_files\tag_groups.cpp" />
     <ClCompile Include="source\units\unit_definitions.cpp" />
     <ClCompile Include="source\zlib\adler32.c" />
@@ -250,7 +251,9 @@
     <ClInclude Include="source\sound\sound_definitions.h" />
     <ClInclude Include="source\tag_files\string_ids.h" />
     <ClInclude Include="source\tag_files\tag_definitions.h" />
+    <ClInclude Include="source\tag_files\tag_files.h" />
     <ClInclude Include="source\tag_files\tag_groups.h" />
+    <ClInclude Include="source\tag_files\tag_resource_internals.h" />
     <ClInclude Include="source\units\biped_definitions.h" />
     <ClInclude Include="source\units\giant_definitions.h" />
     <ClInclude Include="source\units\unit_definitions.h" />
@@ -269,6 +272,7 @@
     <ClInclude Include="source\zlib\zutil.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="source\cache\cache_file_tag_resource.inl" />
     <None Include="source\cseries\enum.inl" />
     <None Include="source\cseries\flags.inl" />
     <None Include="source\cseries\static_array.inl" />
@@ -294,6 +298,8 @@
     <None Include="source\tag_files\tag_block.inl" />
     <None Include="source\tag_files\tag_block_flags.inl" />
     <None Include="source\tag_files\tag_block_index.inl" />
+    <None Include="source\tag_files\tag_iterator.inl" />
+    <None Include="source\tag_files\tag_resource_structure.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

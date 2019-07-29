@@ -4,6 +4,8 @@
 #include <tag_files/tag_groups.h>
 #include <cache/cache_files.h>
 
+#include <cache/cache_file_tag_resource.inl>
+
 /* ---------- constants */
 
 enum
@@ -170,15 +172,15 @@ static_assert(sizeof(s_cache_file_tag_resource_fixup) == 0x8);
 struct s_cache_file_tag_resource
 {
 	s_tag_reference parent_tag;
-	word salt;
+	word identifier;
 	c_tag_block_index<s_cache_file_resource_type, char> resource_type_index;
 	c_flags<e_cache_file_tag_resource_flags, byte> flags;
-	long fixup_information_offset;
-	long fixup_information_length;
+	long definition_data_offset;
+	long definition_data_length;
 	long secondary_fixup_information_offset;
 	short unknown20;
 	c_tag_block_index<s_cache_file_resource_segment, short> segment_index;
-	dword unknown24;
+	dword definition_address;
 	c_tag_block<s_cache_file_tag_resource_fixup> resource_fixups;
 	c_tag_block<s_cache_file_tag_resource_fixup> resource_definition_fixups;
 };
