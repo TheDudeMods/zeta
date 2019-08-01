@@ -189,6 +189,12 @@
     <ClCompile Include="source\tag_files\tag_files.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\geometry\vertex_definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\commands\render_model_commands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ai\ai.h">
@@ -414,6 +420,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\cache\cache_file_tag_resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\geometry\vertex_definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\commands\render_model_commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

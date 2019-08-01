@@ -872,11 +872,28 @@ bool field_parse(
 	long arg_count,
 	char const **arg_values)
 {
+	auto tags_header = g_cache_file->get_tags_header();
+
 	switch (type)
 	{
 	case _field_tag:
-		if (arg_count != 1 || strlen(arg_values[0]) != 4)
+		if (arg_count != 1)
 			return false;
+		for (auto i = 0; i < tags_header->group_count; i++)
+		{
+			auto group = g_cache_file->get_tag_group(i);
+
+			if (!group || group->tags[0] == NONE)
+				continue;
+
+			auto group_name = g_cache_file->get_string(group->name);
+
+			if (group_name && strcmp(group_name, arg_values[0]) == 0)
+			{
+				*(tag *)address = group->tags[0];
+				return true;
+			}
+		}
 		*(tag *)address = string_to_tag(arg_values[0]);
 		return true;
 

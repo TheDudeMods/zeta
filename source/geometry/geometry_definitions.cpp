@@ -119,7 +119,7 @@ TAG_ENUM(
 	{ "rigid_tessellated", _vertex_type_rigid_tessellated },
 	{ "skinned_tessellated", _vertex_type_skinned_tessellated },
 	{ "shader_cache", _vertex_type_shader_cache },
-	{ "structure_instance_imposter", _vertex_type_structure_instance_imposter },
+	{ "instance_imposter", _vertex_type_instance_imposter },
 	{ "object_imposter", _vertex_type_object_imposter },
 	{ "rigid_compressed", _vertex_type_rigid_compressed },
 	{ "skinned_compressed", _vertex_type_skinned_compressed },

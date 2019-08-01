@@ -7,16 +7,43 @@ class c_cache_file_tag_resource
 {
 private:
 	t_definition *m_definition;
-	void *m_data;
+	byte *m_data;
+	long m_data_length;
+	bool m_should_delete;
 
 public:
-	c_cache_file_tag_resource(t_definition *definition, void *data) :
+	c_cache_file_tag_resource(t_definition *definition, void *data, long data_length, bool should_delete) :
 		m_definition(definition),
-		m_data(data)
+		m_data((byte *)data),
+		m_data_length(data_length),
+		m_should_delete(should_delete)
 	{
 	}
 
-	void *get_address(dword address)
+	c_cache_file_tag_resource(long resource_index) :
+		c_cache_file_tag_resource(nullptr, nullptr, NONE, true)
+	{
+		m_definition = g_cache_file->tag_resource_definition_get<t_definition>(resource_index);
+
+		if (!g_cache_file->tag_resource_try_and_get(resource_index, &m_data_length, (void **)&m_data))
+		{
+			m_data = nullptr;
+			m_data_length = NONE;
+		}
+	}
+
+	~c_cache_file_tag_resource()
+	{
+		if (m_should_delete && m_data)
+			delete[] m_data;
+	}
+
+	t_definition *get_definition()
+	{
+		return m_definition;
+	}
+
+	void *get_data(dword address)
 	{
 		switch ((address >> 28) & 0xF)
 		{
@@ -28,5 +55,16 @@ public:
 			long offset = address & 0x07FFFFFF;
 			return (char *)m_definition + (negative ? -offset : offset);
 		}
+	}
+
+	template <typename t_type>
+	t_type *get_data(dword address)
+	{
+		return (t_type *)get_data(address);
+	}
+
+	t_definition *operator->()
+	{
+		return get_definition();
 	}
 };

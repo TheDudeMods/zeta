@@ -3,6 +3,8 @@
 #include <cseries/cseries.h>
 #include <math/real_math.h>
 #include <tag_files/tag_groups.h>
+#include <tag_files/tag_resource_internals.h>
+#include <geometry/vertex_definitions.h>
 
 /* ---------- constants */
 
@@ -103,43 +105,6 @@ enum e_prt_type
 	_prt_type_linear,
 	_prt_type_quadratic,
 	k_number_of_prt_types
-};
-
-enum e_vertex_type
-{
-	_vertex_type_world,
-	_vertex_type_rigid,
-	_vertex_type_skinned,
-	_vertex_type_particle_model,
-	_vertex_type_flat_world,
-	_vertex_type_flat_rigid,
-	_vertex_type_flat_skinned,
-	_vertex_type_screen,
-	_vertex_type_debug,
-	_vertex_type_transparent,
-	_vertex_type_particle,
-	_vertex_type_contrail,
-	_vertex_type_light_volume,
-	_vertex_type_chud_simple,
-	_vertex_type_chud_fancy,
-	_vertex_type_decorator,
-	_vertex_type_tiny_position,
-	_vertex_type_patchy_fog,
-	_vertex_type_water,
-	_vertex_type_ripple,
-	_vertex_type_implicit,
-	_vertex_type_beam,
-	_vertex_type_world_tessellated,
-	_vertex_type_rigid_tessellated,
-	_vertex_type_skinned_tessellated,
-	_vertex_type_shader_cache,
-	_vertex_type_structure_instance_imposter,
-	_vertex_type_object_imposter,
-	_vertex_type_rigid_compressed,
-	_vertex_type_skinned_compressed,
-	_vertex_type_light_volume_precompiled,
-	_vertex_type_bink,
-	k_number_of_vertex_types
 };
 
 enum e_index_buffer_type
@@ -370,13 +335,39 @@ struct s_render_geometry
 };
 static_assert(sizeof(s_render_geometry) == 0xA8);
 
+struct s_render_geometry_api_vertex_buffer
+{
+	long count;
+	short format;
+	short vertex_size;
+	s_tag_data data;
+};
+static_assert(sizeof(s_render_geometry_api_vertex_buffer) == 0x1C);
 
+struct s_render_geometry_api_vertex_buffer_reference
+{
+	c_tag_resource_structure<s_render_geometry_api_vertex_buffer> vertex_buffer;
+};
+static_assert(sizeof(s_render_geometry_api_vertex_buffer_reference) == 0xC);
+
+struct s_render_geometry_api_index_buffer
+{
+	long format;
+	s_tag_data data;
+};
+static_assert(sizeof(s_render_geometry_api_index_buffer) == 0x18);
+
+struct s_render_geometry_api_index_buffer_reference
+{
+	c_tag_resource_structure<s_render_geometry_api_index_buffer> index_buffer;
+};
+static_assert(sizeof(s_render_geometry_api_index_buffer_reference) == 0xC);
 
 struct s_render_geometry_api_resource_definition
 {
 	s_tag_block unused1;
 	s_tag_block unused2;
-	//
-	// TODO
-	//
+	c_tag_block<s_render_geometry_api_vertex_buffer_reference> vertex_buffers;
+	c_tag_block<s_render_geometry_api_index_buffer_reference> index_buffers;
 };
+static_assert(sizeof(s_render_geometry_api_resource_definition) == 0x30);

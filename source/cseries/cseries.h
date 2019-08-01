@@ -94,9 +94,11 @@ enum : unsigned long long
 #define SET_FLAG(FLAGS, BIT, VALUE) ((VALUE) ? ((FLAGS) |= FLAG(BIT)) : ((FLAGS) &= ~FLAG(BIT)))
 #define FLAG_RANGE(FIRST_BIT, LAST_BIT) ((FLAG((LAST_BIT) + 1 - (FIRST_BIT)) - 1) << (FIRST_BIT))
 
+#undef HIWORD
 #define HIWORD(N) (((N) >> 16) & USHRT_MAX)
 #define SET_HIWORD(N, V) ((N) = (((N) & USHRT_MAX) | (((V) & USHRT_MAX) << 16)))
 
+#undef LOWORD
 #define LOWORD(N) ((N) & USHRT_MAX)
 #define SET_LOWORD(N, V) ((N) = (((N) & (USHRT_MAX << 16)) | ((V) & USHRT_MAX)))
 

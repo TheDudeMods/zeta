@@ -1,6 +1,7 @@
 #include <bitmaps/bitmaps.h>
 #include <commands/bitmap_commands.h>
 #include <commands/editing_commands.h>
+#include <commands/render_model_commands.h>
 #include <commands/tag_commands.h>
 
 /* ---------- constants */
@@ -23,7 +24,7 @@ s_command g_tag_commands[k_number_of_tag_commands] =
 	},
 	{
 		"edit_tag",
-		"edit_tag <tag_index>",
+		"edit_tag <tag_index> [filter]",
 		"Opens the specified tag instance for editing.",
 		false,
 		edit_tag_execute
@@ -47,11 +48,18 @@ bool list_tags_execute(
 	long arg_count,
 	char const **arg_values)
 {
-	if (arg_count != 1)
+	if (arg_count < 1 || arg_count > 2)
 		return false;
 
-	// TODO: add verification to group tag parsing
-	auto group_tag = string_to_tag(arg_values[0]);
+	tag group_tag = NONE;
+	
+	if (!field_parse(_field_tag, "group_tag", nullptr, &group_tag, 1, &arg_values[0]))
+	{
+		printf("ERROR: failed to parse group: %s\n", arg_values[0]);
+		return true;
+	}
+
+	auto filter = arg_count > 1 ? arg_values[1] : nullptr;
 
 	auto tags_header = g_cache_file->get_tags_header();
 
@@ -64,6 +72,9 @@ bool list_tags_execute(
 
 		auto tag_name = g_cache_file->get_tag_name(i);
 		auto tag_name_length = strlen(tag_name);
+
+		if (filter && !strstr(tag_name, filter))
+			continue;
 
 		auto group = g_cache_file->get_tag_group(instance->group_index);
 		auto cache_file_header = g_cache_file->get_header();
@@ -128,20 +139,28 @@ bool edit_tag_execute(
 
 	auto tag_definition = g_cache_file->get_tag_definition<void>(reference.index & k_word_maximum);
 
-	if (group->is_in_group(k_bitmap_group_tag))
+	switch (group->tags[0])
 	{
+	case k_bitmap_group_tag:
 		g_command_context = new c_bitmap_command_context(
 			tag_name_string.ascii,
 			(s_bitmap_definition *)tag_definition,
 			g_command_context);
-	}
-	else
-	{
+
+	case k_render_model_group_tag:
+		g_command_context = new c_render_model_command_context(
+			tag_name_string.ascii,
+			(s_render_model_definition *)tag_definition,
+			g_command_context);
+		break;
+
+	default:
 		g_command_context = new c_editing_command_context(
 			tag_name_string.ascii,
 			tag_definition,
 			group_definition,
 			g_command_context);
+		break;
 	}
 
 	return true;

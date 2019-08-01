@@ -146,6 +146,7 @@
     <ClCompile Include="source\commands\bitmap_commands.cpp" />
     <ClCompile Include="source\commands\commands.cpp" />
     <ClCompile Include="source\commands\editing_commands.cpp" />
+    <ClCompile Include="source\commands\render_model_commands.cpp" />
     <ClCompile Include="source\commands\tag_commands.cpp" />
     <ClCompile Include="source\cseries\cseries.cpp" />
     <ClCompile Include="source\cseries\errors.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="source\game\campaign_metagame.cpp" />
     <ClCompile Include="source\game\game_allegiance.cpp" />
     <ClCompile Include="source\geometry\geometry_definitions.cpp" />
+    <ClCompile Include="source\geometry\vertex_definitions.cpp" />
     <ClCompile Include="source\items\item_definitions.cpp" />
     <ClCompile Include="source\items\projectile_definitions.cpp" />
     <ClCompile Include="source\main\main.cpp" />
@@ -206,6 +208,7 @@
     <ClInclude Include="source\commands\bitmap_commands.h" />
     <ClInclude Include="source\commands\commands.h" />
     <ClInclude Include="source\commands\editing_commands.h" />
+    <ClInclude Include="source\commands\render_model_commands.h" />
     <ClInclude Include="source\commands\tag_commands.h" />
     <ClInclude Include="source\cseries\cseries.h" />
     <ClInclude Include="source\cseries\errors.h" />
@@ -221,6 +224,7 @@
     <ClInclude Include="source\game\game_allegiance.h" />
     <ClInclude Include="source\game\game_globals.h" />
     <ClInclude Include="source\geometry\geometry_definitions.h" />
+    <ClInclude Include="source\geometry\vertex_definitions.h" />
     <ClInclude Include="source\interface\chud\chud_definitions.h" />
     <ClInclude Include="source\items\equipment_definitions.h" />
     <ClInclude Include="source\items\item_definitions.h" />
