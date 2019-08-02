@@ -7,6 +7,7 @@
 
 enum e_vertex_type
 {
+	_vertex_type_none = NONE,
 	_vertex_type_world,
 	_vertex_type_rigid,
 	_vertex_type_skinned,

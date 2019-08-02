@@ -233,8 +233,9 @@ static s_vertex_definition g_vertex_definitions[k_number_of_vertex_types] =
 s_vertex_definition *vertex_definition_get(
 	e_vertex_type type)
 {
-	assert(type >= 0 && type < k_number_of_vertex_types);
-	
+	if (type == NONE || type >= k_number_of_vertex_types)
+		return nullptr;
+
 	return &g_vertex_definitions[type];
 }
 
@@ -475,14 +476,15 @@ bool vertex_element_next(
 {
 	assert(definition);
 	assert(element_address);
-	assert(data_address);
 
 	auto element_size = vertex_element_get_size(*element_address);
 
 	if (element_size == NONE)
 		return false;
 
-	*data_address = ((char *)*data_address) + element_size;
+	if (data_address)
+		*(char **)data_address += element_size;
+
 	(*(D3D11_INPUT_ELEMENT_DESC **)element_address)++;
 
 	return true;

@@ -86,44 +86,33 @@ bool c_cache_file::tag_resource_try_and_get(
 	if (!segment->primary_page || segment->primary_segment_offset == NONE)
 		return false;
 
-	auto page_index = (segment->secondary_page) ?
-		segment->secondary_page :
-		segment->primary_page;
-
 	auto segment_offset = (segment->secondary_segment_offset != NONE) ?
 		segment->secondary_segment_offset :
 		segment->primary_segment_offset;
 
-	if (!page_index || segment_offset == NONE)
+	if (segment_offset == NONE)
 		return false;
 
-	s_cache_file_resource_page *page = nullptr;
-	if (!page_index.try_resolve(&definition->layout_table.pages, &page))
-		return false;
+	s_cache_file_resource_page *primary_page = nullptr;
+	if (segment->primary_page.try_resolve(&definition->layout_table.pages, &primary_page))
+		if (primary_page->block_offset == NONE)
+			primary_page = nullptr;
 
-	if (page->block_offset == NONE)
-	{
-		page_index = segment->primary_page;
-		segment_offset = segment->primary_segment_offset;
+	s_cache_file_resource_page *secondary_page = nullptr;
+	if (segment->secondary_page.try_resolve(&definition->layout_table.pages, &secondary_page))
+		if (secondary_page->block_offset == NONE)
+			secondary_page = nullptr;
 
-		if (!page_index.try_resolve(&definition->layout_table.pages, &page))
-			return false;
-	}
+	auto page = secondary_page ? secondary_page : primary_page;
+	if (!page) return false;
 
 	auto location = page->shared_cache_file.resolve(&definition->layout_table.physical_locations);
-	auto page_data = get_resource_page_data(location, page);
 
-	if (!page_data)
-		return false;
+	auto data = get_resource_page_data(location, page);
+	if (!data) return false;
 
-	auto length = page->compressed_block_size - segment_offset;
-	auto data = new byte[length];
-	memcpy(data, (char *)page_data + segment_offset, length);
-
-	if (out_length) *out_length = length;
+	if (out_length) *out_length = page->uncompressed_block_size;
 	if (out_address) *out_address = data;
-
-	if (page_data) delete[] page_data;
 
 	return true;
 }

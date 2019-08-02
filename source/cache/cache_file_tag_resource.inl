@@ -48,12 +48,17 @@ public:
 		switch ((address >> 28) & 0xF)
 		{
 		case 4: // points to compressed data
-			return (char *)m_data + (address & 0x0FFFFFFF);
+		{
+			long data_offset = (address & 0x0FFFFFFF);
+			return (char *)m_data + data_offset;
+		}
 
 		default: // points to definition data
+		{
 			bool negative = ((address >> 27) & 1) != 0;
 			long offset = address & 0x07FFFFFF;
 			return (char *)m_definition + (negative ? -offset : offset);
+		}
 		}
 	}
 
