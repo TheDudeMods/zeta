@@ -353,9 +353,10 @@ static_assert(sizeof(s_render_geometry_api_vertex_buffer_reference) == 0xC);
 struct s_render_geometry_api_index_buffer
 {
 	long format;
+	long unknown;
 	s_tag_data data;
 };
-static_assert(sizeof(s_render_geometry_api_index_buffer) == 0x18);
+static_assert(sizeof(s_render_geometry_api_index_buffer) == 0x1C);
 
 struct s_render_geometry_api_index_buffer_reference
 {

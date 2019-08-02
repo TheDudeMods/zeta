@@ -10,6 +10,8 @@ void bitmap_texture_initialize_dds_header(
 	assert(resource);
 	assert(header);
 
+	memset(header, 0, sizeof(s_dds_header));
+
 	header->signature = k_dds_signature;
 	header->size = sizeof(s_dds_header);
 	header->height = resource->height;

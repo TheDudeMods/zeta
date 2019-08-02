@@ -7,7 +7,7 @@
 
 enum
 {
-	k_dds_signature = 'DDS ',
+	k_dds_signature = ' SDD',
 };
 
 /* ---------- enumerators */

@@ -89,16 +89,12 @@ bool extract_render_model_execute(
 		auto region = &regions[region_index];
 		auto region_name = g_cache_file->get_string(region->name);
 
-		printf("region \"%s\":\n", region_name);
-
 		auto permutations = g_cache_file->get_page_data<s_render_model_permutation>(region->permutations.address);
 
 		for (auto permutation_index = 0; permutation_index < region->permutations.count; permutation_index++)
 		{
 			auto permutation = &permutations[permutation_index];
 			auto permutation_name = g_cache_file->get_string(permutation->name);
-
-			printf("\tpermutation \"%s\"\n", permutation_name);
 
 			s_mesh *meshes = nullptr;
 			permutation->first_mesh.try_resolve(&render_model->geometry.meshes, &meshes);
@@ -111,127 +107,229 @@ bool extract_render_model_execute(
 				if (!vertex_definition)
 					continue;
 
-				printf("\t\tmesh %i:\n", mesh_index);
+				auto vertex_stream_index = 0;
+				auto vertex_buffer_index = mesh->vertex_buffer_indices[vertex_stream_index];
 
-				for (auto vertex_stream_index = 0;
-					vertex_stream_index < k_maximum_number_of_vertex_buffers_per_mesh;
-					vertex_stream_index++)
+				if (vertex_buffer_index == NONE)
+					continue;
+
+				auto vertex_buffer = geometry_resource.get_data<s_render_geometry_api_vertex_buffer>(
+					vertex_buffers[vertex_buffer_index].vertex_buffer.address);
+
+				for (auto vertex_index = 0;
+					vertex_index < vertex_buffer->count;
+					vertex_index++)
 				{
-					auto vertex_buffer_index = mesh->vertex_buffer_indices[vertex_stream_index];
+					auto vertex_data = (void *)((char *)geometry_resource.get_data(vertex_buffer->data.address) + (vertex_index * vertex_buffer->vertex_size));
+					auto vertex_element = vertex_definition->elements;
 
-					if (vertex_buffer_index == NONE)
-						continue;
-
-					printf("\t\t\tvertex stream %i\n", vertex_stream_index);
-
-					auto vertex_buffer = geometry_resource.get_data<s_render_geometry_api_vertex_buffer>(
-							vertex_buffers[vertex_buffer_index].vertex_buffer.address);
-
-					for (auto vertex_index = 0;
-						vertex_index < vertex_buffer->count;
-						vertex_index++)
+					for (auto vertex_element_index = 0;
+						vertex_element_index < vertex_definition->element_count;
+						vertex_element_index++)
 					{
-						auto vertex_data = (void*)((char *)geometry_resource.get_data(vertex_buffer->data.address) + (vertex_index * vertex_buffer->vertex_size));
-						auto vertex_element = vertex_definition->elements;
+						auto current_element = (D3D11_INPUT_ELEMENT_DESC *)vertex_element;
 
-						for (auto vertex_element_index = 0;
-							vertex_element_index < vertex_definition->element_count;
-							vertex_element_index++)
+						if (current_element->SemanticIndex != vertex_stream_index)
 						{
-							auto current_element = (D3D11_INPUT_ELEMENT_DESC *)vertex_element;
-
-							if (current_element->SemanticIndex != vertex_stream_index)
-							{
-								vertex_element_next(vertex_definition, &vertex_element, nullptr);
-								continue;
-							}
-
-							auto position = real_quaternion{ 0.0f, 0.0f, 0.0f, 0.0f };
-							auto texcoord = real_vector2d{ 0.0f, 0.0f };
-
-							if (strcmp("POSITION", current_element->SemanticName) == 0)
-							{
-								printf("%s", "\t\t\t\t");
-
-								switch (current_element->Format)
-								{
-								case DXGI_FORMAT_R32G32B32A32_FLOAT:
-									position.i = ((float *)vertex_data)[0];
-									position.j = ((float *)vertex_data)[1];
-									position.k = ((float *)vertex_data)[2];
-									position.w = ((float *)vertex_data)[3];
-									break;
-
-								case DXGI_FORMAT_R32G32B32_FLOAT:
-									position.i = ((float *)vertex_data)[0];
-									position.j = ((float *)vertex_data)[1];
-									position.k = ((float *)vertex_data)[2];
-									break;
-
-								case DXGI_FORMAT_R32G32_FLOAT:
-									position.i = ((float *)vertex_data)[0];
-									position.j = ((float *)vertex_data)[1];
-									break;
-
-								case DXGI_FORMAT_R32_UINT:
-									position.i = (float)((unsigned long *)vertex_data)[0];
-									break;
-
-								case DXGI_FORMAT_R16G16B16A16_SNORM:
-									position.i = (float)((short *)vertex_data)[0] / (float)SHRT_MAX;
-									position.j = (float)((short *)vertex_data)[1] / (float)SHRT_MAX;
-									position.k = (float)((short *)vertex_data)[2] / (float)SHRT_MAX;
-									position.w = (float)((short *)vertex_data)[3] / (float)SHRT_MAX;
-									break;
-
-								case DXGI_FORMAT_R8G8B8A8_UNORM:
-									position.i = (float)((byte *)vertex_data)[0] / (float)UCHAR_MAX;
-									position.j = (float)((byte *)vertex_data)[1] / (float)UCHAR_MAX;
-									position.k = (float)((byte *)vertex_data)[2] / (float)UCHAR_MAX;
-									position.w = (float)((byte *)vertex_data)[3] / (float)UCHAR_MAX;
-									break;
-
-								default:
-									printf("ERROR: vertex element format %i not supported!", current_element->Format);
-									break;
-								}
-
-								if (compression_info)
-								{
-									position.i *= compression_info->position_upper.x - (compression_info->position_lower.x * 2);
-									position.j *= compression_info->position_upper.y - (compression_info->position_lower.y * 2);
-									position.k *= compression_info->position_upper.z - (compression_info->position_lower.z * 2);
-								}
-
-								switch (current_element->Format)
-								{
-								case DXGI_FORMAT_R32G32B32A32_FLOAT:
-								case DXGI_FORMAT_R16G16B16A16_SNORM:
-								case DXGI_FORMAT_R8G8B8A8_UNORM:
-									printf("x: %f, y: %f, z: %f, w: %f\n", position.i, position.j, position.k, position.w);
-									break;
-
-								case DXGI_FORMAT_R32G32B32_FLOAT:
-									printf("x: %f, y: %f, z: %f\n", position.i, position.j, position.k);
-									break;
-
-								case DXGI_FORMAT_R32G32_FLOAT:
-									printf("x: %f, y: %f\n", position.i, position.j);
-									break;
-
-								case DXGI_FORMAT_R32_UINT:
-									printf("x: %f\n", position.i);
-									break;
-
-								default:
-									printf("ERROR: vertex element format %i not supported!", current_element->Format);
-									break;
-								}
-							}
-
-							vertex_element_next(vertex_definition, &vertex_element, &vertex_data);
+							vertex_element_next(vertex_definition, &vertex_element, nullptr);
+							continue;
 						}
+
+						if (strcmp("POSITION", current_element->SemanticName) == 0)
+						{
+							auto position = real_quaternion{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+							switch (current_element->Format)
+							{
+							case DXGI_FORMAT_R32G32B32A32_FLOAT:
+								position.i = ((float *)vertex_data)[0];
+								position.j = ((float *)vertex_data)[1];
+								position.k = ((float *)vertex_data)[2];
+								position.w = ((float *)vertex_data)[3];
+								break;
+
+							case DXGI_FORMAT_R32G32B32_FLOAT:
+								position.i = ((float *)vertex_data)[0];
+								position.j = ((float *)vertex_data)[1];
+								position.k = ((float *)vertex_data)[2];
+								break;
+
+							case DXGI_FORMAT_R32G32_FLOAT:
+								position.i = ((float *)vertex_data)[0];
+								position.j = ((float *)vertex_data)[1];
+								break;
+
+							case DXGI_FORMAT_R32_UINT:
+								position.i = (float)((unsigned long *)vertex_data)[0];
+								break;
+
+							case DXGI_FORMAT_R16G16B16A16_SNORM:
+								position.i = (float)((short *)vertex_data)[0] / (float)SHRT_MAX;
+								position.j = (float)((short *)vertex_data)[1] / (float)SHRT_MAX;
+								position.k = (float)((short *)vertex_data)[2] / (float)SHRT_MAX;
+								position.w = (float)((short *)vertex_data)[3] / (float)SHRT_MAX;
+								break;
+
+							case DXGI_FORMAT_R8G8B8A8_UNORM:
+								position.i = (float)((byte *)vertex_data)[0] / (float)UCHAR_MAX;
+								position.j = (float)((byte *)vertex_data)[1] / (float)UCHAR_MAX;
+								position.k = (float)((byte *)vertex_data)[2] / (float)UCHAR_MAX;
+								position.w = (float)((byte *)vertex_data)[3] / (float)UCHAR_MAX;
+								break;
+
+							default:
+								printf("ERROR: vertex element format %i not supported!", current_element->Format);
+								break;
+							}
+
+							if (compression_info)
+							{
+								position.i *= compression_info->position_upper.x - (compression_info->position_lower.x * 2);
+								position.j *= compression_info->position_upper.y - (compression_info->position_lower.y * 2);
+								position.k *= compression_info->position_upper.z - (compression_info->position_lower.z * 2);
+							}
+
+							printf("v %f %f %f\n", position.i, position.j, position.k);
+						}
+
+						if (strcmp("NORMAL", current_element->SemanticName) == 0)
+						{
+							auto normal = real_quaternion{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+							switch (current_element->Format)
+							{
+							case DXGI_FORMAT_R32G32B32A32_FLOAT:
+								normal.i = ((float *)vertex_data)[0];
+								normal.j = ((float *)vertex_data)[1];
+								normal.k = ((float *)vertex_data)[2];
+								normal.w = ((float *)vertex_data)[3];
+								break;
+
+							case DXGI_FORMAT_R32G32B32_FLOAT:
+								normal.i = ((float *)vertex_data)[0];
+								normal.j = ((float *)vertex_data)[1];
+								normal.k = ((float *)vertex_data)[2];
+								break;
+
+							case DXGI_FORMAT_R32G32_FLOAT:
+								normal.i = ((float *)vertex_data)[0];
+								normal.j = ((float *)vertex_data)[1];
+								break;
+
+							case DXGI_FORMAT_R32_UINT:
+								normal.i = (float)((unsigned long *)vertex_data)[0];
+								break;
+
+							case DXGI_FORMAT_R16G16B16A16_SNORM:
+								normal.i = (float)((short *)vertex_data)[0] / (float)SHRT_MAX;
+								normal.j = (float)((short *)vertex_data)[1] / (float)SHRT_MAX;
+								normal.k = (float)((short *)vertex_data)[2] / (float)SHRT_MAX;
+								normal.w = (float)((short *)vertex_data)[3] / (float)SHRT_MAX;
+								break;
+
+							case DXGI_FORMAT_R8G8B8A8_UNORM:
+								normal.i = (float)((byte *)vertex_data)[0] / (float)UCHAR_MAX;
+								normal.j = (float)((byte *)vertex_data)[1] / (float)UCHAR_MAX;
+								normal.k = (float)((byte *)vertex_data)[2] / (float)UCHAR_MAX;
+								normal.w = (float)((byte *)vertex_data)[3] / (float)UCHAR_MAX;
+								break;
+
+							default:
+								printf("ERROR: vertex element format %i not supported!", current_element->Format);
+								break;
+							}
+
+							if (compression_info)
+							{
+								normal.i *= compression_info->position_upper.x - (compression_info->position_lower.x * 2);
+								normal.j *= compression_info->position_upper.y - (compression_info->position_lower.y * 2);
+								normal.k *= compression_info->position_upper.z - (compression_info->position_lower.z * 2);
+							}
+
+							printf("vn %f %f %f\n", normal.i, normal.j, normal.k);
+						}
+
+						if (strcmp("TEXCOORD", current_element->SemanticName) == 0)
+						{
+							auto texcoord = real_quaternion{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+							switch (current_element->Format)
+							{
+							case DXGI_FORMAT_R32G32B32A32_FLOAT:
+								texcoord.i = ((float *)vertex_data)[0];
+								texcoord.j = ((float *)vertex_data)[1];
+								texcoord.k = ((float *)vertex_data)[2];
+								texcoord.w = ((float *)vertex_data)[3];
+								break;
+
+							case DXGI_FORMAT_R32G32B32_FLOAT:
+								texcoord.i = ((float *)vertex_data)[0];
+								texcoord.j = ((float *)vertex_data)[1];
+								texcoord.k = ((float *)vertex_data)[2];
+								break;
+
+							case DXGI_FORMAT_R32G32_FLOAT:
+								texcoord.i = ((float *)vertex_data)[0];
+								texcoord.j = ((float *)vertex_data)[1];
+								break;
+
+							case DXGI_FORMAT_R32_UINT:
+								texcoord.i = (float)((unsigned long *)vertex_data)[0];
+								break;
+
+							case DXGI_FORMAT_R16G16B16A16_SNORM:
+								texcoord.i = (float)((short *)vertex_data)[0] / (float)SHRT_MAX;
+								texcoord.j = (float)((short *)vertex_data)[1] / (float)SHRT_MAX;
+								texcoord.k = (float)((short *)vertex_data)[2] / (float)SHRT_MAX;
+								texcoord.w = (float)((short *)vertex_data)[3] / (float)SHRT_MAX;
+								break;
+
+							case DXGI_FORMAT_R8G8B8A8_UNORM:
+								texcoord.i = (float)((byte *)vertex_data)[0] / (float)UCHAR_MAX;
+								texcoord.j = (float)((byte *)vertex_data)[1] / (float)UCHAR_MAX;
+								texcoord.k = (float)((byte *)vertex_data)[2] / (float)UCHAR_MAX;
+								texcoord.w = (float)((byte *)vertex_data)[3] / (float)UCHAR_MAX;
+								break;
+
+							default:
+								printf("ERROR: vertex element format %i not supported!", current_element->Format);
+								break;
+							}
+
+							if (compression_info)
+							{
+								texcoord.i *= compression_info->position_upper.x - (compression_info->position_lower.x * 2);
+								texcoord.j *= compression_info->position_upper.y - (compression_info->position_lower.y * 2);
+								texcoord.k *= compression_info->position_upper.z - (compression_info->position_lower.z * 2);
+							}
+
+							printf("vt %f %f\n", texcoord.i, texcoord.j);
+						}
+
+						vertex_element_next(vertex_definition, &vertex_element, &vertex_data);
 					}
+				}
+
+				auto index_stream_index = 0;
+				auto index_buffer_index = mesh->index_buffer_indices[index_stream_index];
+
+				if (index_buffer_index == NONE)
+					continue;
+
+				auto index_buffer = geometry_resource.get_data<s_render_geometry_api_index_buffer>(
+					index_buffers[index_buffer_index].index_buffer.address);
+
+				printf("g %s_%s_%i\n", region_name, permutation_name, mesh_index);
+
+				for (auto index_index = 0;
+					index_index < (index_buffer->data.size / 2);
+					index_index++)
+				{
+					auto index_data = (word *)((char *)geometry_resource.get_data(index_buffer->data.address) + (index_index * 2));
+					printf("f %i/%i/%i %i/%i/%i %i/%i/%i\n",
+						index_data[0] + 1, index_data[0] + 1, index_data[0] + 1,
+						index_data[1] + 1, index_data[1] + 1, index_data[1] + 1,
+						index_data[2] + 1, index_data[2] + 1, index_data[2] + 1);
 				}
 			}
 		}

@@ -43,8 +43,16 @@ public:
 		return m_definition;
 	}
 
-	void *get_data(dword address)
+	long get_data_length()
 	{
+		return m_data_length;
+	}
+
+	void *get_data(dword address = 0)
+	{
+		if (!address)
+			return m_data;
+
 		switch ((address >> 28) & 0xF)
 		{
 		case 4: // points to compressed data
