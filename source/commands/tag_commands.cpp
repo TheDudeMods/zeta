@@ -24,7 +24,7 @@ s_command g_tag_commands[k_number_of_tag_commands] =
 	},
 	{
 		"edit_tag",
-		"edit_tag <tag_index> [filter]",
+		"edit_tag <tag_handle>",
 		"Opens the specified tag instance for editing.",
 		false,
 		edit_tag_execute
@@ -146,6 +146,7 @@ bool edit_tag_execute(
 			tag_name_string.ascii,
 			(s_bitmap_definition *)tag_definition,
 			g_command_context);
+		break;
 
 	case k_render_model_group_tag:
 		g_command_context = new c_render_model_command_context(

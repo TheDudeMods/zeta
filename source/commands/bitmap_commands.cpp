@@ -72,7 +72,7 @@ bool extract_bitmap_execute(
 	auto image_resource = (s_bitmap_texture_resource *)bitmap_resource.get_data(bitmap_resource->bitmap.address);
 
 	s_dds_header dds_header;
-	bitmap_texture_initialize_dds_header(image, image_resource, &dds_header);
+	bitmap_image_initialize_dds_header(image, image_resource, &dds_header);
 
 	FILE *stream = fopen(arg_values[1], "wb+");
 	fwrite(&dds_header, sizeof(s_dds_header), 1, stream);

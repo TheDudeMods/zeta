@@ -3,13 +3,6 @@
 #include <cseries/cseries.h>
 #include <bitmaps/bitmaps.h>
 
-/* ---------- constants */
-
-enum
-{
-	k_dds_signature = ' SDD',
-};
-
 /* ---------- enumerators */
 
 enum e_dds_format_type
@@ -92,7 +85,7 @@ static_assert(sizeof(s_dds_pixel_format) == 0x20);
 
 struct s_dds_header
 {
-	tag signature;
+	tag four_cc;
 	dword size;
 	c_enum<e_dds_header_flags, long> flags;
 	dword height;
