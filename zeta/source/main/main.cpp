@@ -8,9 +8,11 @@ int main()
 {
 	puts("Zeta v0.0.1");
 
-	cache_files_open();
-	command_loop_execute();
-	cache_files_close();
+	auto file = cache_file_load();
+
+	command_loop_execute(file);
+
+	delete file;
 
 	return EXIT_SUCCESS;
 }

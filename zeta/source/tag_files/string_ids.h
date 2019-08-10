@@ -43,7 +43,3 @@ enum e_string_id_set
 
 extern long const k_string_id_set_offsets[
 	k_number_of_string_id_sets];
-
-/* ---------- prototypes/STRING_IDS.CPP */
-
-char const *string_id_get_string(string_id id);

@@ -49,11 +49,13 @@ c_editing_command_context::c_editing_command_context(
 	char const *name,
 	void *address,
 	s_struct_definition *definition,
+	c_cache_file *file,
 	c_command_context *parent) :
 	c_command_context(
 		name,
 		k_number_of_editing_command_sets,
 		g_editing_command_sets,
+		file,
 		parent),
 	m_address(address),
 	m_definition(definition)
@@ -77,12 +79,19 @@ bool list_fields_execute(
 	if (arg_count > 1)
 		return false;
 
-	auto editing_context = (c_editing_command_context *)g_command_context;
-	
+	auto editing_context = dynamic_cast<c_editing_command_context *>(g_command_context);
+	auto file = editing_context->get_file();
+
+	if (!editing_context)
+	{
+		puts("ERROR: invalid command context!");
+		return true;
+	}
+
 	auto address = editing_context->get_address();
 	auto definition = editing_context->get_definition();
 
-	struct_print(definition, address, arg_count == 1 ? arg_values[0] : nullptr);
+	struct_print(file, definition, address, arg_count == 1 ? arg_values[0] : nullptr);
 	
 	return true;
 }
@@ -96,7 +105,14 @@ bool set_field_execute(
 
 	auto field_name = arg_values[0];
 
-	auto editing_context = (c_editing_command_context *)g_command_context;
+	auto editing_context = dynamic_cast<c_editing_command_context *>(g_command_context);
+	auto file = editing_context->get_file();
+
+	if (!editing_context)
+	{
+		puts("ERROR: invalid command context!");
+		return true;
+	}
 
 	auto address = editing_context->get_address();
 	auto definition = editing_context->get_definition();
@@ -109,13 +125,13 @@ bool set_field_execute(
 		return true;
 	}
 
-	if (!field_parse(field->type, field->name, field->definition, address, arg_count - 1, &arg_values[1]))
+	if (!field_parse(file, field->type, field->name, field->definition, address, arg_count - 1, &arg_values[1]))
 	{
 		printf("ERROR: failed to parse '%s' field value!\n", field->name);
 		return false;
 	}
 
-	field_print(field->type, field->name, field->definition, address);
+	field_print(file, field->type, field->name, field->definition, address);
 
 	return true;
 }
@@ -129,7 +145,14 @@ bool edit_block_execute(
 
 	auto field_name = arg_values[0];
 
-	auto editing_context = (c_editing_command_context *)g_command_context;
+	auto editing_context = dynamic_cast<c_editing_command_context *>(g_command_context);
+	auto file = editing_context->get_file();
+
+	if (!editing_context)
+	{
+		puts("ERROR: invalid command context!");
+		return true;
+	}
 
 	auto address = editing_context->get_address();
 	auto definition = editing_context->get_definition();
@@ -166,7 +189,7 @@ bool edit_block_execute(
 			return true;
 		}
 
-		address = g_cache_file->get_page_data<char>(block->address) + (index * block_definition->size);
+		address = file->get_page_data<char>(block->address) + ((qword)index * (qword)block_definition->size);
 		sprintf(context_name.ascii, "%s[%u]", field->name, index);
 		break;
 	}
@@ -189,6 +212,7 @@ bool edit_block_execute(
 		context_name.ascii,
 		address,
 		(s_struct_definition *)field->definition,
+		file,
 		g_command_context);
 
 	return true;

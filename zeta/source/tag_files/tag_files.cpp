@@ -14,22 +14,23 @@ void tag_iterator_initialize(
 }
 
 long tag_iterator_next(
+	c_cache_file *file,
 	s_tag_iterator *iterator)
 {
 	assert(iterator);
 
 	auto group_tag = iterator->group_tag;
-	auto tags_header = g_cache_file->get_tags_header();
+	auto tags_header = file->get_tags_header();
 
 	for (; iterator->index < tags_header->tag_count; iterator->index++)
 	{
 		auto index = iterator->index;
-		auto instance = g_cache_file->get_tag_instance(index);
+		auto instance = file->get_tag_instance(index);
 
 		if (!instance || !instance->address || instance->group_index == NONE)
 			continue;
 
-		auto group = g_cache_file->get_tag_group(instance->group_index);
+		auto group = file->get_tag_group(instance->group_index);
 
 		if (group->is_in_group(group_tag))
 			return index;

@@ -14,7 +14,7 @@ bool c_cache_file::tag_resource_definition_try_and_get(
 	if (resource_index == NONE)
 		return false;
 
-	auto resource_gestalt_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>().next();
+	auto resource_gestalt_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(this).next();
 	if (resource_gestalt_index == NONE)
 		return false;
 
@@ -26,15 +26,18 @@ bool c_cache_file::tag_resource_definition_try_and_get(
 	if (resource_absolute_index < 0 || resource_absolute_index >= resource_gestalt->tag_resources.count)
 		return false;
 
-	auto tag_resource = &resource_gestalt->tag_resources[resource_absolute_index];
+	s_cache_file_tag_resource *tag_resource = nullptr;
+	if (!resource_gestalt->tag_resources.try_get_element(this, resource_absolute_index, &tag_resource))
+		return false;
 
 	if (resource_identifier != tag_resource->identifier)
 		return false;
 
-	auto gestalt_definition_data = g_cache_file->get_page_data<char>(resource_gestalt->definition_data.address);
+	auto gestalt_definition_data = get_page_data<char>(resource_gestalt->definition_data.address);
 	auto definition_data = &gestalt_definition_data[tag_resource->definition_data_offset];
 
-	auto fixups = g_cache_file->get_page_data<s_cache_file_tag_resource_fixup>(tag_resource->resource_fixups.address);
+	auto fixups = get_page_data<s_cache_file_tag_resource_fixup>(tag_resource->resource_fixups.address);
+	auto definition_fixups = get_page_data<s_cache_file_tag_resource_fixup>(tag_resource->resource_definition_fixups.address);
 	auto definition_offset = tag_resource->definition_address & 0x1FFFFFFF;
 
 	for (auto i = 0; i < tag_resource->resource_fixups.count; i++)
@@ -50,6 +53,12 @@ bool c_cache_file::tag_resource_definition_try_and_get(
 		}
 
 		*(dword *)&definition_data[fixups[i].block_offset] = address;
+	}
+
+	for (auto i = 0; i < tag_resource->resource_definition_fixups.count; i++)
+	{
+		auto block_offset = definition_fixups[i].block_offset;
+		auto address = definition_fixups[i].address;
 	}
 
 	if (out_address)
@@ -69,18 +78,21 @@ bool c_cache_file::tag_resource_try_and_get(
 	if (resource_index == NONE)
 		return false;
 
-	auto zone_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>().next();
+	auto zone_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(this).next();
 	if (zone_index == NONE)
 		return false;
 
 	auto definition = get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
-	auto resource = &definition->tag_resources[resource_index & k_word_maximum];
+
+	s_cache_file_tag_resource *resource = nullptr;
+	if (!definition->tag_resources.try_get_element(this, resource_index & k_word_maximum, &resource))
+		return false;
 
 	if (!resource->segment_index)
 		return false;
 
 	s_cache_file_resource_segment *segment = nullptr;
-	if (!resource->segment_index.try_resolve(&definition->layout_table.segments, &segment))
+	if (!resource->segment_index.try_resolve(this, &definition->layout_table.segments, &segment))
 		return false;
 
 	if (!segment->primary_page || segment->primary_segment_offset == NONE)
@@ -94,19 +106,21 @@ bool c_cache_file::tag_resource_try_and_get(
 		return false;
 
 	s_cache_file_resource_page *primary_page = nullptr;
-	if (segment->primary_page.try_resolve(&definition->layout_table.pages, &primary_page))
+	if (segment->primary_page.try_resolve(this, &definition->layout_table.pages, &primary_page))
 		if (primary_page->block_offset == NONE)
 			primary_page = nullptr;
 
 	s_cache_file_resource_page *secondary_page = nullptr;
-	if (segment->secondary_page.try_resolve(&definition->layout_table.pages, &secondary_page))
+	if (segment->secondary_page.try_resolve(this, &definition->layout_table.pages, &secondary_page))
 		if (secondary_page->block_offset == NONE)
 			secondary_page = nullptr;
 
 	auto page = secondary_page ? secondary_page : primary_page;
 	if (!page) return false;
 
-	auto location = page->shared_cache_file.resolve(&definition->layout_table.physical_locations);
+	s_cache_file_resource_physical_location *location = nullptr;
+	if (page->shared_cache_file && !page->shared_cache_file.try_resolve(this, &definition->layout_table.physical_locations, &location))
+		return false;
 
 	auto data = get_resource_page_data(location, page);
 	if (!data) return false;
@@ -122,20 +136,20 @@ void *c_cache_file::get_resource_page_data(
 	s_cache_file_resource_page *page)
 {
 	static s_cache_file_header resource_cache_header;
-	static char resource_cache_file_path[1024];
+	static char resource_cache_file_path[1024] = { 0 };
 
 	memset(resource_cache_file_path, 0, 1024);
 
 	if (location)
 	{
-		memcpy(resource_cache_file_path, g_cache_file_path, strrchr(g_cache_file_path, '\\') - g_cache_file_path);
+		memcpy(resource_cache_file_path, m_filename, strrchr(m_filename, '\\') - m_filename);
 
 		auto file_path = strrchr(location->path.ascii, '\\');
 		memcpy(resource_cache_file_path + strlen(resource_cache_file_path), file_path, strlen(file_path));
 	}
 	else
 	{
-		memcpy(resource_cache_file_path, g_cache_file_path, strlen(g_cache_file_path));
+		memcpy(resource_cache_file_path, m_filename, strlen(m_filename));
 	}
 
 	s_cache_file_header *cache_header = nullptr;

@@ -17,18 +17,18 @@ public:
 	inline bool operator==(const c_tag_block_index<t_element, t_index> &other) const { return m_index == other.m_index; }
 	inline bool operator!=(const c_tag_block_index<t_element, t_index> &other) const { return !(*this == other); }
 
-	inline bool try_resolve(c_tag_block<t_element> *block, t_element **out_element)
+	inline bool try_resolve(c_cache_file *file, c_tag_block<t_element> *block, t_element **out_element)
 	{
 		if (!block || !out_element)
 			return false;
-		return block->try_get_element(m_index, out_element);
+		return block->try_get_element(file, m_index, out_element);
 	}
 
-	inline t_element *resolve(c_tag_block<t_element> *block)
+	inline t_element *resolve(c_cache_file *file, c_tag_block<t_element> *block)
 	{
 		if (!block)
 			return nullptr;
-		return block->get_element(m_index);
+		return block->get_element(file, m_index);
 	}
 
 	inline operator t_index() const { return m_index; }

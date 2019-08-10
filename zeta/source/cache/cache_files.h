@@ -180,10 +180,15 @@ public:
 	s_cache_file_header *get_header();
 	s_cache_file_tags_header *get_tags_header();
 
-	char const *get_string(string_id id) const;
+	char const *get_filename();
 
-	char const *get_tag_name(long index) const;
+	char const *get_string(string_id id);
+
+	char const *get_tag_name(long index);
+	
+	long find_tag_group(tag group_tag);
 	s_tag_group *get_tag_group(long index);
+
 	s_cache_file_tag_instance *get_tag_instance(long index);
 
 	bool tag_resource_definition_try_and_get(
@@ -244,12 +249,7 @@ public:
 	}
 };
 
-/* ---------- globals/CACHE_FILES.CPP */
-
-extern char g_cache_file_path[1024];
-extern c_cache_file *g_cache_file;
-
 /* ---------- prototypes/CACHE_FILES.CPP */
 
-void cache_files_open();
+c_cache_file *cache_file_load();
 void cache_files_close();

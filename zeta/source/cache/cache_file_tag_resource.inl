@@ -6,13 +6,15 @@ template <typename t_definition>
 class c_cache_file_tag_resource
 {
 private:
+	c_cache_file *m_file;
 	t_definition *m_definition;
 	byte *m_data;
 	long m_data_length;
 	bool m_should_delete;
 
 public:
-	c_cache_file_tag_resource(t_definition *definition, void *data, long data_length, bool should_delete) :
+	c_cache_file_tag_resource(c_cache_file *file, t_definition *definition, void *data, long data_length, bool should_delete) :
+		m_file(file),
 		m_definition(definition),
 		m_data((byte *)data),
 		m_data_length(data_length),
@@ -20,12 +22,12 @@ public:
 	{
 	}
 
-	c_cache_file_tag_resource(long resource_index) :
-		c_cache_file_tag_resource(nullptr, nullptr, NONE, true)
+	c_cache_file_tag_resource(c_cache_file *file, long resource_index) :
+		c_cache_file_tag_resource(file, nullptr, nullptr, NONE, true)
 	{
-		m_definition = g_cache_file->tag_resource_definition_get<t_definition>(resource_index);
+		m_definition = m_file->tag_resource_definition_get<t_definition>(resource_index);
 
-		if (!g_cache_file->tag_resource_try_and_get(resource_index, &m_data_length, (void **)&m_data))
+		if (!m_file->tag_resource_try_and_get(resource_index, &m_data_length, (void **)&m_data))
 		{
 			m_data = nullptr;
 			m_data_length = NONE;

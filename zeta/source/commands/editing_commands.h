@@ -24,6 +24,7 @@ public:
 		char const *name,
 		void *address,
 		s_struct_definition *definition,
+		c_cache_file *file,
 		c_command_context *parent = nullptr);
 
 	void *get_address();

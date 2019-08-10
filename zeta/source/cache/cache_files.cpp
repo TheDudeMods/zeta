@@ -1,16 +1,13 @@
 #include <cache/cache_files.h>
+#include <memory/data.h>
 #include <tag_files/string_ids.h>
-
-/* ---------- globals */
-
-char g_cache_file_path[1024];
-
-c_cache_file *g_cache_file = nullptr;
 
 /* ---------- code */
 
-void cache_files_open()
+c_cache_file *cache_file_load()
 {
+	static char cache_file_path[1024];
+
 	//
 	// Look up the cache file to open
 	//
@@ -25,17 +22,17 @@ void cache_files_open()
 		// Read the cache file path
 		//
 
-		memset(g_cache_file_path, 0, 1024);
-		fgets(g_cache_file_path, 1024, stdin);
+		memset(cache_file_path, 0, 1024);
+		fgets(cache_file_path, 1024, stdin);
 
-		auto newline = strchr(g_cache_file_path, '\n');
+		auto newline = strchr(cache_file_path, '\n');
 		if (newline) *newline = '\0';
 
 		//
 		// If empty cache file path, start over
 		//
 
-		if (strlen(g_cache_file_path) == 0)
+		if (strlen(cache_file_path) == 0)
 			continue;
 
 		//
@@ -44,7 +41,7 @@ void cache_files_open()
 
 		FILE *stream = nullptr;
 
-		if (stream = fopen(g_cache_file_path, "rb+"))
+		if (stream = fopen(cache_file_path, "rb+"))
 		{
 			//
 			// Read limited cache file header info
@@ -82,12 +79,11 @@ void cache_files_open()
 	// Allocate and load the cache file
 	//
 
-	g_cache_file = new c_cache_file(g_cache_file_path);
+	return new c_cache_file(cache_file_path);
 }
 
 void cache_files_close()
 {
-	delete g_cache_file;
 }
 
 c_cache_file::c_cache_file(char const *filename) :
@@ -175,7 +171,12 @@ s_cache_file_tags_header *c_cache_file::get_tags_header()
 	return get_buffer_data<s_cache_file_tags_header>(m_header.tags_header_address);
 }
 
-char const *c_cache_file::get_string(string_id id) const
+char const *c_cache_file::get_filename()
+{
+	return m_filename;
+}
+
+char const *c_cache_file::get_string(string_id id)
 {
 	auto set_min = (unsigned long)0x4C8;
 	auto set_max = (unsigned long)0x1FFFF;
@@ -191,19 +192,52 @@ char const *c_cache_file::get_string(string_id id) const
 	return m_string_ids_buffer + m_string_id_indices[index + k_string_id_set_offsets[set]];
 }
 
-char const *c_cache_file::get_tag_name(long index) const
+char const *c_cache_file::get_tag_name(long index)
 {
-	return m_tag_names_buffer + m_tag_name_indices[index];
+	auto tags_header = get_tags_header();
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+
+	if (absolute_index < 0 || absolute_index >= tags_header->tag_count)
+		return nullptr;
+
+	return m_tag_names_buffer + m_tag_name_indices[absolute_index];
+}
+
+long c_cache_file::find_tag_group(tag group_tag)
+{
+	auto tags_header = get_tags_header();
+
+	for (auto i = 0; i < tags_header->group_count; i++)
+	{
+		auto group = get_tag_group(i);
+		
+		if (group->tags[0] == group_tag)
+			return i;
+	}
+
+	return NONE;
 }
 
 s_tag_group *c_cache_file::get_tag_group(long index)
 {
-	return &get_buffer_data<s_tag_group>(get_tags_header()->groups_address)[index];
+	auto tags_header = get_tags_header();
+
+	if (index < 0 || index >= tags_header->group_count)
+		return nullptr;
+
+	return &get_buffer_data<s_tag_group>(tags_header->groups_address)[index];
 }
 
 s_cache_file_tag_instance *c_cache_file::get_tag_instance(long index)
 {
-	return &get_buffer_data<s_cache_file_tag_instance>(get_tags_header()->tags_address)[index & 0xFFFF];
+	auto tags_header = get_tags_header();
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
+
+	if (absolute_index < 0 || absolute_index >= tags_header->tag_count)
+		return nullptr;
+
+	return &get_buffer_data<s_cache_file_tag_instance>(tags_header->tags_address)[absolute_index];
 }
 
 qword c_cache_file::get_page_offset(dword address)

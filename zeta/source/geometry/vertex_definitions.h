@@ -61,8 +61,3 @@ s_vertex_definition *vertex_definition_get(
 
 long vertex_element_get_size(
 	void *element_address);
-
-bool vertex_element_next(
-	s_vertex_definition *definition,
-	void **element_address,
-	void **data_address);

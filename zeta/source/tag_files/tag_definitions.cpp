@@ -318,6 +318,7 @@ void field_print_flags(
 }
 
 void field_print(
+	c_cache_file *file,
 	e_field_type type,
 	char const *name,
 	void *definition,
@@ -345,7 +346,7 @@ void field_print(
 		break;
 
 	case _field_string_id:
-		printf("%s: string_id = %s\n", name, g_cache_file->get_string(*(string_id *)address));
+		printf("%s: string_id = %s\n", name, file->get_string(*(string_id *)address));
 		break;
 
 	case _field_char_integer:
@@ -548,7 +549,7 @@ void field_print(
 	{
 		auto reference = (s_tag_reference *)address;
 		
-		if (reference->index == NONE || g_cache_file->get_tag_instance(reference->index & k_word_maximum)->group_index == NONE)
+		if (reference->index == NONE || file->get_tag_instance(reference->index & k_word_maximum)->group_index == NONE)
 		{
 			printf("%s: tag_reference = none\n",
 				name,
@@ -557,15 +558,15 @@ void field_print(
 		}
 		else
 		{
-			auto tag_name = g_cache_file->get_tag_name(reference->index & k_word_maximum);
-			auto instance = g_cache_file->get_tag_instance(reference->index & k_word_maximum);
-			auto group = g_cache_file->get_tag_group(instance->group_index);
+			auto tag_name = file->get_tag_name(reference->index & k_word_maximum);
+			auto instance = file->get_tag_instance(reference->index & k_word_maximum);
+			auto group = file->get_tag_group(instance->group_index);
 
 			printf("%s: tag_reference = (0x%04lX) %s.%s\n",
 				name,
 				reference->index & k_word_maximum,
 				tag_name,
-				g_cache_file->get_string(group->name));
+				file->get_string(group->name));
 		}
 		break;
 	}
@@ -632,7 +633,7 @@ void field_print(
 		for (auto i = 0; i < array_definition->length; i++)
 		{
 			printf("%s[%li]", name, i);
-			field_print(array_definition->type, "", definition, (char *)address + (i * element_size));
+			field_print(file, array_definition->type, "", definition, (char *)address + (i * element_size));
 		}
 		break;
 	}
@@ -776,6 +777,7 @@ bool field_parse_flags(
 }
 
 bool field_parse_tag_reference(
+	c_cache_file *file,
 	char const *name,
 	s_tag_reference_definition *definition,
 	void *address,
@@ -785,7 +787,7 @@ bool field_parse_tag_reference(
 	if (arg_count != 1)
 		return false;
 
-	auto tags_header = g_cache_file->get_tags_header();
+	auto tags_header = file->get_tags_header();
 
 	auto reference = (s_tag_reference *)address;
 
@@ -804,18 +806,18 @@ bool field_parse_tag_reference(
 
 		for (auto i = 0; i < tags_header->tag_count; i++)
 		{
-			auto current_instance = g_cache_file->get_tag_instance(i);
+			auto current_instance = file->get_tag_instance(i);
 
 			if (!current_instance || current_instance->group_index == NONE || !current_instance->address)
 				continue;
 
-			auto group = g_cache_file->get_tag_group(current_instance->group_index);
+			auto group = file->get_tag_group(current_instance->group_index);
 			if (!group) continue;
 
-			if (strcmp(group_name, g_cache_file->get_string(group->name)) == 0 ||
+			if (strcmp(group_name, file->get_string(group->name)) == 0 ||
 				strcmp(group_name, tag_to_string(group->tags[0], tag_string)) == 0)
 			{
-				if (tag_name_is_wildcard || strcmp(tag_name, g_cache_file->get_tag_name(i)) == 0)
+				if (tag_name_is_wildcard || strcmp(tag_name, file->get_tag_name(i)) == 0)
 				{
 					reference->group_tag = group->tags[0];
 					reference->index = i;
@@ -827,8 +829,8 @@ bool field_parse_tag_reference(
 	else if (strstr(tag_name, "0x") == tag_name)
 	{
 		reference->index = strtol(tag_name, nullptr, 0);
-		auto instance = g_cache_file->get_tag_instance(reference->index);
-		auto group = g_cache_file->get_tag_group(instance->group_index);
+		auto instance = file->get_tag_instance(reference->index);
+		auto group = file->get_tag_group(instance->group_index);
 		reference->group_tag = group->tags[0];
 		return true;
 	}
@@ -838,7 +840,7 @@ bool field_parse_tag_reference(
 
 		for (auto i = 0; i < tags_header->tag_count; i++)
 		{
-			auto current_instance = g_cache_file->get_tag_instance(i);
+			auto current_instance = file->get_tag_instance(i);
 
 			if (current_instance && current_instance->group_index != NONE && current_instance->address)
 				last_index = i;
@@ -846,8 +848,8 @@ bool field_parse_tag_reference(
 
 		if (last_index != NONE)
 		{
-			auto instance = g_cache_file->get_tag_instance(last_index);
-			auto group = g_cache_file->get_tag_group(instance->group_index);
+			auto instance = file->get_tag_instance(last_index);
+			auto group = file->get_tag_group(instance->group_index);
 			reference->group_tag = group->tags[0];
 			reference->index = last_index;
 			return true;
@@ -865,6 +867,7 @@ bool field_parse_tag_reference(
 }
 
 bool field_parse(
+	c_cache_file *file,
 	e_field_type type,
 	char const *name,
 	void *definition,
@@ -872,7 +875,7 @@ bool field_parse(
 	long arg_count,
 	char const **arg_values)
 {
-	auto tags_header = g_cache_file->get_tags_header();
+	auto tags_header = file->get_tags_header();
 
 	switch (type)
 	{
@@ -881,12 +884,12 @@ bool field_parse(
 			return false;
 		for (auto i = 0; i < tags_header->group_count; i++)
 		{
-			auto group = g_cache_file->get_tag_group(i);
+			auto group = file->get_tag_group(i);
 
 			if (!group || group->tags[0] == NONE)
 				continue;
 
-			auto group_name = g_cache_file->get_string(group->name);
+			auto group_name = file->get_string(group->name);
 
 			if (group_name && strcmp(group_name, arg_values[0]) == 0)
 			{
@@ -979,15 +982,15 @@ bool field_parse(
 	
 	case _field_point2d:
 		return arg_count == 2
-			&& field_parse(_field_short_integer, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_short_integer, "y", nullptr, (char *)address + 2, 1, &arg_values[1]);
+			&& field_parse(file, _field_short_integer, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_short_integer, "y", nullptr, (char *)address + 2, 1, &arg_values[1]);
 
 	case _field_rectangle2d:
 		return arg_count == 4
-			&& field_parse(_field_short_integer, "top", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_short_integer, "left", nullptr, (char *)address + 2, 1, &arg_values[1])
-			&& field_parse(_field_short_integer, "bottom", nullptr, (char *)address + 4, 1, &arg_values[2])
-			&& field_parse(_field_short_integer, "right", nullptr, (char *)address + 6, 1, &arg_values[3]);
+			&& field_parse(file, _field_short_integer, "top", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_short_integer, "left", nullptr, (char *)address + 2, 1, &arg_values[1])
+			&& field_parse(file, _field_short_integer, "bottom", nullptr, (char *)address + 4, 1, &arg_values[2])
+			&& field_parse(file, _field_short_integer, "right", nullptr, (char *)address + 6, 1, &arg_values[3]);
 
 	case _field_rgb_color:
 		if (arg_count != 1)
@@ -1021,125 +1024,126 @@ bool field_parse(
 
 	case _field_real_point2d:
 		return arg_count == 2
-			&& field_parse(_field_real, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "y", nullptr, (char *)address + 4, 1, &arg_values[1]);
+			&& field_parse(file, _field_real, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "y", nullptr, (char *)address + 4, 1, &arg_values[1]);
 
 	case _field_real_point3d:
 		return arg_count == 3
-			&& field_parse(_field_real, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "y", nullptr, (char *)address + 4, 1, &arg_values[1])
-			&& field_parse(_field_real, "z", nullptr, (char *)address + 8, 1, &arg_values[2]);
+			&& field_parse(file, _field_real, "x", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "y", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "z", nullptr, (char *)address + 8, 1, &arg_values[2]);
 
 	case _field_real_vector2d:
 		return arg_count == 2
-			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1]);
+			&& field_parse(file, _field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1]);
 
 	case _field_real_vector3d:
 		return arg_count == 3
-			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
-			&& field_parse(_field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2]);
+			&& field_parse(file, _field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2]);
 
 	case _field_real_quaternion:
 		return arg_count == 4
-			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
-			&& field_parse(_field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2])
-			&& field_parse(_field_real, "w", nullptr, (char *)address + 12, 1, &arg_values[3]);
+			&& field_parse(file, _field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2])
+			&& field_parse(file, _field_real, "w", nullptr, (char *)address + 12, 1, &arg_values[3]);
 
 	case _field_real_euler_angles2d:
 		return arg_count == 2
-			&& field_parse(_field_angle, "yaw", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_angle, "pitch", nullptr, (char *)address + 4, 1, &arg_values[1]);
+			&& field_parse(file, _field_angle, "yaw", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_angle, "pitch", nullptr, (char *)address + 4, 1, &arg_values[1]);
 
 	case _field_real_euler_angles3d:
 		return arg_count == 3
-			&& field_parse(_field_angle, "yaw", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_angle, "pitch", nullptr, (char *)address + 4, 1, &arg_values[1])
-			&& field_parse(_field_angle, "roll", nullptr, (char *)address + 8, 1, &arg_values[2]);
+			&& field_parse(file, _field_angle, "yaw", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_angle, "pitch", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(file, _field_angle, "roll", nullptr, (char *)address + 8, 1, &arg_values[2]);
 
 	case _field_real_plane2d:
 		return arg_count == 3
-			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
-			&& field_parse(_field_real, "d", nullptr, (char *)address + 8, 1, &arg_values[2]);
+			&& field_parse(file, _field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "d", nullptr, (char *)address + 8, 1, &arg_values[2]);
 
 	case _field_real_plane3d:
 		return arg_count == 4
-			&& field_parse(_field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
-			&& field_parse(_field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2])
-			&& field_parse(_field_real, "d", nullptr, (char *)address + 12, 1, &arg_values[3]);
+			&& field_parse(file, _field_real, "i", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "j", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "k", nullptr, (char *)address + 8, 1, &arg_values[2])
+			&& field_parse(file, _field_real, "d", nullptr, (char *)address + 12, 1, &arg_values[3]);
 
 	case _field_real_matrix4x3:
 		return arg_count == 13
-			&& field_parse(_field_real, "scale", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real_vector3d, "forward", nullptr, (char *)address + 4, 3, &arg_values[1])
-			&& field_parse(_field_real_vector3d, "left", nullptr, (char *)address + 16, 3, &arg_values[4])
-			&& field_parse(_field_real_vector3d, "up", nullptr, (char *)address + 28, 3, &arg_values[7])
-			&& field_parse(_field_real_point3d, "position", nullptr, (char *)address + 40, 3, &arg_values[10]);
+			&& field_parse(file, _field_real, "scale", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real_vector3d, "forward", nullptr, (char *)address + 4, 3, &arg_values[1])
+			&& field_parse(file, _field_real_vector3d, "left", nullptr, (char *)address + 16, 3, &arg_values[4])
+			&& field_parse(file, _field_real_vector3d, "up", nullptr, (char *)address + 28, 3, &arg_values[7])
+			&& field_parse(file, _field_real_point3d, "position", nullptr, (char *)address + 40, 3, &arg_values[10]);
 
 	case _field_real_rgb_color:
 		return arg_count == 3
-			&& field_parse(_field_real, "red", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "green", nullptr, (char *)address + 4, 1, &arg_values[1])
-			&& field_parse(_field_real, "blue", nullptr, (char *)address + 8, 1, &arg_values[2]);
+			&& field_parse(file, _field_real, "red", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "green", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "blue", nullptr, (char *)address + 8, 1, &arg_values[2]);
 
 	case _field_real_argb_color:
 		return arg_count == 4
-			&& field_parse(_field_real, "alpha", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "red", nullptr, (char *)address + 4, 1, &arg_values[0])
-			&& field_parse(_field_real, "green", nullptr, (char *)address + 8, 1, &arg_values[1])
-			&& field_parse(_field_real, "blue", nullptr, (char *)address + 12, 1, &arg_values[2]);
+			&& field_parse(file, _field_real, "alpha", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "red", nullptr, (char *)address + 4, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "green", nullptr, (char *)address + 8, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "blue", nullptr, (char *)address + 12, 1, &arg_values[2]);
 
 	case _field_real_hsv_color:
 		return arg_count == 3
-			&& field_parse(_field_real, "hue", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "saturation", nullptr, (char *)address + 4, 1, &arg_values[1])
-			&& field_parse(_field_real, "value", nullptr, (char *)address + 8, 1, &arg_values[2]);
+			&& field_parse(file, _field_real, "hue", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "saturation", nullptr, (char *)address + 4, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "value", nullptr, (char *)address + 8, 1, &arg_values[2]);
 
 	case _field_real_ahsv_color:
 		return arg_count == 4
-			&& field_parse(_field_real, "alpha", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "hue", nullptr, (char *)address + 4, 1, &arg_values[0])
-			&& field_parse(_field_real, "saturation", nullptr, (char *)address + 8, 1, &arg_values[1])
-			&& field_parse(_field_real, "value", nullptr, (char *)address + 12, 1, &arg_values[2]);
+			&& field_parse(file, _field_real, "alpha", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "hue", nullptr, (char *)address + 4, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "saturation", nullptr, (char *)address + 8, 1, &arg_values[1])
+			&& field_parse(file, _field_real, "value", nullptr, (char *)address + 12, 1, &arg_values[2]);
 
 	case _field_short_bounds:
 		return arg_count == 2
-			&& field_parse(_field_short_integer, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_short_integer, "upper", nullptr, (char *)address + 2, 1, &arg_values[1]);
+			&& field_parse(file, _field_short_integer, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_short_integer, "upper", nullptr, (char *)address + 2, 1, &arg_values[1]);
 
 	case _field_angle_bounds:
 		return arg_count == 2
-			&& field_parse(_field_angle, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_angle, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
+			&& field_parse(file, _field_angle, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_angle, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
 
 	case _field_real_bounds:
 		return arg_count == 2
-			&& field_parse(_field_real, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
+			&& field_parse(file, _field_real, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
 
 	case _field_fraction_bounds:
 		return arg_count == 2
-			&& field_parse(_field_real_fraction, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
-			&& field_parse(_field_real_fraction, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
+			&& field_parse(file, _field_real_fraction, "lower", nullptr, (char *)address + 0, 1, &arg_values[0])
+			&& field_parse(file, _field_real_fraction, "upper", nullptr, (char *)address + 4, 1, &arg_values[1]);
 
 	case _field_tag_reference:
-		return field_parse_tag_reference(name, (s_tag_reference_definition *)definition, address, arg_count, arg_values);
+		return field_parse_tag_reference(file, name, (s_tag_reference_definition *)definition, address, arg_count, arg_values);
 	}
 
 	return false;
 }
 
 void *struct_print(
+	c_cache_file *file,
 	s_struct_definition *definition,
 	void *address,
 	char const *filter)
 {
 	if (definition->parent)
-		address = struct_print(definition->parent, address, filter);
+		address = struct_print(file, definition->parent, address, filter);
 
 	for (auto field = &definition->fields[0];
 		field->type != _field_terminator;
@@ -1148,7 +1152,7 @@ void *struct_print(
 		if (filter && !strstr(field->name, filter))
 			continue;
 
-		field_print(field->type, field->name, field->definition, address);
+		field_print(file, field->type, field->name, field->definition, address);
 	}
 
 	return address;

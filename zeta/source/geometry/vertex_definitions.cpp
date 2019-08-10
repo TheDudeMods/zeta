@@ -468,24 +468,3 @@ long vertex_element_get_size(
 		return NONE;
 	}
 }
-
-bool vertex_element_next(
-	s_vertex_definition *definition,
-	void **element_address,
-	void **data_address)
-{
-	assert(definition);
-	assert(element_address);
-
-	auto element_size = vertex_element_get_size(*element_address);
-
-	if (element_size == NONE)
-		return false;
-
-	if (data_address)
-		*(char **)data_address += element_size;
-
-	(*(D3D11_INPUT_ELEMENT_DESC **)element_address)++;
-
-	return true;
-}

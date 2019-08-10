@@ -109,6 +109,42 @@ enum e_prt_type
 	k_number_of_prt_types
 };
 
+enum e_vertex_buffer_type
+{	// TODO: verify
+	_vertex_buffer_type_invalid,
+	_vertex_buffer_type_world,
+	_vertex_buffer_type_rigid,
+	_vertex_buffer_type_skinned,
+	_vertex_buffer_type_static_per_pixel,
+	_vertex_buffer_type_unknown_5,
+	_vertex_buffer_type_static_per_vertex,
+	_vertex_buffer_type_unknown_7,
+	_vertex_buffer_type_unused_8,
+	_vertex_buffer_type_ambient_prt,
+	_vertex_buffer_type_linear_prt,
+	_vertex_buffer_type_quadratic_prt,
+	_vertex_buffer_type_unknown_c,
+	_vertex_buffer_type_unknown_d,
+	_vertex_buffer_type_static_per_vertex_color,
+	_vertex_buffer_type_unknown_f,
+	_vertex_buffer_type_unused_10,
+	_vertex_buffer_type_unused_11,
+	_vertex_buffer_type_unused_12,
+	_vertex_buffer_type_unused_13,
+	_vertex_buffer_type_tiny_position,
+	_vertex_buffer_type_unknown_15,
+	_vertex_buffer_type_unknown_16,
+	_vertex_buffer_type_unknown_17,
+	_vertex_buffer_type_decorator,
+	_vertex_buffer_type_particle_model,
+	_vertex_buffer_type_unknown_1a,
+	_vertex_buffer_type_unknown_1b,
+	_vertex_buffer_type_unknown_1c,
+	_vertex_buffer_type_unused_1d,
+	_vertex_buffer_type_world2,
+	k_number_of_vertex_buffer_types
+};
+
 enum e_index_buffer_type
 {
 	_index_buffer_type_default,
@@ -340,7 +376,7 @@ static_assert(sizeof(s_render_geometry) == 0xA8);
 struct s_render_geometry_api_vertex_buffer
 {
 	long count;
-	short format;
+	c_enum<e_vertex_buffer_type, short> format;
 	short vertex_size;
 	s_tag_data data;
 };
@@ -354,7 +390,7 @@ static_assert(sizeof(s_render_geometry_api_vertex_buffer_reference) == 0xC);
 
 struct s_render_geometry_api_index_buffer
 {
-	long format;
+	c_enum<e_index_buffer_type, long> format;
 	long unknown;
 	s_tag_data data;
 };

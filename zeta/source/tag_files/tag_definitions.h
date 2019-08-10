@@ -176,14 +176,16 @@ struct s_padding_definition
 	void *definition;
 };
 
+class c_cache_file;
+
 /* ---------- prototypes/TAG_DEFINITIONS.CPP */
 
 qword field_get_size(e_field_type type, void *definition);
-void field_print(e_field_type type, char const *name, void *definition, void *address);
+void field_print(c_cache_file *file, e_field_type type, char const *name, void *definition, void *address);
 void field_next(s_field_definition **out_field, void **out_address);
-bool field_parse(e_field_type type, char const *name, void *definition, void *address, long arg_count, char const **arg_values);
+bool field_parse(c_cache_file *file, e_field_type type, char const *name, void *definition, void *address, long arg_count, char const **arg_values);
 
-void *struct_print(s_struct_definition *definition, void *address, char const *filter);
+void *struct_print(c_cache_file *file, s_struct_definition *definition, void *address, char const *filter);
 s_field_definition *struct_get_field(s_struct_definition *definition, char const *name, void **out_address);
 
 s_tag_group_definition *tag_group_definition_get(tag group_tag);

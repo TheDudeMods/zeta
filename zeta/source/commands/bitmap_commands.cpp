@@ -36,11 +36,13 @@ static s_command_set g_bitmap_command_sets[k_number_of_bitmap_command_sets] =
 c_bitmap_command_context::c_bitmap_command_context(
 	char const *name,
 	s_bitmap_definition *bitmap,
+	c_cache_file *file,
 	c_command_context *parent) :
 	c_editing_command_context(
 		name,
 		bitmap,
 		&bitmap_group,
+		file,
 		parent),
 	m_bitmap(bitmap)
 {
@@ -63,12 +65,32 @@ bool extract_bitmap_execute(
 	auto image_index = strtoul(arg_values[0], nullptr, 0);
 	auto filename = arg_values[1];
 
-	auto editing_context = (c_bitmap_command_context *)g_command_context;
+	auto editing_context = dynamic_cast<c_bitmap_command_context *>(g_command_context);
+	auto file = editing_context->get_file();
+
+	if (!editing_context)
+	{
+		puts("ERROR: invalid command context!");
+		return true;
+	}
 
 	auto bitmap = editing_context->get_bitmap();
-	auto image = &bitmap->images[image_index];
 
-	c_cache_file_tag_resource<s_bitmap_texture_interop_resource> bitmap_resource(bitmap->resources[image_index].resource_index);
+	s_bitmap_image *image = nullptr;
+	if (!bitmap->images.try_get_element(file, image_index, &image) || !image)
+	{
+		printf("ERROR: Invalid image index: %ul\n", image_index);
+		return true;
+	}
+
+	s_bitmap_resource_info *resource_info = nullptr;
+	if (!bitmap->resources.try_get_element(file, image_index, &resource_info) || !resource_info)
+	{
+		printf("ERROR: Invalid image index: %ul\n", image_index);
+		return true;
+	}
+
+	c_cache_file_tag_resource<s_bitmap_texture_interop_resource> bitmap_resource(file, resource_info->resource_index);
 	auto image_resource = (s_bitmap_texture_resource *)bitmap_resource.get_data(bitmap_resource->bitmap.address);
 
 	s_dds_header dds_header;

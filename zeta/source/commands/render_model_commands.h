@@ -13,6 +13,7 @@ public:
 	c_render_model_command_context(
 		char const *name,
 		s_render_model_definition *render_model,
+		c_cache_file *file,
 		c_command_context *parent = nullptr);
 
 	s_render_model_definition *get_render_model();

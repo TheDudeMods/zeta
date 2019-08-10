@@ -13,7 +13,7 @@ struct s_tag_iterator
 /* ---------- prototypes/TAG_FILES.CPP */
 
 void tag_iterator_initialize(s_tag_iterator *iterator, tag group_tag);
-long tag_iterator_next(s_tag_iterator *iterator);
+long tag_iterator_next(c_cache_file *file, s_tag_iterator *iterator);
 
 /* ---------- inline headers */
 

@@ -15,6 +15,7 @@ public:
 	c_bitmap_command_context(
 		char const *name,
 		s_bitmap_definition *bitmap,
+		c_cache_file *file,
 		c_command_context *parent = nullptr);
 
 	s_bitmap_definition *get_bitmap();

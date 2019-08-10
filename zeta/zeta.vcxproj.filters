@@ -192,6 +192,21 @@
     <ClCompile Include="source\cseries\cseries_errors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\cseries\cseries.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cseries\cseries_asserts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cseries\cseries_memory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cseries\cseries_string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\datatypes\static_string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ai\ai.h">
@@ -420,6 +435,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\cseries\cseries_errors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cseries\cseries.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cseries\cseries_asserts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cseries\cseries_memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cseries\cseries_string.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\datatypes\enum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\datatypes\flags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\datatypes\static_array.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\datatypes\static_string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

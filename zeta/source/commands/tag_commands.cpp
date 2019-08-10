@@ -1,4 +1,6 @@
 #include <bitmaps/bitmaps.h>
+#include <tag_files/tag_files.h>
+#include <cache\cache_file_tag_resources.h>
 #include <commands/bitmap_commands.h>
 #include <commands/editing_commands.h>
 #include <commands/render_model_commands.h>
@@ -17,7 +19,7 @@ s_command g_tag_commands[k_number_of_tag_commands] =
 {
 	{
 		"list_tags",
-		"list_tags <group_tag>",
+		"list_tags <group_tag> [filter]",
 		"Lists all tags instances of the specified group.",
 		true,
 		list_tags_execute
@@ -28,7 +30,21 @@ s_command g_tag_commands[k_number_of_tag_commands] =
 		"Opens the specified tag instance for editing.",
 		false,
 		edit_tag_execute
-	}
+	},
+	{
+		"file_offset",
+		"file_offset <page_address>",
+		"Lists the file offset for a page address.",
+		true,
+		file_offset_execute
+	},
+	{
+		"list_local_resource_tags",
+		"list_local_resource_tags <group_tag>",
+		"Lists all resource-owning tags instances of the specified group within the current cache file.",
+		true,
+		list_local_resource_tags_execute
+	},
 };
 
 static s_command_set g_tag_command_sets[k_number_of_tag_command_sets] =
@@ -39,9 +55,10 @@ static s_command_set g_tag_command_sets[k_number_of_tag_command_sets] =
 /* ---------- code */
 
 c_command_context *create_tag_command_context(
+	c_cache_file *file,
 	c_command_context *parent)
 {
-	 return new c_command_context("tags", k_number_of_tag_command_sets, g_tag_command_sets, parent);
+	 return new c_command_context("tags", k_number_of_tag_command_sets, g_tag_command_sets, file, parent);
 }
 
 bool list_tags_execute(
@@ -51,9 +68,11 @@ bool list_tags_execute(
 	if (arg_count < 1 || arg_count > 2)
 		return false;
 
+	auto file = g_command_context->get_file();
+
 	tag group_tag = NONE;
 	
-	if (!field_parse(_field_tag, "group_tag", nullptr, &group_tag, 1, &arg_values[0]))
+	if (!field_parse(file, _field_tag, "group_tag", nullptr, &group_tag, 1, &arg_values[0]))
 	{
 		printf("ERROR: failed to parse group: %s\n", arg_values[0]);
 		return true;
@@ -61,30 +80,31 @@ bool list_tags_execute(
 
 	auto filter = arg_count > 1 ? arg_values[1] : nullptr;
 
-	auto tags_header = g_cache_file->get_tags_header();
+	auto tags_header = file->get_tags_header();
 
 	for (auto i = 0; i < tags_header->tag_count; i++)
 	{
-		auto instance = g_cache_file->get_tag_instance(i);
+		auto instance = file->get_tag_instance(i);
 
 		if (!instance || !instance->address || instance->group_index == NONE)
 			continue;
 
-		auto tag_name = g_cache_file->get_tag_name(i);
+		auto tag_name = file->get_tag_name(i);
 		auto tag_name_length = strlen(tag_name);
 
 		if (filter && !strstr(tag_name, filter))
 			continue;
 
-		auto group = g_cache_file->get_tag_group(instance->group_index);
-		auto cache_file_header = g_cache_file->get_header();
+		auto group = file->get_tag_group(instance->group_index);
+		auto cache_file_header = file->get_header();
 
 		if (group->is_in_group(group_tag))
-			printf("[Index: 0x%04lX, Offset: 0x%llX] %s.%s\n",
+			printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",
 				i,
-				cache_file_header->memory_buffer_offset + g_cache_file->get_page_offset(instance->address),
+				instance->identifier,
+				cache_file_header->memory_buffer_offset + file->get_page_offset(instance->address),
 				tag_name_length == 0 ? "<unnamed>" : tag_name,
-				g_cache_file->get_string(group->name));
+				file->get_string(group->name));
 	}
 
 	return true;
@@ -97,19 +117,19 @@ bool edit_tag_execute(
 	if (arg_count != 1)
 		return false;
 
+	auto file = g_command_context->get_file();
+
 	s_tag_reference reference;
-	field_parse(_field_tag_reference, "reference", nullptr, &reference, arg_count, arg_values);
+	field_parse(file, _field_tag_reference, "reference", nullptr, &reference, arg_count, arg_values);
 
-	auto instance = g_cache_file->get_tag_instance(reference.index & k_word_maximum);
-
+	auto instance = file->get_tag_instance(reference.index & k_word_maximum);
 	if (!instance || !instance->address || instance->group_index == NONE)
 	{
 		printf("ERROR: tag instance 0x%04lX is null!", reference.index & k_word_maximum);
 		return true;
 	}
 
-	auto group = g_cache_file->get_tag_group(instance->group_index);
-
+	auto group = file->get_tag_group(instance->group_index);
 	if (!group)
 	{
 		printf("ERROR: failed to get tag group of tag instance 0x%04lX!", reference.index & k_word_maximum);
@@ -117,7 +137,6 @@ bool edit_tag_execute(
 	}
 
 	auto group_definition = tag_group_definition_get(group->tags[0]);
-
 	if (!group_definition)
 	{
 		char tag_string[5];
@@ -127,8 +146,8 @@ bool edit_tag_execute(
 
 	long_string tag_name_string;
 
-	auto tag_name = g_cache_file->get_tag_name(reference.index & k_word_maximum);
-	auto group_name = g_cache_file->get_string(group->name);
+	auto tag_name = file->get_tag_name(reference.index & k_word_maximum);
+	auto group_name = file->get_string(group->name);
 	
 	auto separator = strrchr(tag_name, '\\');
 	
@@ -137,7 +156,7 @@ bool edit_tag_execute(
 
 	sprintf(tag_name_string.ascii, "(0x%04lX) %s.%s", reference.index & k_word_maximum, tag_name, group_name);
 
-	auto tag_definition = g_cache_file->get_tag_definition<void>(reference.index & k_word_maximum);
+	auto tag_definition = file->get_tag_definition<void>(reference.index & k_word_maximum);
 
 	switch (group->tags[0])
 	{
@@ -145,6 +164,7 @@ bool edit_tag_execute(
 		g_command_context = new c_bitmap_command_context(
 			tag_name_string.ascii,
 			(s_bitmap_definition *)tag_definition,
+			file,
 			g_command_context);
 		break;
 
@@ -152,6 +172,7 @@ bool edit_tag_execute(
 		g_command_context = new c_render_model_command_context(
 			tag_name_string.ascii,
 			(s_render_model_definition *)tag_definition,
+			file,
 			g_command_context);
 		break;
 
@@ -160,8 +181,96 @@ bool edit_tag_execute(
 			tag_name_string.ascii,
 			tag_definition,
 			group_definition,
+			file,
 			g_command_context);
 		break;
+	}
+
+	return true;
+}
+
+bool file_offset_execute(
+	long arg_count,
+	char const **arg_values)
+{
+	if (arg_count != 1)
+		return false;
+
+	auto file = g_command_context->get_file();
+
+	auto value = strtoul(arg_values[0], nullptr, 0);
+	auto cache_file_header = file->get_header();
+
+	printf("File Offset: 0x%llX\n", cache_file_header->memory_buffer_offset + file->get_page_offset(value));
+
+	return true;
+}
+
+bool list_local_resource_tags_execute(
+	long arg_count,
+	char const **arg_values)
+{
+	if (arg_count > 1)
+		return false;
+
+	auto file = g_command_context->get_file();
+
+	tag group_tag = NONE;
+	s_tag_group *group = nullptr;
+
+	if (arg_count != 0)
+	{
+		if (!field_parse(file, _field_tag, "group_tag", nullptr, &group_tag, 1, &arg_values[0]))
+		{
+			printf("ERROR: failed to parse group: %s\n", arg_values[0]);
+			return true;
+		}
+
+		group = file->get_tag_group(file->find_tag_group(group_tag));
+	}
+
+	auto cache_file_header = file->get_header();
+	auto zone_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(file).next();
+	auto zone = file->get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
+
+	auto tag_resources = file->get_page_data<s_cache_file_tag_resource>(zone->tag_resources.address);
+
+	for (auto i = 0; i < zone->tag_resources.count; i++)
+	{
+		auto tag_resource = &tag_resources[i];
+
+		if (group && !group->is_in_group(tag_resource->parent_tag.group_tag))
+			continue;
+
+		s_cache_file_resource_segment *segment = nullptr;
+		if (!tag_resource->segment_index.try_resolve(file, &zone->layout_table.segments, &segment))
+			continue;
+
+		s_cache_file_resource_page *primary_page = nullptr;
+		if (segment->primary_page.try_resolve(file, &zone->layout_table.pages, &primary_page))
+			if (primary_page->block_offset == NONE)
+				primary_page = nullptr;
+
+		s_cache_file_resource_page *secondary_page = nullptr;
+		if (segment->secondary_page.try_resolve(file, &zone->layout_table.pages, &secondary_page))
+			if (secondary_page->block_offset == NONE)
+				secondary_page = nullptr;
+
+		auto page = secondary_page ? secondary_page : primary_page;
+		if (!page || page->shared_cache_file) continue;
+
+		auto instance = file->get_tag_instance(tag_resource->parent_tag.index);
+
+		auto tag_name = file->get_tag_name(tag_resource->parent_tag.index);
+		auto tag_name_length = strlen(tag_name);
+		auto tag_group = file->get_tag_group(instance->group_index);
+
+		printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",
+			i,
+			instance->identifier,
+			cache_file_header->memory_buffer_offset + file->get_page_offset(instance->address),
+			tag_name_length == 0 ? "<unnamed>" : tag_name,
+			file->get_string(tag_group->name));
 	}
 
 	return true;

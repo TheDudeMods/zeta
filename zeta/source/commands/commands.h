@@ -2,6 +2,7 @@
 
 #include <cseries/cseries.h>
 #include <datatypes/static_string.h>
+#include <cache/cache_files.h>
 
 /* ---------- structures */
 
@@ -29,14 +30,16 @@ protected:
 	long m_command_set_count;
 	s_command_set *m_command_sets;
 	c_command_context *m_parent;
+	c_cache_file *m_file;
 
 public:
-	c_command_context(char const *name, long command_set_count, s_command_set *command_sets, c_command_context *parent = nullptr);
+	c_command_context(char const *name, long command_set_count, s_command_set *command_sets, c_cache_file *file, c_command_context *parent = nullptr);
 
-	char *get_name(char *buffer) const;
-	long get_command_count() const;
-	s_command *get_command(char const *name);
-	c_command_context *get_parent() const;
+	virtual char *get_name(char *buffer) const;
+	virtual long get_command_count() const;
+	virtual s_command *get_command(char const *name);
+	virtual c_command_context *get_parent() const;
+	virtual c_cache_file *get_file() const;
 };
 
 /* ---------- globals/COMMANDS.CPP */
@@ -45,4 +48,4 @@ extern c_command_context *g_command_context;
 
 /* ---------- prototypes/COMMANDS.CPP */
 
-void command_loop_execute();
+void command_loop_execute(c_cache_file *file);
