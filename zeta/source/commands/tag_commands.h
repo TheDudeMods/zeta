@@ -17,7 +17,7 @@ extern s_command g_tag_commands[k_number_of_tag_commands];
 
 /* ---------- prototypes/TAG_COMMANDS.CPP */
 
-c_command_context *create_tag_command_context(c_cache_file *file, c_command_context *parent = nullptr);
+c_command_context *create_tag_command_context(c_cache_file_reach *file, c_command_context *parent = nullptr);
 
 bool list_tags_execute(long arg_count, char const **arg_values);
 bool edit_tag_execute(long arg_count, char const **arg_values);

@@ -36,7 +36,7 @@ static s_command_set g_bitmap_command_sets[k_number_of_bitmap_command_sets] =
 c_bitmap_command_context::c_bitmap_command_context(
 	char const *name,
 	s_bitmap_definition *bitmap,
-	c_cache_file *file,
+	c_cache_file_reach *file,
 	c_command_context *parent) :
 	c_editing_command_context(
 		name,
@@ -90,7 +90,7 @@ bool extract_bitmap_execute(
 		return true;
 	}
 
-	c_cache_file_tag_resource<s_bitmap_texture_interop_resource> bitmap_resource(file, resource_info->resource_index);
+	c_cache_file_reach_tag_resource<s_bitmap_texture_interop_resource> bitmap_resource(file, resource_info->resource_index);
 	auto image_resource = (s_bitmap_texture_resource *)bitmap_resource.get_data(bitmap_resource->bitmap.address);
 
 	s_dds_header dds_header;

@@ -1,6 +1,6 @@
 #include <bitmaps/bitmaps.h>
 #include <tag_files/tag_files.h>
-#include <cache\cache_file_tag_resources.h>
+#include <cache/cache_file_tag_resources.h>
 #include <commands/bitmap_commands.h>
 #include <commands/editing_commands.h>
 #include <commands/render_model_commands.h>
@@ -55,7 +55,7 @@ static s_command_set g_tag_command_sets[k_number_of_tag_command_sets] =
 /* ---------- code */
 
 c_command_context *create_tag_command_context(
-	c_cache_file *file,
+	c_cache_file_reach *file,
 	c_command_context *parent)
 {
 	 return new c_command_context("tags", k_number_of_tag_command_sets, g_tag_command_sets, file, parent);

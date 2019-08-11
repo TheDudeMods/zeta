@@ -40,7 +40,7 @@ static s_command_set g_render_model_command_sets[k_number_of_render_model_comman
 c_render_model_command_context::c_render_model_command_context(
 	char const *name,
 	s_render_model_definition *render_model,
-	c_cache_file *file,
+	c_cache_file_reach *file,
 	c_command_context *parent) :
 	c_editing_command_context(
 		name,
@@ -83,7 +83,7 @@ bool extract_render_model_execute(
 	auto render_model = context->get_render_model();
 	auto render_model_name = file->get_string(render_model->name);
 
-	auto geometry_resource = c_cache_file_tag_resource<s_render_geometry_api_resource_definition>(
+	auto geometry_resource = c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition>(
 		file, render_model->geometry.resource_index);
 	
 	auto vertex_buffers = geometry_resource.get_data<s_render_geometry_api_vertex_buffer_reference>(

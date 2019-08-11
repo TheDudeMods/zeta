@@ -49,7 +49,7 @@ c_editing_command_context::c_editing_command_context(
 	char const *name,
 	void *address,
 	s_struct_definition *definition,
-	c_cache_file *file,
+	c_cache_file_reach *file,
 	c_command_context *parent) :
 	c_command_context(
 		name,

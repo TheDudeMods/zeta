@@ -18,7 +18,7 @@ c_command_context::c_command_context(
 	char const *name,
 	long command_set_count,
 	s_command_set *command_sets,
-	c_cache_file *file,
+	c_cache_file_reach *file,
 	c_command_context *parent) :
 	m_name(name),
 	m_command_set_count(command_set_count),
@@ -76,12 +76,12 @@ c_command_context *c_command_context::get_parent() const
 	return m_parent;
 }
 
-c_cache_file *c_command_context::get_file() const
+c_cache_file_reach *c_command_context::get_file() const
 {
 	return m_file;
 }
 
-void command_loop_execute(c_cache_file *file)
+void command_loop_execute(c_cache_file_reach *file)
 {
 	g_command_context = create_tag_command_context(file);
 
