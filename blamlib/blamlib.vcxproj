@@ -60,6 +60,7 @@
     <ClInclude Include="source\math\integer_math.h" />
     <ClInclude Include="source\math\real_math.h" />
     <ClInclude Include="source\memory\data_base.h" />
+    <ClInclude Include="source\tag_files\tag_definitions_base.h" />
     <ClInclude Include="source\zlib\crc32.h" />
     <ClInclude Include="source\zlib\deflate.h" />
     <ClInclude Include="source\zlib\gzguts.h" />
