@@ -170,6 +170,9 @@ void *c_cache_file_reach::get_resource_page_data(
 
 		fseek(stream, page->block_offset, SEEK_SET);
 
+		if (location)
+			fseek(stream, location->block_offset, SEEK_CUR);
+
 		auto uncompressed_data = new byte[page->uncompressed_block_size];
 		memset(uncompressed_data, 0, page->uncompressed_block_size);
 

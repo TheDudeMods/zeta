@@ -84,7 +84,8 @@ static_assert(sizeof(s_cache_file_resource_compression_codec) == 0x10);
 struct s_cache_file_resource_physical_location
 {
 	short_string path;
-	long unknown[58];
+	long unknown[57];
+	dword block_offset;
 };
 static_assert(sizeof(s_cache_file_resource_physical_location) == 0x108);
 

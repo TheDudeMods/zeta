@@ -257,7 +257,9 @@ bool list_local_resource_tags_execute(
 				secondary_page = nullptr;
 
 		auto page = secondary_page ? secondary_page : primary_page;
-		if (!page || page->shared_cache_file) continue;
+		if (!page || !page->shared_cache_file) continue;
+
+		auto location = page->shared_cache_file.resolve(file, &zone->layout_table.physical_locations);
 
 		auto instance = file->get_tag_instance(tag_resource->parent_tag.index);
 
