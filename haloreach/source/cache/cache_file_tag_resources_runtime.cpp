@@ -30,7 +30,7 @@ bool c_cache_file_reach::tag_resource_definition_try_and_get(
 	if (!resource_gestalt->tag_resources.try_get_element(this, resource_absolute_index, &tag_resource))
 		return false;
 
-	if (resource_identifier != tag_resource->identifier)
+	if ((tag_resource->identifier != (word)NONE) && resource_identifier != tag_resource->identifier)
 		return false;
 
 	auto gestalt_definition_data = get_page_data<char>(resource_gestalt->definition_data.address);
@@ -78,6 +78,9 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 	if (resource_index == NONE)
 		return false;
 
+	auto resource_identifier = DATUM_INDEX_TO_IDENTIFIER(resource_index);
+	auto resource_absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(resource_index);
+
 	auto zone_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(this).next();
 	if (zone_index == NONE)
 		return false;
@@ -85,7 +88,7 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 	auto definition = get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
 
 	s_cache_file_tag_resource *resource = nullptr;
-	if (!definition->tag_resources.try_get_element(this, resource_index & k_word_maximum, &resource))
+	if (!definition->tag_resources.try_get_element(this, resource_absolute_index, &resource))
 		return false;
 
 	if (!resource->segment_index)
@@ -116,14 +119,16 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 			secondary_page = nullptr;
 
 	auto page = secondary_page ? secondary_page : primary_page;
-	if (!page) return false;
+	if (!page)
+		return false;
 
 	s_cache_file_resource_physical_location *location = nullptr;
 	if (page->shared_cache_file && !page->shared_cache_file.try_resolve(this, &definition->layout_table.physical_locations, &location))
 		return false;
 
 	auto data = get_resource_page_data(location, page);
-	if (!data) return false;
+	if (!data)
+		return false;
 
 	if (out_length) *out_length = page->uncompressed_block_size;
 	if (out_address) *out_address = data;

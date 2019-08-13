@@ -251,17 +251,16 @@ bool extract_render_model_execute(
 
 							if (i % 2 == 0)
 							{
-								f_indices[i * 3 + 0] = f_prev[0];
-								f_indices[i * 3 + 1] = f_prev[1];
-								f_indices[i * 3 + 2] = index;
+								f_indices[(i * 3) + 0] = f_prev[0];
+								f_indices[(i * 3) + 1] = f_prev[1];
 							}
 							else
 							{
-								f_indices[i * 3 + 0] = f_prev[1];
-								f_indices[i * 3 + 1] = f_prev[0];
-								f_indices[i * 3 + 2] = index;
+								f_indices[(i * 3) + 0] = f_prev[1];
+								f_indices[(i * 3) + 1] = f_prev[0];
 							}
 
+							f_indices[(i * 3) + 2] = index;
 							f_prev[0] = f_prev[1];
 							f_prev[1] = index;
 						}
