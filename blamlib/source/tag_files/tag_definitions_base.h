@@ -147,7 +147,6 @@ struct s_array_definition
 struct s_tag_block_definition :
 	s_struct_definition
 {
-	long maximum_count;
 };
 
 struct s_tag_data_definition
