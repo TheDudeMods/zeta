@@ -23,7 +23,7 @@ long tag_iterator_next(
 	auto group_tag = iterator->group_tag;
 	auto tags_header = file->get_tags_header();
 
-	for (; iterator->index < tags_header->tag_count; iterator->index++)
+	for (; iterator->index < tags_header->instances.count; iterator->index++)
 	{
 		auto index = iterator->index;
 		auto instance = file->get_tag_instance(index);

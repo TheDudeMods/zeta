@@ -19,7 +19,7 @@ s_command g_tag_commands[k_number_of_tag_commands] =
 {
 	{
 		"list_tags",
-		"list_tags <group_tag> [filter]",
+		"list_tags [group_tag] [filter]",
 		"Lists all tags instances of the specified group.",
 		true,
 		list_tags_execute
@@ -65,14 +65,14 @@ bool list_tags_execute(
 	long arg_count,
 	char const **arg_values)
 {
-	if (arg_count < 1 || arg_count > 2)
+	if (arg_count > 2)
 		return false;
 
 	auto file = g_command_context->get_file();
 
 	tag group_tag = NONE;
 	
-	if (!field_parse(file, _field_tag, "group_tag", nullptr, &group_tag, 1, &arg_values[0]))
+	if (arg_count > 0 && !field_parse(file, _field_tag, "group_tag", nullptr, &group_tag, 1, &arg_values[0]))
 	{
 		printf("ERROR: failed to parse group: %s\n", arg_values[0]);
 		return true;
@@ -82,7 +82,7 @@ bool list_tags_execute(
 
 	auto tags_header = file->get_tags_header();
 
-	for (auto i = 0; i < tags_header->tag_count; i++)
+	for (auto i = 0; i < tags_header->instances.count; i++)
 	{
 		auto instance = file->get_tag_instance(i);
 
@@ -98,7 +98,7 @@ bool list_tags_execute(
 		auto group = file->get_tag_group(instance->group_index);
 		auto cache_file_header = file->get_header();
 
-		if (group->is_in_group(group_tag))
+		if (group_tag == NONE || group->is_in_group(group_tag))
 			printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",
 				i,
 				instance->identifier,

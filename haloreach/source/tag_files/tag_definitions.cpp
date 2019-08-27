@@ -801,7 +801,7 @@ bool field_parse_tag_reference(
 
 		auto tag_name_is_wildcard = strcmp(tag_name, "*") == 0;
 
-		for (auto i = 0; i < tags_header->tag_count; i++)
+		for (auto i = 0; i < tags_header->instances.count; i++)
 		{
 			auto current_instance = file->get_tag_instance(i);
 
@@ -835,7 +835,7 @@ bool field_parse_tag_reference(
 	{
 		long last_index = NONE;
 
-		for (auto i = 0; i < tags_header->tag_count; i++)
+		for (auto i = 0; i < tags_header->instances.count; i++)
 		{
 			auto current_instance = file->get_tag_instance(i);
 
@@ -879,7 +879,7 @@ bool field_parse(
 	case _field_tag:
 		if (arg_count != 1)
 			return false;
-		for (auto i = 0; i < tags_header->group_count; i++)
+		for (auto i = 0; i < tags_header->groups.count; i++)
 		{
 			auto group = file->get_tag_group(i);
 

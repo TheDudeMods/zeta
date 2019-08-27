@@ -192,7 +192,7 @@ char const *c_cache_file_reach::get_tag_name(long index)
 	auto tags_header = get_tags_header();
 	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
 
-	if (absolute_index < 0 || absolute_index >= tags_header->tag_count)
+	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
 		return nullptr;
 
 	return m_tag_names_buffer + m_tag_name_indices[absolute_index];
@@ -202,7 +202,7 @@ long c_cache_file_reach::find_tag_group(tag group_tag)
 {
 	auto tags_header = get_tags_header();
 
-	for (auto i = 0; i < tags_header->group_count; i++)
+	for (auto i = 0; i < tags_header->groups.count; i++)
 	{
 		auto group = get_tag_group(i);
 		
@@ -217,10 +217,10 @@ s_tag_group *c_cache_file_reach::get_tag_group(long index)
 {
 	auto tags_header = get_tags_header();
 
-	if (index < 0 || index >= tags_header->group_count)
+	if (index < 0 || index >= tags_header->groups.count)
 		return nullptr;
 
-	return &get_buffer_data<s_tag_group>(tags_header->groups_address)[index];
+	return &get_buffer_data<s_tag_group>(tags_header->groups.address)[index];
 }
 
 s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
@@ -229,10 +229,10 @@ s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
 	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
 	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
 
-	if (absolute_index < 0 || absolute_index >= tags_header->tag_count)
+	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
 		return nullptr;
 
-	return &get_buffer_data<s_cache_file_tag_instance>(tags_header->tags_address)[absolute_index];
+	return &get_buffer_data<s_cache_file_tag_instance>(tags_header->instances.address)[absolute_index];
 }
 
 qword c_cache_file_reach::get_page_offset(dword address)

@@ -12,7 +12,8 @@ enum
 {
 	k_cache_file_header_signature = 'head',
 	k_cache_file_footer_signature = 'foot',
-	k_cache_file_tags_signature = 'tags'
+	k_cache_file_tags_signature = 'tags',
+	k_cache_file_tags_section_signature = '343i',
 };
 
 /* ---------- enumerators */
@@ -142,24 +143,24 @@ struct s_cache_file_tag_instance
 };
 static_assert(sizeof(s_cache_file_tag_instance) == 0x8);
 
+struct s_cache_file_tags_section
+{
+	dword count = 0;
+	tag post_count_signature = k_cache_file_tags_section_signature;
+	qword address = 0;
+};
+static_assert(sizeof(s_cache_file_tags_section) == 0x10);
+
 struct s_cache_file_tags_header
 {
-	dword group_count;
-	tag post_group_count_signature;
-	qword groups_address;
-	dword tag_count;
-	tag post_tag_count_signature;
-	qword tags_address;
-	dword important_group_count;
-	tag post_important_group_count_signature;
-	qword important_groups_address;
-	dword tag_interop_table_count;
-	tag post_tag_interop_table_count_signature;
-	qword tag_interop_table_address;
-	long unknown40;
-	long unknown44;
+	s_cache_file_tags_section groups;
+	s_cache_file_tags_section instances;
+	s_cache_file_tags_section important_groups;
+	s_cache_file_tags_section interop_table;
+	long unknown40; // datum index?
+	dword checksum;
 	tag signature;
-	long unknown4C;
+	long unknown4C; // datum index?
 };
 static_assert(sizeof(s_cache_file_tags_header) == 0x50);
 
