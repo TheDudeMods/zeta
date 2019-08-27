@@ -144,13 +144,17 @@ static_assert(sizeof(s_cache_file_tag_instance) == 0x8);
 
 struct s_cache_file_tags_header
 {
-	qword group_count;
+	dword group_count;
+	dword unknown04;
 	qword groups_address;
-	qword tag_count;
+	dword tag_count;
+	dword unknown14;
 	qword tags_address;
-	qword important_group_count;
+	dword important_group_count;
+	dword unknown24;
 	qword important_groups_address;
-	qword tag_interop_table_count;
+	dword tag_interop_table_count;
+	dword unknown34;
 	qword tag_interop_table_address;
 	long unknown44;
 	long unknown48;
