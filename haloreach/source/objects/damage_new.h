@@ -35,7 +35,7 @@ enum e_damage_reporting_type
 	_damage_reporting_type_spiker,
 	_damage_reporting_type_plasma_launcher,
 	_damage_reporting_type_gravity_hammer,
-	_damage_reporting_type_energy_sushort,
+	_damage_reporting_type_energy_sword,
 	_damage_reporting_type_plasma_grenade,
 	_damage_reporting_type_concussion_rifle,
 	_damage_reporting_type_ghost,
