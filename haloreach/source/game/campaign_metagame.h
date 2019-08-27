@@ -57,7 +57,7 @@ enum e_campaign_metagame_bucket_type
     _campaign_metagame_bucket_type_scarab,
     _campaign_metagame_bucket_type_guntower,
     _campaign_metagame_bucket_type_tuning_fork,
-    _campaign_metagame_bucket_type_broadsushort,
+    _campaign_metagame_bucket_type_broadsword,
     _campaign_metagame_bucket_type_mammoth,
     _campaign_metagame_bucket_type_lich,
     _campaign_metagame_bucket_type_mantis,
