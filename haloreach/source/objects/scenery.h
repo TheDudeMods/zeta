@@ -43,7 +43,7 @@ enum e_scenery_lightmapping_policy
 struct s_scenery_definition : s_object_definition
 {
     c_enum<e_scenery_pathfinding_policy, short> pathfinding_policy;
-    c_flags<e_scenery_flags, word> scenery_flags;
+    c_flags<e_scenery_flags, ushort> scenery_flags;
     c_enum<e_scenery_lightmapping_policy, short> lightmapping_policy;
     short : 16;
 };

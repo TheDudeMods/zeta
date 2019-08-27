@@ -192,7 +192,7 @@ struct s_sorting_position
 	real_plane3d plane;
 	real_point3d position;
 	real radius;
-	byte node_indices[k_number_of_node_indices_per_vertex];
+	uchar node_indices[k_number_of_node_indices_per_vertex];
 	real node_weights[k_number_of_node_weights_per_vertex];
 };
 static_assert(sizeof(s_sorting_position) == 0x30);
@@ -207,8 +207,8 @@ struct s_part
 	short subpart_count;
 	c_enum<e_part_type, char> part_type;
 	c_enum<e_specialized_render_type, char> specialized_render;
-	c_flags<e_part_flags, word> part_flags;
-	word budget_vertex_count;
+	c_flags<e_part_flags, ushort> part_flags;
+	ushort budget_vertex_count;
 	short : 16;
 };
 static_assert(sizeof(s_part) == 0x18);
@@ -218,8 +218,8 @@ struct s_subpart
 	long index_start;
 	long index_count;
 	c_tag_block_index<s_part, short> part_index;
-	word budget_vertex_count;
-	dword analytical_light_index;
+	ushort budget_vertex_count;
+	ulong analytical_light_index;
 };
 static_assert(sizeof(s_subpart) == 0x10);
 
@@ -249,7 +249,7 @@ struct s_mesh
 	c_tag_block<s_subpart> subparts;
 	short vertex_buffer_indices[k_maximum_number_of_vertex_buffers_per_mesh];
 	short index_buffer_indices[k_maximum_number_of_index_buffers_per_mesh];
-	c_flags<e_mesh_flags, byte> mesh_flags;
+	c_flags<e_mesh_flags, uchar> mesh_flags;
 	char rigid_node_index;
 	c_enum<e_vertex_type, char> vertex_type;
 	char use_dual_quat;
@@ -267,7 +267,7 @@ static_assert(sizeof(s_mesh) == 0x5C);
 
 struct s_compression_info
 {
-	c_flags<e_compression_flags, word> flags;
+	c_flags<e_compression_flags, ushort> flags;
 	short : 16;
 	real_point3d position_lower;
 	real_point3d position_upper;
@@ -348,7 +348,7 @@ static_assert(sizeof(s_water_bounding_box) == 0x1C);
 
 struct s_mesh_resource_group
 {
-	dword address;
+	ulong address;
 };
 static_assert(sizeof(s_mesh_resource_group) == 0x4);
 

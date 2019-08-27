@@ -6,6 +6,11 @@
 #include <commands/render_model_commands.h>
 #include <commands/tag_commands.h>
 
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <cstdio>
+#include <cstdlib>
+
 /* ---------- constants */
 
 enum
@@ -90,9 +95,9 @@ bool list_tags_execute(
 			continue;
 
 		auto tag_name = file->get_tag_name(i);
-		auto tag_name_length = strlen(tag_name);
+		auto tag_name_length = csstrlen(tag_name);
 
-		if (filter && !strstr(tag_name, filter))
+		if (filter && !csstrstr((char *)tag_name, filter))
 			continue;
 
 		auto group = file->get_tag_group(instance->group_index);
@@ -122,17 +127,17 @@ bool edit_tag_execute(
 	s_tag_reference reference;
 	field_parse(file, _field_tag_reference, "reference", nullptr, &reference, arg_count, arg_values);
 
-	auto instance = file->get_tag_instance(reference.index & k_word_maximum);
+	auto instance = file->get_tag_instance(reference.index & k_uint16_max);
 	if (!instance || !instance->address || instance->group_index == NONE)
 	{
-		printf("ERROR: tag instance 0x%04lX is null!", reference.index & k_word_maximum);
+		printf("ERROR: tag instance 0x%04lX is null!", reference.index & k_uint16_max);
 		return true;
 	}
 
 	auto group = file->get_tag_group(instance->group_index);
 	if (!group)
 	{
-		printf("ERROR: failed to get tag group of tag instance 0x%04lX!", reference.index & k_word_maximum);
+		printf("ERROR: failed to get tag group of tag instance 0x%04lX!", reference.index & k_uint16_max);
 		return true;
 	}
 
@@ -144,25 +149,25 @@ bool edit_tag_execute(
 		return true;
 	}
 
-	long_string tag_name_string;
+	c_static_string<256> tag_name_string;
 
-	auto tag_name = file->get_tag_name(reference.index & k_word_maximum);
+	auto tag_name = file->get_tag_name(reference.index & k_uint16_max);
 	auto group_name = file->get_string(group->name);
 	
-	auto separator = strrchr(tag_name, '\\');
+	auto separator = csstrrchr((char *)tag_name, '\\');
 	
 	if (separator)
 		tag_name = separator + 1;
 
-	sprintf(tag_name_string.ascii, "(0x%04lX) %s.%s", reference.index & k_word_maximum, tag_name, group_name);
+	sprintf(tag_name_string.get_buffer(), "(0x%04lX) %s.%s", reference.index & k_uint16_max, tag_name, group_name);
 
-	auto tag_definition = file->get_tag_definition<void>(reference.index & k_word_maximum);
+	auto tag_definition = file->get_tag_definition<void>(reference.index & k_uint16_max);
 
 	switch (group->tags[0])
 	{
 	case k_bitmap_group_tag:
 		g_command_context = new c_bitmap_command_context(
-			tag_name_string.ascii,
+			tag_name_string.get_buffer(),
 			(s_bitmap_definition *)tag_definition,
 			file,
 			g_command_context);
@@ -170,7 +175,7 @@ bool edit_tag_execute(
 
 	case k_render_model_group_tag:
 		g_command_context = new c_render_model_command_context(
-			tag_name_string.ascii,
+			tag_name_string.get_buffer(),
 			(s_render_model_definition *)tag_definition,
 			file,
 			g_command_context);
@@ -178,7 +183,7 @@ bool edit_tag_execute(
 
 	default:
 		g_command_context = new c_editing_command_context(
-			tag_name_string.ascii,
+			tag_name_string.get_buffer(),
 			tag_definition,
 			group_definition,
 			file,
@@ -264,7 +269,7 @@ bool list_local_resource_tags_execute(
 		auto instance = file->get_tag_instance(tag_resource->parent_tag.index);
 
 		auto tag_name = file->get_tag_name(tag_resource->parent_tag.index);
-		auto tag_name_length = strlen(tag_name);
+		auto tag_name_length = csstrlen(tag_name);
 		auto tag_group = file->get_tag_group(instance->group_index);
 
 		printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",

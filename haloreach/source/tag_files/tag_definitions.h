@@ -7,7 +7,7 @@ class c_cache_file_reach;
 
 /* ---------- prototypes/TAG_DEFINITIONS.CPP */
 
-qword field_get_size(e_field_type type, void *definition);
+ulonglong field_get_size(e_field_type type, void *definition);
 void field_print(c_cache_file_reach *file, e_field_type type, char const *name, void *definition, void *address);
 void field_next(s_field_definition **out_field, void **out_address);
 bool field_parse(c_cache_file_reach *file, e_field_type type, char const *name, void *definition, void *address, long arg_count, char const **arg_values);

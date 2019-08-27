@@ -60,7 +60,7 @@ static_assert(sizeof(s_water_physics_material_override) == 0x3C);
 
 struct s_water_physics_hull_surface_definition
 {
-	c_enum<e_water_physics_hull_surface_flags, word> flags;
+	c_enum<e_water_physics_hull_surface_flags, ushort> flags;
 	short : 16;
 	string_id marker_name;
 	real radius;

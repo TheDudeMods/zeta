@@ -1,0 +1,98 @@
+#pragma once
+
+#include <cseries/cseries.h>
+#include <datatypes/flags.h>
+
+/* ---------- types */
+
+enum e_memory_pool_flags
+{
+	// TODO
+	k_number_of_memory_pool_flags
+};
+
+struct s_memory_pool_block_header
+{
+	// TODO
+};
+
+struct s_memory_pool_block_info
+{
+	// TODO
+};
+
+struct s_memory_pool
+{
+	// TODO
+};
+
+/* ---------- prototypes/MEMORY_POOL.CPP */
+
+/* TODO:
+memory_pool_block_free
+memory_pool_dump_to_file
+memory_pool_inplace_new
+memory_pool_compact_incrementally
+memory_pool_dump
+memory_pool_new
+memory_pool_dispose
+memory_pool_inplace_dispose
+memory_pool_allocation_size
+memory_pool_clear
+memory_pool_compact
+memory_pool_verify
+memory_pool_set_relocation_function
+memory_pool_set_reference_tracking
+memory_pool_set_allow_block_pointers
+memory_pool_set_allocation_from_anywhere_in_pool
+memory_pool_set_allocation_from_anywhere_in_pool_on_failure
+memory_pool_set_allow_compact_on_allocate
+memory_pool_set_verification
+memory_pool_get_number_of_blocks
+memory_pool_get_free_size
+memory_pool_get_used_size
+memory_pool_get_contiguous_free_size
+memory_pool_get_bounds
+memory_pool_block_allocate_handle_tracked
+memory_pool_block_reallocate_handle_tracked
+memory_pool_block_free_handle
+memory_pool_block_verify_handle
+memory_pool_handle_get_address
+memory_pool_get_block_handle_size
+memory_pool_block_allocate_tracked
+memory_pool_block_reallocate_tracked
+memory_pool_block_verify
+memory_pool_get_block_size
+memory_pool_dump_to_debugger
+memory_pool_get_block
+memory_pool_address_from_handle
+memory_pool_handle_from_address
+memory_pool_compact_block
+memory_pool_get_base_address
+memory_pool_get_block_const
+memory_pool_block_get_end_of_block_const
+memory_pool_get_end_address
+memory_pool_payload_handle_from_block_handle
+memory_pool_block_handle_from_payload_handle
+memory_pool_payload_from_block_const
+memory_pool_initialize
+memory_pool_block_compute_actual_size
+memory_pool_overhead_size
+memory_pool_compute_available_inplace_size
+memory_pool_block_new
+memory_pool_block_new_from_end_of_pool
+memory_pool_block_get_end_of_block
+memory_pool_block_new_from_front_of_pool
+memory_pool_block_new_from_in_between_blocks
+memory_pool_block_initialize
+memory_pool_payload_from_block
+memory_pool_block_valid
+memory_block_notify_reference
+memory_pool_block_base_get_block
+memory_pool_block_get_base
+memory_pool_block_get_base_const
+memory_pool_block_get_header
+memory_pool_block_get_header_const
+memory_pool_payload_get_block
+memory_pool_payload_get_block_const
+*/

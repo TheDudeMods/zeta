@@ -27,7 +27,7 @@ TAG_ENUM(
 	{ "spiker", _damage_reporting_type_spiker },
 	{ "plasma_launcher", _damage_reporting_type_plasma_launcher },
 	{ "gravity_hammer", _damage_reporting_type_gravity_hammer },
-	{ "energy_sword", _damage_reporting_type_energy_sword },
+	{ "energy_sushort", _damage_reporting_type_energy_sushort },
 	{ "plasma_grenade", _damage_reporting_type_plasma_grenade },
 	{ "concussion_rifle", _damage_reporting_type_concussion_rifle },
 	{ "ghost", _damage_reporting_type_ghost },

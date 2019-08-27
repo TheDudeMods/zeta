@@ -2,6 +2,12 @@
 #include <cache/cache_files.h>
 #include <cache/cache_file_tag_resources.h>
 
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <cstdio>
+#include <cstdlib>
+
+
 /* ---------- constants */
 
 enum

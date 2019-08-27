@@ -20,14 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\cache\cache_files_base.cpp" />
-    <ClCompile Include="source\cseries\cseries.cpp" />
-    <ClCompile Include="source\cseries\cseries_asserts.cpp" />
-    <ClCompile Include="source\cseries\cseries_errors.cpp" />
-    <ClCompile Include="source\cseries\cseries_memory.cpp" />
-    <ClCompile Include="source\cseries\cseries_string.cpp" />
-    <ClCompile Include="source\datatypes\static_string.cpp" />
     <ClCompile Include="source\math\integer_math.cpp" />
+    <ClCompile Include="source\math\periodic_functions.cpp" />
+    <ClCompile Include="source\math\perlin.cpp" />
+    <ClCompile Include="source\math\polygon_math.cpp" />
     <ClCompile Include="source\math\real_math.cpp" />
+    <ClCompile Include="source\math\spherical_harmonics.cpp" />
     <ClCompile Include="source\zlib\adler32.c" />
     <ClCompile Include="source\zlib\compress.c" />
     <ClCompile Include="source\zlib\crc32.c" />
@@ -46,20 +44,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cache\cache_files_base.h" />
-    <ClInclude Include="source\cseries\cseries.h" />
-    <ClInclude Include="source\cseries\cseries_asserts.h" />
-    <ClInclude Include="source\cseries\cseries_errors.h" />
-    <ClInclude Include="source\cseries\cseries_memory.h" />
-    <ClInclude Include="source\cseries\cseries_string.h" />
-    <ClInclude Include="source\cseries\language.h" />
-    <ClInclude Include="source\datatypes\enum.h" />
-    <ClInclude Include="source\datatypes\flags.h" />
-    <ClInclude Include="source\datatypes\static_array.h" />
-    <ClInclude Include="source\datatypes\static_string.h" />
     <ClInclude Include="source\math\function_definitions.h" />
     <ClInclude Include="source\math\integer_math.h" />
+    <ClInclude Include="source\math\periodic_functions.h" />
+    <ClInclude Include="source\math\perlin.h" />
+    <ClInclude Include="source\math\polygon_math.h" />
     <ClInclude Include="source\math\real_math.h" />
-    <ClInclude Include="source\memory\data_base.h" />
+    <ClInclude Include="source\math\spherical_harmonics.h" />
+    <ClInclude Include="source\tag_files\string_ids_base.h" />
     <ClInclude Include="source\tag_files\tag_definitions_base.h" />
     <ClInclude Include="source\zlib\crc32.h" />
     <ClInclude Include="source\zlib\deflate.h" />
@@ -95,7 +87,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{C38331FE-B813-4CEE-AC68-F1C952078B2B}</ProjectGuid>
+    <ProjectGuid>{2BD1617A-DCC9-45DA-8C13-51476404E8FF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>blamlib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
@@ -147,19 +139,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)source;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)source;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)source;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)source;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -171,14 +167,20 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -190,14 +192,20 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -211,9 +219,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -221,6 +228,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -234,9 +248,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -244,6 +257,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

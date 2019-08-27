@@ -10,7 +10,7 @@ void bitmap_image_initialize_dds_header(
 	assert(resource);
 	assert(header);
 
-	memset(header, 0, sizeof(s_dds_header));
+	csmemset(header, 0, sizeof(s_dds_header));
 
 	header->four_cc = ' SDD';
 	header->size = sizeof(s_dds_header);
@@ -26,12 +26,12 @@ void bitmap_image_initialize_dds_header(
 
 	if (image->format == _bitmap_format_a8_r8_g8_b8)
 	{
-		header->flags |= FLAG(_dds_header_pitch_bit);
+		header->flags.set(_dds_header_pitch_bit, true);
 		header->pitch_or_linear_size = header->width * 4;
 	}
 	else
 	{
-		header->flags |= FLAG(_dds_header_linear_size_bit);
+		header->flags.set(_dds_header_linear_size_bit, true);
 		header->pitch_or_linear_size = bitmap_image_get_resource_length(image);
 	}
 
@@ -40,26 +40,22 @@ void bitmap_image_initialize_dds_header(
 	switch (image->format.operator e_bitmap_format())
 	{
 	case _bitmap_format_a8_r8_g8_b8:
-		header->pixel_format.flags |=
-			FLAG(_dds_format_rgb_bit) |
-			FLAG(_dds_format_alpha_pixels_bit);
+		header->pixel_format.flags.set(_dds_format_rgb_bit, true);
+		header->pixel_format.flags.set(_dds_format_alpha_pixels_bit, true);
 		break;
 
 	case _bitmap_format_dxt1:
-		header->pixel_format.flags |=
-			FLAG(_dds_format_four_cc_bit);
+		header->pixel_format.flags.set(_dds_format_four_cc_bit, true);
 		header->pixel_format.four_cc = '1TXD';
 		break;
 
 	case _bitmap_format_dxt3:
-		header->pixel_format.flags |=
-			FLAG(_dds_format_four_cc_bit);
+		header->pixel_format.flags.set(_dds_format_four_cc_bit, true);
 		header->pixel_format.four_cc = '3TXD';
 		break;
 
 	case _bitmap_format_dxt5:
-		header->pixel_format.flags |=
-			FLAG(_dds_format_four_cc_bit);
+		header->pixel_format.flags.set(_dds_format_four_cc_bit, true);
 		header->pixel_format.four_cc = '5TXD';
 		break;
 	}

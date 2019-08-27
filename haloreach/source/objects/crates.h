@@ -39,7 +39,7 @@ enum e_crate_flags
 
 struct s_crate_definition : s_object_definition
 {
-	c_flags<e_crate_flags, word> crate_flags;
+	c_flags<e_crate_flags, ushort> crate_flags;
 	short : 16;
 	c_tag_block<s_campaign_metagame_bucket> campaign_metagame_bucket;
 	long self_destruction_timer;

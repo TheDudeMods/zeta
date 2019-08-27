@@ -8,7 +8,7 @@ class c_cache_file_reach_tag_resource
 private:
 	c_cache_file_reach *m_file;
 	t_definition *m_definition;
-	byte *m_data;
+	uchar *m_data;
 	long m_data_length;
 	bool m_should_delete;
 
@@ -16,7 +16,7 @@ public:
 	c_cache_file_reach_tag_resource(c_cache_file_reach *file, t_definition *definition, void *data, long data_length, bool should_delete) :
 		m_file(file),
 		m_definition(definition),
-		m_data((byte *)data),
+		m_data((uchar *)data),
 		m_data_length(data_length),
 		m_should_delete(should_delete)
 	{
@@ -50,7 +50,7 @@ public:
 		return m_data_length;
 	}
 
-	void *get_data(dword address = 0)
+	void *get_data(ulong address = 0)
 	{
 		if (!address)
 			return m_data;
@@ -73,7 +73,7 @@ public:
 	}
 
 	template <typename t_type>
-	t_type *get_data(dword address)
+	t_type *get_data(ulong address)
 	{
 		return (t_type *)get_data(address);
 	}

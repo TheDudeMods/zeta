@@ -6,6 +6,8 @@
 #include <commands/render_model_commands.h>
 #include <geometry/geometry_definitions.h>
 
+#include <cstdio>
+
 /* ---------- constants */
 
 enum
@@ -193,7 +195,7 @@ bool extract_render_model_execute(
 
 				for (auto i = 0; i < vertex_buffer->count; i++)
 				{
-					auto vt = (word *)&vertex_data[(i * vertex_buffer->vertex_size) + 16];
+					auto vt = (ushort *)&vertex_data[(i * vertex_buffer->vertex_size) + 16];
 					auto u = (float)vt[0] / (float)USHRT_MAX;
 					auto v = -((float)vt[1] / (float)USHRT_MAX);
 
@@ -240,8 +242,8 @@ bool extract_render_model_execute(
 					{
 						auto triangle_count = part->index_count - 2;
 						
-						auto f_indices = new word[(qword)triangle_count * 3];
-						word f_prev[2] = { part_indices[0], part_indices[1] };
+						auto f_indices = new ushort[(ulonglong)triangle_count * 3];
+						ushort f_prev[2] = { part_indices[0], part_indices[1] };
 						
 						part_indices += 2;
 

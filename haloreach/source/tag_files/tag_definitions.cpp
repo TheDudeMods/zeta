@@ -4,7 +4,7 @@
 #include <cache/cache_files.h>
 #include <cache/cache_file_tag_resources.h>
 #include <camera/camera_track.h>
-#include <memory/data_base.h>
+#include <datatypes/data_array.h>
 #include <models/render_model_definitions.h>
 #include <objects/object_definitions.h>
 #include <objects/scenery.h>
@@ -15,6 +15,9 @@
 #include <items/item_definitions.h>
 #include <items/projectile_definitions.h>
 #include <units/unit_definitions.h>
+
+#include <cstdio>
+#include <cstdlib>
 
 /* ---------- globals */
 
@@ -58,7 +61,7 @@ static struct tag_definition
 
 /* ---------- code */
 
-qword field_get_size(
+ulonglong field_get_size(
 	e_field_type type,
 	void *definition)
 {
@@ -67,9 +70,9 @@ qword field_get_size(
 	case _field_tag:
 		return sizeof(tag);
 	case _field_short_string:
-		return sizeof(short_string);
+		return sizeof(c_static_string<32>);
 	case _field_long_string:
-		return sizeof(long_string);
+		return sizeof(c_static_string<256>);
 	case _field_string_id:
 		return sizeof(string_id);
 	case _field_char_integer:
@@ -81,13 +84,13 @@ qword field_get_size(
 	case _field_int64_integer:
 		return sizeof(long long);
 	case _field_byte_integer:
-		return sizeof(byte);
+		return sizeof(uchar);
 	case _field_word_integer:
-		return sizeof(word);
+		return sizeof(ushort);
 	case _field_dword_integer:
-		return sizeof(dword);
+		return sizeof(ulong);
 	case _field_qword_integer:
-		return sizeof(qword);
+		return sizeof(ulonglong);
 	case _field_char_enum:
 		return sizeof(char);
 	case _field_short_enum:
@@ -95,9 +98,9 @@ qword field_get_size(
 	case _field_long_enum:
 		return sizeof(long);
 	case _field_byte_flags:
-		return sizeof(byte);
+		return sizeof(uchar);
 	case _field_word_flags:
-		return sizeof(word);
+		return sizeof(ushort);
 	case _field_long_flags:
 		return sizeof(long);
 	case _field_point2d:
@@ -161,9 +164,9 @@ qword field_get_size(
 	case _field_long_block_index:
 		return sizeof(long);
 	case _field_byte_block_flags:
-		return sizeof(byte);
+		return sizeof(uchar);
 	case _field_word_block_flags:
-		return sizeof(word);
+		return sizeof(ushort);
 	case _field_long_block_flags:
 		return sizeof(long);
 	case _field_data:
@@ -217,23 +220,23 @@ void field_print_integer(
 		break;
 
 	case _field_byte_integer:
-		type_name = "byte_integer";
-		value = *(byte *)address;
+		type_name = "uchar_integer";
+		value = *(uchar *)address;
 		break;
 
 	case _field_word_integer:
-		type_name = "word_integer";
-		value = *(word *)address;
+		type_name = "ushort_integer";
+		value = *(ushort *)address;
 		break;
 
 	case _field_dword_integer:
-		type_name = "dword_integer";
-		value = *(dword *)address;
+		type_name = "ulong_integer";
+		value = *(ulong *)address;
 		break;
 
 	case _field_qword_integer:
-		type_name = "qword_integer";
-		value = *(qword *)address;
+		type_name = "ulonglong_integer";
+		value = *(ulonglong *)address;
 		break;
 	}
 
@@ -291,13 +294,13 @@ void field_print_flags(
 	switch (type)
 	{
 	case _field_byte_flags:
-		type_name = "byte_flags";
-		value = *(byte *)address;
+		type_name = "uchar_flags";
+		value = *(uchar *)address;
 		break;
 
 	case _field_word_flags:
-		type_name = "word_flags";
-		value = *(word *)address;
+		type_name = "ushort_flags";
+		value = *(ushort *)address;
 		break;
 
 	case _field_long_flags:
@@ -311,7 +314,7 @@ void field_print_flags(
 	printf("%s: %s = %s", name, type_name, value ? "" : "none");
 
 	for (auto i = 0, count = 0; i < enum_definition->option_count; i++)
-		if (TEST_FLAG(value, enum_definition->options[i].value))
+		if (TEST_BIT(value, enum_definition->options[i].value))
 			printf("%s%s", count++ > 0 ? ", " : "", enum_definition->options[i].name);
 
 	puts("");
@@ -325,7 +328,7 @@ void field_print(
 	void *address)
 {
 	char tag_string[5];
-	long_string temp_string;
+	c_static_string<256> temp_string;
 
 	//
 	// TODO: finish reimplementing
@@ -338,11 +341,11 @@ void field_print(
 		break;
 
 	case _field_short_string:
-		printf("%s: short_string = %s\n", name, ((short_string *)address)->ascii);
+		printf("%s: c_static_string<32> = %s\n", name, ((c_static_string<32> *)address)->get_buffer());
 		break;
 
 	case _field_long_string:
-		printf("%s: long_string = %s\n", name, ((long_string *)address)->ascii);
+		printf("%s: c_static_string<256> = %s\n", name, ((c_static_string<256> *)address)->get_buffer());
 		break;
 
 	case _field_string_id:
@@ -548,20 +551,20 @@ void field_print(
 	case _field_tag_reference:
 	{
 		auto reference = (s_tag_reference *)address;
-		
-		if (reference->index == NONE || file->get_tag_instance(reference->index & k_word_maximum)->group_index == NONE)
+		auto instance = file->get_tag_instance(reference->index & k_uint16_max);
+
+		if (reference->index == NONE || !instance || (instance && instance->group_index == NONE))
 		{
 			printf("%s: tag_reference = none\n", name);
 		}
 		else
 		{
-			auto tag_name = file->get_tag_name(reference->index & k_word_maximum);
-			auto instance = file->get_tag_instance(reference->index & k_word_maximum);
+			auto tag_name = file->get_tag_name(reference->index & k_uint16_max);
 			auto group = file->get_tag_group(instance->group_index);
 
 			printf("%s: tag_reference = (0x%04lX) %s.%s\n",
 				name,
-				reference->index & k_word_maximum,
+				reference->index & k_uint16_max,
 				tag_name,
 				file->get_string(group->name));
 		}
@@ -662,7 +665,7 @@ bool field_parse_enum(
 
 	for (auto i = 0; i < enum_definition->option_count; i++)
 	{
-		if (strcmp(option_name, enum_definition->options[i].name) != 0)
+		if (csstrcmp(option_name, enum_definition->options[i].name) != 0)
 			continue;
 
 		switch (type)
@@ -717,18 +720,18 @@ bool field_parse_flags(
 				set_bit = false;
 			}
 
-			if (strcmp(option_name, option->name) == 0)
+			if (csstrcmp(option_name, option->name) == 0)
 			{
 				found = true;
 
 				switch (type)
 				{
 				case _field_byte_flags:
-					SET_FLAG(*(byte *)address, option->value, set_bit);
+					SET_FLAG(*(uchar *)address, option->value, set_bit);
 					break;
 
 				case _field_word_flags:
-					SET_FLAG(*(word *)address, option->value, set_bit);
+					SET_FLAG(*(ushort *)address, option->value, set_bit);
 					break;
 
 				case _field_long_flags:
@@ -744,17 +747,17 @@ bool field_parse_flags(
 		{
 			auto option_name = arg_values[arg_index];
 
-			if (strcmp(option_name, "none") == 0 ||
-				strcmp(option_name, "0") == 0)
+			if (csstrcmp(option_name, "none") == 0 ||
+				csstrcmp(option_name, "0") == 0)
 			{
 				switch (type)
 				{
 				case _field_byte_flags:
-					*(byte *)address = 0;
+					*(uchar *)address = 0;
 					break;
 
 				case _field_word_flags:
-					*(word *)address = 0;
+					*(ushort *)address = 0;
 					break;
 
 				case _field_long_flags:
@@ -788,18 +791,18 @@ bool field_parse_tag_reference(
 
 	auto reference = (s_tag_reference *)address;
 
-	long_string reference_string(arg_values[0]);
+	c_static_string<256> reference_string(arg_values[0]);
 	char tag_string[5];
 
-	auto tag_name = reference_string.ascii;
-	auto group_name = strrchr(reference_string.ascii, '.');
+	auto tag_name = reference_string.get_buffer();
+	auto group_name = csstrrchr(reference_string.get_buffer(), '.');
 
 	if (group_name)
 	{
 		*group_name = '\0';
 		group_name++;
 
-		auto tag_name_is_wildcard = strcmp(tag_name, "*") == 0;
+		auto tag_name_is_wildcard = csstrcmp(tag_name, "*") == 0;
 
 		for (auto i = 0; i < tags_header->instances.count; i++)
 		{
@@ -811,10 +814,10 @@ bool field_parse_tag_reference(
 			auto group = file->get_tag_group(current_instance->group_index);
 			if (!group) continue;
 
-			if (strcmp(group_name, file->get_string(group->name)) == 0 ||
-				strcmp(group_name, tag_to_string(group->tags[0], tag_string)) == 0)
+			if (csstrcmp(group_name, file->get_string(group->name)) == 0 ||
+				csstrcmp(group_name, tag_to_string(group->tags[0], tag_string)) == 0)
 			{
-				if (tag_name_is_wildcard || strcmp(tag_name, file->get_tag_name(i)) == 0)
+				if (tag_name_is_wildcard || csstrcmp(tag_name, file->get_tag_name(i)) == 0)
 				{
 					reference->group_tag = group->tags[0];
 					reference->index = i;
@@ -823,7 +826,7 @@ bool field_parse_tag_reference(
 			}
 		}
 	}
-	else if (strstr(tag_name, "0x") == tag_name)
+	else if (csstrstr(tag_name, "0x") == tag_name)
 	{
 		reference->index = strtol(tag_name, nullptr, 0);
 		auto instance = file->get_tag_instance(reference->index);
@@ -831,7 +834,7 @@ bool field_parse_tag_reference(
 		reference->group_tag = group->tags[0];
 		return true;
 	}
-	else if (strcmp(tag_name, "*") == 0)
+	else if (csstrcmp(tag_name, "*") == 0)
 	{
 		long last_index = NONE;
 
@@ -852,7 +855,7 @@ bool field_parse_tag_reference(
 			return true;
 		}
 	}
-	else if (strcmp(tag_name, "none") == 0)
+	else if (csstrcmp(tag_name, "none") == 0)
 	{
 		reference->group_tag = NONE;
 		reference->index = NONE;
@@ -888,7 +891,7 @@ bool field_parse(
 
 			auto group_name = file->get_string(group->name);
 
-			if (group_name && strcmp(group_name, arg_values[0]) == 0)
+			if (group_name && csstrcmp(group_name, arg_values[0]) == 0)
 			{
 				*(tag *)address = group->tags[0];
 				return true;
@@ -898,15 +901,15 @@ bool field_parse(
 		return true;
 
 	case _field_short_string:
-		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_short_string_utf8_length)
+		if (arg_count != 1 || csstrlen(arg_values[0]) > 32)
 			return false;
-		strcpy_s(((short_string *)address)->ascii, arg_values[0]);
+		csmemcpy(((c_static_string<32> *)address)->get_buffer(), arg_values[0], csstrlen(arg_values[0]));
 		return true;
 
 	case _field_long_string:
-		if (arg_count != 1 || strlen(arg_values[0]) > k_maximum_long_string_utf8_length)
+		if (arg_count != 1 || csstrlen(arg_values[0]) > 32)
 			return false;
-		strcpy_s(((long_string *)address)->ascii, arg_values[0]);
+		csmemcpy(((c_static_string<256> *)address)->get_buffer(), arg_values[0], csstrlen(arg_values[0]));
 		return true;
 
 	case _field_string_id:
@@ -946,25 +949,25 @@ bool field_parse(
 	case _field_byte_integer:
 		if (arg_count != 1)
 			return false;
-		*(byte *)address = (byte)strtoul(arg_values[0], nullptr, 0);
+		*(uchar *)address = (uchar)strtoul(arg_values[0], nullptr, 0);
 		return true;
 
 	case _field_word_integer:
 		if (arg_count != 1)
 			return false;
-		*(word *)address = (word)strtoul(arg_values[0], nullptr, 0);
+		*(ushort *)address = (ushort)strtoul(arg_values[0], nullptr, 0);
 		return true;
 
 	case _field_dword_integer:
 		if (arg_count != 1)
 			return false;
-		*(dword *)address = (dword)strtoul(arg_values[0], nullptr, 0);
+		*(ulong *)address = (ulong)strtoul(arg_values[0], nullptr, 0);
 		return true;
 
 	case _field_qword_integer:
 		if (arg_count != 1)
 			return false;
-		*(qword *)address = (qword)strtoul(arg_values[0], nullptr, 0);
+		*(ulonglong *)address = (ulonglong)strtoul(arg_values[0], nullptr, 0);
 		return true;
 
 	case _field_char_enum:
@@ -1146,7 +1149,7 @@ void *struct_print(
 		field->type != _field_terminator;
 		field_next(&field, &address))
 	{
-		if (filter && !strstr(field->name, filter))
+		if (filter && !csstrstr((char *)field->name, filter))
 			continue;
 
 		field_print(file, field->type, field->name, field->definition, address);
@@ -1170,7 +1173,7 @@ s_field_definition *struct_get_field(
 		field->type != _field_terminator;
 		field_next(&field, out_address))
 	{
-		if (strcmp(name, field->name) == 0)
+		if (csstrcmp(name, field->name) == 0)
 			return field;
 	}
 

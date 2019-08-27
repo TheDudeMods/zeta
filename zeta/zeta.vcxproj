@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,11 +18,27 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\commands\bitmap_commands.cpp" />
+    <ClCompile Include="source\commands\commands.cpp" />
+    <ClCompile Include="source\commands\editing_commands.cpp" />
+    <ClCompile Include="source\commands\render_model_commands.cpp" />
+    <ClCompile Include="source\commands\tag_commands.cpp" />
+    <ClCompile Include="source\main\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\commands\bitmap_commands.h" />
+    <ClInclude Include="source\commands\commands.h" />
+    <ClInclude Include="source\commands\editing_commands.h" />
+    <ClInclude Include="source\commands\render_model_commands.h" />
+    <ClInclude Include="source\commands\tag_commands.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{9AADE945-D0D4-4C9D-9C60-018A7C62C159}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{566D1135-9B35-4875-9A77-7411577FC78D}</ProjectGuid>
+    <RootNamespace>tool</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>zeta</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -35,6 +51,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -47,6 +64,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -68,102 +86,81 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)blamlib/source;$(SolutionDir)haloreach/source;$(ProjectDir)source;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(SolutionDir)blamlib/source;$(SolutionDir)haloreach/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)blamlib/source;$(SolutionDir)haloreach/source;$(ProjectDir)source;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(SolutionDir)blamlib/source;$(SolutionDir)haloreach/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)blamlib/source;$(SolutionDir)haloreach/source;$(ProjectDir)source;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(SolutionDir)blamlib/source;$(SolutionDir)haloreach/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)blamlib/source;$(SolutionDir)haloreach/source;$(ProjectDir)source;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(SolutionDir)blamlib/source;$(SolutionDir)haloreach/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PrecompiledHeaderFile />
-      <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4838</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <TargetMachine>MachineX86</TargetMachine>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>blamlib.lib;haloreach.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PrecompiledHeaderFile />
-      <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4838</DisableSpecificWarnings>
-    </ClCompile>
-    <Link>
-      <TargetMachine>MachineX86</TargetMachine>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>blamlib.lib;haloreach.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>corelib.lib;baselib.lib;blamlib.lib;haloreach.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PrecompiledHeaderFile />
-      <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4838</DisableSpecificWarnings>
-      <EnableModules>true</EnableModules>
     </ClCompile>
-    <Link />
     <Link>
-      <AdditionalDependencies>blamlib.lib;haloreach.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>corelib.lib;baselib.lib;blamlib.lib;haloreach.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>corelib.lib;baselib.lib;blamlib.lib;haloreach.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PrecompiledHeaderFile />
-      <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4838</DisableSpecificWarnings>
     </ClCompile>
-    <Link />
     <Link>
-      <AdditionalDependencies>blamlib.lib;haloreach.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>corelib.lib;baselib.lib;blamlib.lib;haloreach.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="source\commands\bitmap_commands.cpp" />
-    <ClCompile Include="source\commands\commands.cpp" />
-    <ClCompile Include="source\commands\editing_commands.cpp" />
-    <ClCompile Include="source\commands\render_model_commands.cpp" />
-    <ClCompile Include="source\commands\tag_commands.cpp" />
-    <ClCompile Include="source\main\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="source\commands\bitmap_commands.h" />
-    <ClInclude Include="source\commands\commands.h" />
-    <ClInclude Include="source\commands\editing_commands.h" />
-    <ClInclude Include="source\commands\render_model_commands.h" />
-    <ClInclude Include="source\commands\tag_commands.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

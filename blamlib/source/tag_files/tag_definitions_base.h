@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cseries/cseries.h>
+#include <datatypes/tag.h>
 
 /* ---------- macros */
 

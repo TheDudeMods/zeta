@@ -19,10 +19,10 @@ bool real_to_real16(const real value, real16 *out)
 	union {
 		float f;
 		long l;
-		dword ul;
+		ulong ul;
 	} s, v = { value };
 
-	dword sign = v.l & k_real16_sign_n;
+	ulong sign = v.l & k_real16_sign_n;
 	v.l ^= sign;
 
 	sign >>= k_real16_shift_sign;
@@ -56,7 +56,7 @@ bool real16_to_real(const real16 value, real *out)
 	union {
 		float f;
 		long l;
-		dword ul;
+		ulong ul;
 	} s, v;
 
 	v.ul = value;

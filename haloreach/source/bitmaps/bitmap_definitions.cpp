@@ -344,7 +344,7 @@ TAG_ENUM(
 {
 	{ "xbox360_medium_resolution_offset_is_valid", _bitmap_image_xbox360_medium_resolution_offset_is_valid_bit },
 	{ "xbox360_memory_spacing", _bitmap_image_xbox360_memory_spacing_bit },
-	{ "xbox360_byte_order", _bitmap_image_xbox360_byte_order_bit },
+	{ "xbox360_uchar_order", _bitmap_image_xbox360_uchar_order_bit },
 	{ "xbox360_tiled_texture", _bitmap_image_xbox360_tiled_texture_bit },
 	{ "xbox360_created_correctly", _bitmap_image_xbox360_created_correctly_bit },
 	{ "xbox360_high_resolution_offset_is_valid", _bitmap_image_xbox360_high_resolution_offset_is_valid_bit },

@@ -48,7 +48,7 @@ TAG_ENUM(
     { "scarab", _campaign_metagame_bucket_type_scarab },
     { "guntower", _campaign_metagame_bucket_type_guntower },
     { "tuning_fork", _campaign_metagame_bucket_type_tuning_fork },
-    { "broadsword", _campaign_metagame_bucket_type_broadsword },
+    { "broadsushort", _campaign_metagame_bucket_type_broadsushort },
     { "mammoth", _campaign_metagame_bucket_type_mammoth },
     { "lich", _campaign_metagame_bucket_type_lich },
     { "mantis", _campaign_metagame_bucket_type_mantis },

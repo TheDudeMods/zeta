@@ -47,7 +47,7 @@ struct s_device_definition : s_object_definition
     real position_acceleration_time;
     real depowered_position_transition_time;
     real depowered_position_acceleration_time;
-    c_flags<e_device_lightmap_flags, word> lightmap_flags;
+    c_flags<e_device_lightmap_flags, ushort> lightmap_flags;
     short : 16;
     s_tag_reference open;
     s_tag_reference close;

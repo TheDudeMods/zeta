@@ -1,7 +1,9 @@
 #include <cache/cache_file_tag_resources.h>
-#include <memory/data_base.h>
+#include <datatypes/data_array.h>
 #include <tag_files/tag_files.h>
 #include <zlib/zlib.h>
+
+#include <cstdio>
 
 /* ---------- code */
 
@@ -30,7 +32,7 @@ bool c_cache_file_reach::tag_resource_definition_try_and_get(
 	if (!resource_gestalt->tag_resources.try_get_element(this, resource_absolute_index, &tag_resource))
 		return false;
 
-	if ((tag_resource->identifier != (word)NONE) && resource_identifier != tag_resource->identifier)
+	if ((tag_resource->identifier != (ushort)NONE) && resource_identifier != tag_resource->identifier)
 		return false;
 
 	auto gestalt_definition_data = get_page_data<char>(resource_gestalt->definition_data.address);
@@ -49,10 +51,10 @@ bool c_cache_file_reach::tag_resource_definition_try_and_get(
 		if (type != 4)
 		{
 			offset -= (long)definition_offset;
-			address = (dword)((type << 28) | (((offset < 0) ? ((-offset & 0x7FFFFFF) | (1 << 27)) : (offset & 0x7FFFFFF))));
+			address = (ulong)((type << 28) | (((offset < 0) ? ((-offset & 0x7FFFFFF) | (1 << 27)) : (offset & 0x7FFFFFF))));
 		}
 
-		*(dword *)&definition_data[fixups[i].block_offset] = address;
+		*(ulong *)&definition_data[fixups[i].block_offset] = address;
 	}
 
 	for (auto i = 0; i < tag_resource->resource_definition_fixups.count; i++)
@@ -143,18 +145,18 @@ void *c_cache_file_reach::get_resource_page_data(
 	static s_cache_file_header resource_cache_header;
 	static char resource_cache_file_path[1024] = { 0 };
 
-	memset(resource_cache_file_path, 0, 1024);
+	csmemset(resource_cache_file_path, 0, 1024);
 
 	if (location)
 	{
-		memcpy(resource_cache_file_path, m_filename, strrchr(m_filename, '\\') - m_filename);
+		csmemcpy(resource_cache_file_path, m_filename, csstrrchr((char *)m_filename, '\\') - m_filename);
 
-		auto file_path = strrchr(location->path.ascii, '\\');
-		memcpy(resource_cache_file_path + strlen(resource_cache_file_path), file_path, strlen(file_path));
+		auto file_path = csstrrchr(location->path.get_buffer(), '\\');
+		csmemcpy(resource_cache_file_path + csstrlen(resource_cache_file_path), file_path, csstrlen(file_path));
 	}
 	else
 	{
-		memcpy(resource_cache_file_path, m_filename, strlen(m_filename));
+		csmemcpy(resource_cache_file_path, m_filename, csstrlen(m_filename));
 	}
 
 	s_cache_file_header *cache_header = nullptr;
@@ -177,9 +179,9 @@ void *c_cache_file_reach::get_resource_page_data(
 
 		if (location)
 			fseek(stream, location->block_offset, SEEK_CUR);
-
-		auto uncompressed_data = new byte[page->uncompressed_block_size];
-		memset(uncompressed_data, 0, page->uncompressed_block_size);
+		
+		auto uncompressed_data = new uchar[page->uncompressed_block_size];
+		csmemset(uncompressed_data, 0, page->uncompressed_block_size);
 
 		if (!page->compression_codec)
 		{
@@ -187,8 +189,8 @@ void *c_cache_file_reach::get_resource_page_data(
 		}
 		else
 		{
-			auto compressed_data = new byte[page->compressed_block_size];
-			memset(compressed_data, 0, page->compressed_block_size);
+			auto compressed_data = new uchar[page->compressed_block_size];
+			csmemset(compressed_data, 0, page->compressed_block_size);
 
 			fread(compressed_data, page->compressed_block_size, 1, stream);
 

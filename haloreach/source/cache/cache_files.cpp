@@ -1,7 +1,10 @@
 #include <cache/cache_files.h>
-#include <memory/data_base.h>
+#include <datatypes/data_array.h>
 #include <tag_files/string_ids.h>
 #include <tag_files/tag_groups.h>
+
+#include <cstdio>
+#include <cstdlib>
 
 /* ---------- code */
 
@@ -23,17 +26,17 @@ c_cache_file_reach *cache_file_load()
 		// Read the cache file path
 		//
 
-		memset(cache_file_path, 0, 1024);
+		csmemset(cache_file_path, 0, 1024);
 		fgets(cache_file_path, 1024, stdin);
 
-		auto newline = strchr(cache_file_path, '\n');
+		auto newline = csstrchr(cache_file_path, '\n');
 		if (newline) *newline = '\0';
 
 		//
 		// If empty cache file path, start over
 		//
 
-		if (strlen(cache_file_path) == 0)
+		if (csstrlen(cache_file_path) == 0)
 			continue;
 
 		//
@@ -115,7 +118,7 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	fseek(stream, m_header.memory_buffer_offset, SEEK_SET);
 	fread(m_memory_buffer, m_header.memory_buffer_size, 1, stream);
 
-	m_address_mask = ((qword)m_memory_buffer - m_header.virtual_base_address);
+	m_address_mask = ((ulonglong)m_memory_buffer - m_header.virtual_base_address);
 
 	//
 	// Allocate and read the cache file string ids
@@ -235,12 +238,12 @@ s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
 	return &get_buffer_data<s_cache_file_tag_instance>(tags_header->instances.address)[absolute_index];
 }
 
-qword c_cache_file_reach::get_page_offset(dword address)
+ulonglong c_cache_file_reach::get_page_offset(ulong address)
 {
-	return ((qword)address * 4) - (m_header.virtual_base_address - 0x10000000);
+	return ((ulonglong)address * 4) - (m_header.virtual_base_address - 0x10000000);
 }
 
-dword c_cache_file_reach::make_page_offset(qword address)
+ulong c_cache_file_reach::make_page_offset(ulonglong address)
 {
-	return (dword)((address + (m_header.virtual_base_address - 0x10000000)) / 4);
+	return (ulong)((address + (m_header.virtual_base_address - 0x10000000)) / 4);
 }

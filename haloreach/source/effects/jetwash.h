@@ -2,6 +2,7 @@
 
 #include <cseries/cseries.h>
 #include <math/real_math.h>
+#include <tag_files/string_ids.h>
 
 /* ---------- constants */
 

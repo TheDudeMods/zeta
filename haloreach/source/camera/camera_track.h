@@ -32,7 +32,7 @@ static_assert(sizeof(s_camera_track_control_point) == 0x1C);
 
 struct s_camera_track_definition
 {
-    c_flags<e_camera_track_flags, byte> flags;
+    c_flags<e_camera_track_flags, uchar> flags;
     char : 8;
     short : 16;
     c_tag_block<s_camera_track_control_point> control_points;

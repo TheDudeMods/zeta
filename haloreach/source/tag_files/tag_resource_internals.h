@@ -6,9 +6,9 @@
 
 struct s_tag_resource_structure
 {
-	dword address;
-	dword runtime_address;
-	dword definition_address;
+	ulong address;
+	ulong runtime_address;
+	ulong definition_address;
 };
 static_assert(sizeof(s_tag_resource_structure) == 0xC);
 

@@ -4,7 +4,6 @@
 #include <datatypes/flags.h>
 #include <tag_files/tag_groups.h>
 #include <cache/cache_files.h>
-
 #include <cache/cache_file_tag_resource.inl>
 
 /* ---------- constants */
@@ -83,16 +82,16 @@ static_assert(sizeof(s_cache_file_resource_compression_codec) == 0x10);
 
 struct s_cache_file_resource_physical_location
 {
-	short_string path;
+	c_static_string<32> path;
 	long unknown[57];
-	dword block_offset;
+	ulong block_offset;
 };
 static_assert(sizeof(s_cache_file_resource_physical_location) == 0x108);
 
 struct s_cache_file_resource_page
 {
-	word identifier;
-	c_flags<e_cache_file_resource_page_flags, byte> flags;
+	ushort identifier;
+	c_flags<e_cache_file_resource_page_flags, uchar> flags;
 	c_tag_block_index<s_cache_file_resource_compression_codec, char> compression_codec;
 	c_tag_block_index<s_cache_file_resource_physical_location, short> shared_cache_file;
 	short : 16;
@@ -166,23 +165,23 @@ static_assert(sizeof(s_cache_file_resource_structure_type) == 0x14);
 
 struct s_cache_file_tag_resource_fixup
 {
-	dword block_offset;
-	dword address;
+	ulong block_offset;
+	ulong address;
 };
 static_assert(sizeof(s_cache_file_tag_resource_fixup) == 0x8);
 
 struct s_cache_file_tag_resource
 {
 	s_tag_reference parent_tag;
-	word identifier;
+	ushort identifier;
 	c_tag_block_index<s_cache_file_resource_type, char> resource_type_index;
-	c_flags<e_cache_file_tag_resource_flags, byte> flags;
+	c_flags<e_cache_file_tag_resource_flags, uchar> flags;
 	long definition_data_offset;
 	long definition_data_length;
 	long secondary_fixup_information_offset;
 	short unknown20;
 	c_tag_block_index<s_cache_file_resource_segment, short> segment_index;
-	dword definition_address;
+	ulong definition_address;
 	c_tag_block<s_cache_file_tag_resource_fixup> resource_fixups;
 	c_tag_block<s_cache_file_tag_resource_fixup> resource_definition_fixups;
 };
@@ -191,7 +190,7 @@ static_assert(sizeof(s_cache_file_tag_resource) == 0x40);
 struct s_cache_file_resource_gestalt
 {
 	c_enum<e_cache_file_resource_location, short> location;
-	c_flags<e_cache_file_resource_gestalt_flags, word> flags;
+	c_flags<e_cache_file_resource_gestalt_flags, ushort> flags;
 	c_tag_block<s_cache_file_resource_type> resource_types;
 	c_tag_block<s_cache_file_resource_structure_type> resource_structure_types;
 	s_cache_file_resource_layout_table layout_table;

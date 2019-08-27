@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cseries/cseries.h>
+#include <tag_files/string_ids.h>
 #include <tag_files/tag_definitions.h>
 
 /* ---------- structures */
@@ -27,8 +28,8 @@ static_assert(sizeof(s_tag_reference) == 0x10);
 struct s_tag_block
 {
 	long count;
-	dword address;
-	dword definition_address;
+	ulong address;
+	ulong definition_address;
 };
 static_assert(sizeof(s_tag_block) == 0xC);
 
@@ -37,8 +38,8 @@ struct s_tag_data
 	long size;
 	long stream_flags;
 	long stream_offset;
-	dword address;
-	dword definition_address;
+	ulong address;
+	ulong definition_address;
 };
 static_assert(sizeof(s_tag_data) == 0x14);
 

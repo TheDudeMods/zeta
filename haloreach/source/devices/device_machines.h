@@ -57,7 +57,7 @@ enum e_machine_pathfinding_policy
 struct s_machine_definition : s_device_definition
 {
 	c_enum<e_machine_type, short> machine_type;
-	c_flags<e_machine_flags, word> machine_flags;
+	c_flags<e_machine_flags, ushort> machine_flags;
 	real door_open_time;
 	real_fraction_bounds door_occlusion_bounds;
 	c_enum<e_machine_collision_response, short> collision_response;

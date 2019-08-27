@@ -4,6 +4,8 @@
 #include <cache/cache_files_base.h>
 #include <datatypes/enum.h>
 #include <datatypes/static_string.h>
+#include <datatypes/tag.h>
+#include <tag_files/string_ids.h>
 #include <scenario/scenario.h>
 
 /* ---------- constants */
@@ -42,28 +44,28 @@ enum e_cache_file_section
 
 struct s_cache_file_partition
 {
-	qword address;
-	qword size;
+	ulonglong address;
+	ulonglong size;
 };
 static_assert(sizeof(s_cache_file_partition) == 0x10);
 
 struct s_cache_file_section
 {
-	dword address;
-	dword size;
+	ulong address;
+	ulong size;
 };
 static_assert(sizeof(s_cache_file_section) == 0x8);
 
 struct s_cache_file_interop
 {
-	dword unknown0;
-	dword unknown4;
-	dword unknown8;
-	dword unknownC;
-	dword resource_base_offset;
-	dword debug_section_size;
-	dword runtime_base_offset;
-	dword unknown_base_offset;
+	ulong unknown0;
+	ulong unknown4;
+	ulong unknown8;
+	ulong unknownC;
+	ulong resource_base_offset;
+	ulong debug_section_size;
+	ulong runtime_base_offset;
+	ulong unknown_base_offset;
 	s_cache_file_section sections[k_number_of_cache_file_sections];
 };
 static_assert(sizeof(s_cache_file_interop) == 0x40);
@@ -74,11 +76,11 @@ struct s_cache_file_header
 	long file_version;
 	long file_length;
 	long file_compressed_length;
-	qword tags_header_address;
+	ulonglong tags_header_address;
 	long memory_buffer_offset;
 	long memory_buffer_size;
-	long_string source_file;
-	short_string build;
+	c_static_string<256> source_file;
+	c_static_string<32> build;
 	c_enum<e_scenario_type, short> scenario_type;
 	c_enum<e_scenario_load_type, short> load_type;
 	char unknown1;
@@ -95,20 +97,20 @@ struct s_cache_file_header
 	long string_id_indices_offset;
 	long string_ids_buffer_offset;
 	long unknown9;
-	qword timestamp;
-	qword mainmenu_timestamp;
-	qword shared_timestamp;
-	qword campaign_timestamp;
-	qword multiplayer_timestamp;
-	short_string name;
+	ulonglong timestamp;
+	ulonglong mainmenu_timestamp;
+	ulonglong shared_timestamp;
+	ulonglong campaign_timestamp;
+	ulonglong multiplayer_timestamp;
+	c_static_string<32> name;
 	long unknown15;
-	long_string scenario_path;
+	c_static_string<256> scenario_path;
 	long minor_version;
 	long tag_name_count;
 	long tag_names_buffer_offset;
 	long tag_names_buffer_size;
 	long tag_name_indices_offset;
-	dword checksum;
+	ulong checksum;
 	long unknown17;
 	long unknown18;
 	long unknown19;
@@ -118,12 +120,12 @@ struct s_cache_file_header
 	long unknown23;
 	long unknown24;
 	long unknown25;
-	qword virtual_base_address;
-	dword xdk_version;
+	ulonglong virtual_base_address;
+	ulong xdk_version;
 	long unknown26;
 	s_cache_file_partition partitions[k_number_of_cache_file_partitions];
-	qword unknown29;
-	qword unknown30;
+	ulonglong unknown29;
+	ulonglong unknown30;
 	long sha1_a[5];
 	long sha1_b[5];
 	long sha1_c[5];
@@ -138,16 +140,16 @@ static_assert(sizeof(s_cache_file_header) == 0xA000);
 struct s_cache_file_tag_instance
 {
 	short group_index;
-	word identifier;
-	dword address;
+	ushort identifier;
+	ulong address;
 };
 static_assert(sizeof(s_cache_file_tag_instance) == 0x8);
 
 struct s_cache_file_tags_section
 {
-	dword count = 0;
+	ulong count = 0;
 	tag post_count_signature = k_cache_file_tags_section_signature;
-	qword address = 0;
+	ulonglong address = 0;
 };
 static_assert(sizeof(s_cache_file_tags_section) == 0x10);
 
@@ -158,7 +160,7 @@ struct s_cache_file_tags_header
 	s_cache_file_tags_section important_groups;
 	s_cache_file_tags_section interop_table;
 	long unknown40; // datum index?
-	dword checksum;
+	ulong checksum;
 	tag signature;
 	long unknown4C; // datum index?
 };
@@ -171,7 +173,7 @@ struct s_tag_group;
 class c_cache_file_reach : public c_cache_file
 {
 private:
-	qword m_address_mask;
+	ulonglong m_address_mask;
 	s_cache_file_header m_header;
 	char *m_memory_buffer;
 	long *m_string_id_indices;
@@ -221,7 +223,7 @@ public:
 		struct s_cache_file_resource_page *page);
 
 	template <typename t_data>
-	t_data *get_buffer_data(qword address)
+	t_data *get_buffer_data(ulonglong address)
 	{
 		if (address == 0)
 			return nullptr;
@@ -229,11 +231,11 @@ public:
 		return (t_data *)(address + m_address_mask);
 	}
 
-	qword get_page_offset(dword address);
-	dword make_page_offset(qword address);
+	ulonglong get_page_offset(ulong address);
+	ulong make_page_offset(ulonglong address);
 
 	template <typename t_data>
-	t_data *get_page_data(dword address)
+	t_data *get_page_data(ulong address)
 	{
 		if (address == 0)
 			return nullptr;

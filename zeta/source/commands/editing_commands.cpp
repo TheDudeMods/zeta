@@ -4,6 +4,11 @@
 #include <math/real_math.h>
 #include <tag_files/tag_groups.h>
 
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <cstdio>
+#include <cstdlib>
+
 /* ---------- constants */
 
 enum
@@ -166,7 +171,7 @@ bool edit_block_execute(
 		return true;
 	}
 
-	long_string context_name;
+	c_static_string<256> context_name;
 
 	switch (field->type)
 	{
@@ -178,7 +183,7 @@ bool edit_block_execute(
 		auto block = (s_tag_block *)address;
 		auto block_definition = (s_tag_block_definition *)field->definition;
 
-		auto index = strcmp(arg_values[1], "*") != 0 ?
+		auto index = csstrcmp(arg_values[1], "*") != 0 ?
 			strtoul(arg_values[1], nullptr, 0) :
 			block->count - 1;
 
@@ -189,8 +194,8 @@ bool edit_block_execute(
 			return true;
 		}
 
-		address = file->get_page_data<char>(block->address) + ((qword)index * (qword)block_definition->size);
-		sprintf(context_name.ascii, "%s[%u]", field->name, index);
+		address = file->get_page_data<char>(block->address) + ((ulonglong)index * (ulonglong)block_definition->size);
+		sprintf(context_name.get_buffer(), "%s[%u]", field->name, index);
 		break;
 	}
 
@@ -199,7 +204,7 @@ bool edit_block_execute(
 		if (arg_count != 1)
 			return false;
 
-		sprintf(context_name.ascii, "%s", field->name);
+		sprintf(context_name.get_buffer(), "%s", field->name);
 		break;
 	}
 
@@ -209,7 +214,7 @@ bool edit_block_execute(
 	}
 
 	g_command_context = new c_editing_command_context(
-		context_name.ascii,
+		context_name.get_buffer(),
 		address,
 		(s_struct_definition *)field->definition,
 		file,

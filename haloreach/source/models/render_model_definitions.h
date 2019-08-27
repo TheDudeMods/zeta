@@ -88,7 +88,7 @@ struct s_render_model_marker
 	c_tag_block_index<s_render_model_region, char> region;
 	c_tag_block_index<s_render_model_permutation, char> permutation;
 	c_tag_block_index<s_render_model_node, char> node;
-	c_flags<e_render_model_marker_flags, byte> flags;
+	c_flags<e_render_model_marker_flags, uchar> flags;
 	real_point3d translation;
 	real_quaternion rotation;
 	real scale;
@@ -221,8 +221,8 @@ static_assert(sizeof(s_default_node_orientation) == 0x20);
 struct s_render_model_definition
 {
 	string_id name;
-	c_flags<e_render_model_flags, word> flags;
-	word version;
+	c_flags<e_render_model_flags, ushort> flags;
+	ushort version;
 	long runtime_import_info_checksum;
 	c_tag_block<s_render_model_region> regions;
 	long unknown18;

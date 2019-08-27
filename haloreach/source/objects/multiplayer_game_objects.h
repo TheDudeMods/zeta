@@ -103,7 +103,7 @@ static_assert(sizeof(s_multiplayer_object_boundary_shader_definition) == 0x20);
 struct s_multiplayer_object_definition
 {
 	c_enum<e_multiplayer_object_type, short> type;
-	c_flags<e_multiplayer_object_teleporter_flags, byte> teleporter_passability;
+	c_flags<e_multiplayer_object_teleporter_flags, uchar> teleporter_passability;
 	char : 8;
 	real boundary_width;
 	real boundary_length;
@@ -113,7 +113,7 @@ struct s_multiplayer_object_definition
 	c_enum<e_multiplayer_object_spawn_timer_type, char> spawn_timer_type;
 	short default_spawn_time;
 	short default_abandon_time;
-	c_flags<e_multiplayer_object_flags, word> flags;
+	c_flags<e_multiplayer_object_flags, ushort> flags;
 	real normal_weight;
 	string_id boundary_center_marker;
 	string_id spawned_object_marker_name;

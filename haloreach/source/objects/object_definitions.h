@@ -248,7 +248,7 @@ struct s_object_attachment
 	s_tag_reference type;
 	string_id marker;
 	c_enum<e_object_attachment_change_color, short> change_color;
-	c_flags<e_object_attachment_flags, word> flags;
+	c_flags<e_object_attachment_flags, ushort> flags;
 	string_id primary_scale;
 	string_id secondary_scale;
 };

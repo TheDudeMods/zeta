@@ -72,11 +72,11 @@ enum e_dds_header_flags
 
 struct s_dds_pixel_format
 {
-	dword size;
+	ulong size;
 	c_flags<e_dds_format_flags, long> flags;
-	dword four_cc;
+	ulong four_cc;
 	long r_bitmask;
-	dword bits_per_pixel;
+	ulong bits_per_pixel;
 	long g_bitmask;
 	long b_bitmask;
 	long a_bitmask;
@@ -86,16 +86,16 @@ static_assert(sizeof(s_dds_pixel_format) == 0x20);
 struct s_dds_header
 {
 	tag four_cc;
-	dword size;
-	c_enum<e_dds_header_flags, long> flags;
-	dword height;
-	dword width;
-	dword pitch_or_linear_size;
-	dword depth;
-	dword mipmap_count;
-	dword reserved1[11];
+	ulong size;
+	c_flags<e_dds_header_flags, long> flags;
+	ulong height;
+	ulong width;
+	ulong pitch_or_linear_size;
+	ulong depth;
+	ulong mipmap_count;
+	ulong reserved1[11];
 	s_dds_pixel_format pixel_format;
-	dword caps[4];
-	dword reserved2;
+	ulong caps[4];
+	ulong reserved2;
 };
 static_assert(sizeof(s_dds_header) == 0x80);

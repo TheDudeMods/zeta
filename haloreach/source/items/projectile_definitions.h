@@ -115,7 +115,7 @@ struct s_projectile_material_response_old
 	short runtime_material_index;
 	short : 16;
 	c_enum<e_projectile_material_response_type, short> potential_response;
-	c_flags<e_projectile_material_response_flags, word> response_flags;
+	c_flags<e_projectile_material_response_flags, ushort> response_flags;
 	real_fraction chance_fraction;
 	angle_bounds between;
 	real_bounds and_;
@@ -133,7 +133,7 @@ struct s_projectile_material_response
 {
 	string_id material_name;
 	short runtime_material_index;
-	c_flags<e_projectile_material_response_flags, word> response_flags;
+	c_flags<e_projectile_material_response_flags, ushort> response_flags;
 	real_fraction chance_fraction;
 	angle_bounds between;
 	real_bounds and_;
@@ -209,7 +209,7 @@ struct s_projectile_definition : s_object_definition
 	s_tag_reference detonation_sound;
 	c_enum<e_damage_reporting_type, char> damage_reporting_type;
 	char : 8;
-	c_flags<e_object_type, word> super_detonation_object_types;
+	c_flags<e_object_type, ushort> super_detonation_object_types;
 	s_tag_reference super_attached_detonation_damage;
 	real material_effect_radius;
 	s_tag_reference flyby_sound;

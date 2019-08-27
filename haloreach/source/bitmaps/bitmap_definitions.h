@@ -321,7 +321,7 @@ enum e_bitmap_more_image_flags
 {
 	_bitmap_image_xbox360_medium_resolution_offset_is_valid_bit,
 	_bitmap_image_xbox360_memory_spacing_bit,
-	_bitmap_image_xbox360_byte_order_bit,
+	_bitmap_image_xbox360_uchar_order_bit,
 	_bitmap_image_xbox360_tiled_texture_bit,
 	_bitmap_image_xbox360_created_correctly_bit,
 	_bitmap_image_xbox360_high_resolution_offset_is_valid_bit,
@@ -336,17 +336,17 @@ struct s_bitmap_usage
 {
 	real source_gamma;
 	c_enum<e_bitmap_curve, long> bitmap_curve;
-	c_flags<e_bitmap_usage_flags, byte> flags;
+	c_flags<e_bitmap_usage_flags, uchar> flags;
 	c_enum<e_bitmap_slicer_mode, char> slicer;
-	c_enum<e_bitmap_dicer_flags, byte> dicer_flags;
+	c_enum<e_bitmap_dicer_flags, uchar> dicer_flags;
 	c_enum<e_bitmap_packer_mode, char> packer;
-	c_flags<e_bitmap_packer_flags, byte> packer_flags;
+	c_flags<e_bitmap_packer_flags, uchar> packer_flags;
 	c_enum<e_bitmap_type, char> type;
 	char mipmap_limit;
 	c_enum<e_bitmap_smallest_mip, char> smallest_mip;
 	c_enum<e_bitmap_downsample_filter, char> downsample_filter;
 	char filter_radius_bias;
-	c_flags<e_bitmap_downsample_flags, word> downsample_flags;
+	c_flags<e_bitmap_downsample_flags, ushort> downsample_flags;
 	real_rgb_color sprite_background_color;
 	c_enum<e_bitmap_swizzle, char> swizzle_red;
 	c_enum<e_bitmap_swizzle, char> swizzle_green;
@@ -371,7 +371,7 @@ static_assert(sizeof(s_bitmap_sequence_sprite) == 0x20);
 
 struct s_bitmap_sequence
 {
-	short_string name;
+	c_static_string<32> name;
 	short first_bitmap_index;
 	short bitmap_count;
 	long : 32;
@@ -394,11 +394,11 @@ struct s_bitmap_image
 	short width;
 	short height;
 	char depth;
-	c_flags<e_bitmap_more_image_flags, byte> more_flags;
+	c_flags<e_bitmap_more_image_flags, uchar> more_flags;
 	c_enum<e_bitmap_type, char> type;
 	char four_times_log2_size;
 	c_enum<e_bitmap_format, short> format;
-	c_flags<e_bitmap_image_flags, word> flags;
+	c_flags<e_bitmap_image_flags, ushort> flags;
 	point2d registration_point;
 	char mipmap_count;
 	c_enum<e_bitmap_curve, char> curve;
@@ -426,7 +426,7 @@ static_assert(sizeof(s_bitmap_resource_info) == 0x8);
 struct s_bitmap_definition
 {
 	c_enum<e_bitmap_usage, long> usage;
-	c_flags<e_bitmap_flags, word> flags;
+	c_flags<e_bitmap_flags, ushort> flags;
 	short sprite_spacing;
 	real bump_map_height;
 	real fade_factor;

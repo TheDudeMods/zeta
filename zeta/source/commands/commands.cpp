@@ -1,6 +1,10 @@
 #include <commands/commands.h>
 #include <commands/tag_commands.h>
 
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <cstdio>
+
 /* ---------- public globals */
 
 c_command_context *g_command_context = nullptr;
@@ -32,9 +36,9 @@ char *c_command_context::get_name(
 	char *buffer) const
 {
 	if (m_parent)
-		sprintf(buffer, "%s\\%s", m_parent->get_name(buffer), m_name.ascii);
+		sprintf(buffer, "%s\\%s", m_parent->get_name(buffer), m_name.get_buffer());
 	else
-		sprintf(buffer, "%s", m_name.ascii);
+		sprintf(buffer, "%s", m_name.get_buffer());
 
 	return buffer;
 
@@ -61,7 +65,7 @@ s_command *c_command_context::get_command(
 		auto command_set = &m_command_sets[i];
 
 		for (auto j = 0; j < command_set->command_count; j++)
-			if (strcmp(name, command_set->commands[j].name) == 0)
+			if (csstrcmp(name, command_set->commands[j].name) == 0)
 				return &command_set->commands[j];
 	}
 
@@ -88,29 +92,29 @@ void command_loop_execute(c_cache_file_reach *file)
 	while (g_command_context)
 	{
 		// Display the full command context path
-		memset(name_buffer, 0, 1024);
+		csmemset(name_buffer, 0, 1024);
 		printf("%s> ", g_command_context->get_name(name_buffer));
 
 		// Read the command input
-		memset(input_buffer, 0, 1024);
+		csmemset(input_buffer, 0, 1024);
 		fgets(input_buffer, 1024, stdin);
 
 		// Strip newline characters from input buffer
-		auto newline = strchr(input_buffer, '\n');
+		auto newline = csstrchr(input_buffer, '\n');
 		if (newline) *newline = '\0';
 
 		//
 		// Tokenize the command input buffer
 		//
 
-		memset(g_command_arg_values, 0, sizeof(char *) * 64);
+		csmemset(g_command_arg_values, 0, sizeof(char *) * 64);
 
 		auto g_command_arg_count = 0;
-		char* arg_token = strtok(input_buffer, " ");
+		char* arg_token = csstrtok(input_buffer, " ");
 
 		auto command = g_command_context->get_command(arg_token);
 
-		while (arg_token = strtok(nullptr, " "))
+		while (arg_token = csstrtok(nullptr, " "))
 			g_command_arg_values[g_command_arg_count++] = arg_token;
 
 		//
@@ -122,7 +126,7 @@ void command_loop_execute(c_cache_file_reach *file)
 			if (!command->execute(g_command_arg_count, (char const **)g_command_arg_values))
 				printf("Usage: %s\n", command->usage);
 		}
-		else if (strcmp(input_buffer, "exit") == 0)
+		else if (csstrcmp(input_buffer, "exit") == 0)
 		{
 			auto old_context = g_command_context;
 			g_command_context = g_command_context->get_parent();

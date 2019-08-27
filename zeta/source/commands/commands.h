@@ -26,7 +26,7 @@ struct s_command_set
 class c_command_context
 {
 protected:
-	long_string m_name;
+	c_static_string<256> m_name;
 	long m_command_set_count;
 	s_command_set *m_command_sets;
 	c_command_context *m_parent;

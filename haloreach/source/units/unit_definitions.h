@@ -237,7 +237,7 @@ static_assert(sizeof(s_unit_camera_gamepad_stick_info) == 0x28);
 
 struct s_unit_camera
 {
-    c_flags<e_unit_camera_flags, word> flags;
+    c_flags<e_unit_camera_flags, ushort> flags;
     short : 16;
     string_id camera_marker_name;
     angle pitch_auto_level;
