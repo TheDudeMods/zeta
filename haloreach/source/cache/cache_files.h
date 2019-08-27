@@ -145,21 +145,21 @@ static_assert(sizeof(s_cache_file_tag_instance) == 0x8);
 struct s_cache_file_tags_header
 {
 	dword group_count;
-	dword unknown04;
+	tag post_group_count_signature;
 	qword groups_address;
 	dword tag_count;
-	dword unknown14;
+	tag post_tag_count_signature;
 	qword tags_address;
 	dword important_group_count;
-	dword unknown24;
+	tag post_important_group_count_signature;
 	qword important_groups_address;
 	dword tag_interop_table_count;
-	dword unknown34;
+	tag post_tag_interop_table_count_signature;
 	qword tag_interop_table_address;
+	long unknown40;
 	long unknown44;
-	long unknown48;
 	tag signature;
-	long : 32;
+	long unknown4C;
 };
 static_assert(sizeof(s_cache_file_tags_header) == 0x50);
 
