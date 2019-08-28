@@ -18,12 +18,13 @@ inline t_type *pointer_from_address(
 	return reinterpret_cast<t_type *>(address);
 }
 
-template <typename t_type>
+template <typename t_type, typename t_offset>
 inline t_type *offset_pointer(
 	t_type *pointer,
-	long offset)
+	t_offset offset)
 {
-	return pointer_from_address<t_type>(address_from_pointer(pointer) + offset);
+	static_assert(__is_convertible_to(t_offset, ulonglong));
+	return pointer_from_address<t_type>(address_from_pointer(pointer) + static_cast<ulonglong>(offset));
 }
 
 inline ulonglong align_address(

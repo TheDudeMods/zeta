@@ -13,7 +13,7 @@ uint data_allocation_size(
 	assert(alignment_bits >= 0);
 	assert(size == align_address(size, alignment_bits));
 
-	uint alignment = alignment_bits ? (1 << (uint)alignment_bits) - 1 : 0;
+	auto alignment = alignment_bits ? (1 << alignment_bits) - 1 : 0;
 
 	return sizeof(s_data_array) + alignment
 		+ BIT_VECTOR_SIZE_IN_BYTES((ulonglong)maximum_count)
@@ -59,8 +59,8 @@ s_data_array *data_new(
 	assert(file);
 	assert(allocation);
 
-	uint allocation_size = data_allocation_size(maximum_count, size, alignment_bits);
-	s_data_array *data = (s_data_array *)allocation->allocate(allocation_size, file, line);
+	auto allocation_size = data_allocation_size(maximum_count, size, alignment_bits);
+	auto data = reinterpret_cast<s_data_array *>(allocation->allocate(allocation_size, file, line));
 
 	assert(data);
 
@@ -82,12 +82,12 @@ s_data_array *data_new_disconnected(
 	assert(file);
 	assert(allocation);
 
-	uint allocation_size = data_allocation_size(maximum_count, size, alignment_bits);
-	s_data_array *data = (s_data_array *)allocation->allocate(allocation_size, file, line);
+	auto allocation_size = data_allocation_size(maximum_count, size, alignment_bits);
+	auto data = reinterpret_cast<s_data_array *>(allocation->allocate(allocation_size, file, line));
 
 	assert(data);
 
-	ulong *in_use_bit_vector = reinterpret_cast<ulong *>(offset_pointer(data, sizeof(s_data_array)));
+	auto in_use_bit_vector = reinterpret_cast<ulong *>(offset_pointer(data, sizeof(s_data_array)));
 	data_initialize_disconnected(data, name, maximum_count, size, alignment_bits, allocation, in_use_bit_vector);
 
 	return data;
@@ -109,8 +109,8 @@ void data_initialize(
 	assert(size == align_address(size, alignment_bits));
 	assert(allocation);
 
-	void *base_address = align_pointer(data + 1, alignment_bits);
-	ulong *in_use_bit_vector = reinterpret_cast<ulong *>(offset_pointer(base_address, maximum_count * size));
+	auto base_address = align_pointer(data + 1, alignment_bits);
+	auto in_use_bit_vector = reinterpret_cast<ulong *>(offset_pointer(base_address, maximum_count * size));
 
 	data_initialize_disconnected(data, name, maximum_count, size, alignment_bits, allocation, in_use_bit_vector);
 
@@ -198,11 +198,11 @@ long data_last_index(
 	assert(data);
 	assert(data->valid);
 
-	long result = NONE;
+	auto result = static_cast<long>(NONE);
 
 	while (true)
 	{
-		long next_index = data_next_index(data, result);
+		auto next_index = data_next_index(data, result);
 
 		if (next_index == NONE)
 			break;
@@ -220,9 +220,9 @@ long data_next_index(
 	assert(data);
 	assert(data->valid);
 
-	long absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index + 1);
-	long next_absolute_index = data_next_absolute_index(data, absolute_index);
-	long next_index = datum_absolute_index_to_index(data, next_absolute_index);
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index + 1);
+	auto next_absolute_index = data_next_absolute_index(data, absolute_index);
+	auto next_index = datum_absolute_index_to_index(data, next_absolute_index);
 
 	return next_index;
 }
@@ -236,11 +236,11 @@ long data_next_absolute_index(
 
 	data_verify(data);
 
-	long first_unallocated = data->first_unallocated;
-	ulong *in_use_bit_vector = data->in_use_bit_vector;
+	auto first_unallocated = data->first_unallocated;
+	auto in_use_bit_vector = data->in_use_bit_vector;
 
 	if (index > NONE && index < first_unallocated)
-		for (long i = index + 1; i < first_unallocated; i++)
+		for (auto i = index + 1; i < first_unallocated; i++)
 			if (BIT_VECTOR_TEST_FLAG(in_use_bit_vector, i))
 				return i;
 
@@ -254,16 +254,16 @@ long data_previous_index(
 	assert(data);
 	assert(data->valid);
 
-	ulong *in_use_bit_vector = data->in_use_bit_vector;
-	ulong datum_size = data->size;
-	void *datums = data->data;
+	auto in_use_bit_vector = data->in_use_bit_vector;
+	auto datum_size = data->size;
+	auto datums = data->data;
 
 	if (index <= 0)
 		return NONE;
 
-	for (long i = index; i > 0; i--)
+	for (auto i = index; i > 0; i--)
 	{
-		s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+		auto datum = reinterpret_cast<s_datum_header *>(
 			offset_pointer(datums, (i - 1) * datum_size));
 
 		if (datum->identifier)
@@ -278,9 +278,9 @@ ushort data_make_first_identifier(
 {
 	assert(data);
 
-	char const *name = data->name.get_string();
+	auto name = data->name.get_string();
 
-	return (ushort)name[0] | ((ushort)name[1] << 8) | (ushort)k_int16_min;
+	return (ushort)name[0] | ((ushort)name[1] << 8) | k_datum_base_identifier;
 }
 
 void data_connect(
@@ -304,37 +304,29 @@ void data_connect(
 	data->actual_count = 0;
 	data->next_index = maximum_count;
 
-	ushort next_identifier = data_make_first_identifier(data);
+	auto next_identifier = data_make_first_identifier(data);
 	data->next_identifier = next_identifier;
-	data->isolated_next_identifier = ~next_identifier | (ushort)k_int16_min;
+	data->isolated_next_identifier = ~next_identifier | k_datum_base_identifier;
 
-	long datum_size = data->size;
-	bool should_verify = data_should_verify_data_pattern(data);
+	auto datum_size = data->size;
+	auto in_use_bit_vector = data->in_use_bit_vector;
+	auto should_verify = data_should_verify_data_pattern(data);
 
-	ulong *in_use_bit_vector = data->in_use_bit_vector;
-
-	for (long i = 0; i < maximum_count; i++)
+	for (auto i = 0; i < maximum_count; i++)
 	{
-		s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+		auto datum = reinterpret_cast<s_datum_header *>(
 			offset_pointer(datums, i * datum_size));
 
 		if (should_verify && !datum->identifier)
 		{
-			if (datum_size > 32)
+			if (datum_size > 32 || !pointer_is_aligned(datum, 2) || datum_size & 3)
 			{
 				csmemset(datum, 0xBA, datum_size);
 			}
 			else
 			{
-				if (!pointer_is_aligned(datum, 2) || datum_size & 3)
-				{
-					csmemset(datum, 0xBA, datum_size);
-				}
-				else
-				{
-					for (int x = 0; x < datum_size / sizeof(ulong); x++)
-						*reinterpret_cast<ulong *>(offset_pointer(datum, x * sizeof(ulong))) = 0xBABABABA;
-				}
+				for (int x = 0; x < datum_size / sizeof(ulong); x++)
+					*reinterpret_cast<ulong *>(offset_pointer(datum, x * sizeof(ulong))) = 0xBABABABA;
 			}
 		}
 		
@@ -378,40 +370,33 @@ void data_delete_all(
 	data->actual_count = 0;
 	data->next_index = 0;
 
-	ushort next_identifier = data_make_first_identifier(data);
+	auto next_identifier = data_make_first_identifier(data);
 	data->next_identifier = next_identifier;
-	data->isolated_next_identifier = ~next_identifier | (ushort)k_int16_min;
+	data->isolated_next_identifier = ~next_identifier | k_datum_base_identifier;
 
-	assert(data->next_identifier < (ushort)k_int16_min);
-	assert(data->isolated_next_identifier < (ushort)k_int16_min);
+	assert(data->next_identifier < k_datum_base_identifier);
+	assert(data->isolated_next_identifier < k_datum_base_identifier);
 
 	if (data_should_verify_data_pattern(data))
 	{
-		uint total_size = data->maximum_count * data->size;
+		auto total_size = data->maximum_count * data->size;
 
-		if (total_size > 32)
+		if (total_size > 32 || !pointer_is_aligned(data, 2) || total_size & 3)
 		{
 			csmemset(data, 0xBA, total_size);
 		}
 		else
 		{
-			if (!pointer_is_aligned(data, 2) || total_size & 3)
-			{
-				csmemset(data, 0xBA, total_size);
-			}
-			else
-			{
-				for (int x = 0; x < total_size / sizeof(ulong); x++)
-					*reinterpret_cast<ulong *>(offset_pointer(data, x * sizeof(ulong))) = 0xBABABABA;
-			}
+			for (auto x = 0; x < total_size / sizeof(ulong); x++)
+				*reinterpret_cast<ulong *>(offset_pointer(data, x * sizeof(ulong))) = 0xBABABABA;
 		}
 	}
 
-	uint datum_size = data->size;
+	auto datum_size = data->size;
 
 	for (long i = 0; i < data->maximum_count; i++)
 	{
-		s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+		auto datum = reinterpret_cast<s_datum_header *>(
 			offset_pointer(data->data, i * datum_size));
 
 		datum->identifier = 0;
@@ -487,7 +472,8 @@ void data_set_new_base_address(
 		}
 		else
 		{
-			ulong *in_use_bit_vector = reinterpret_cast<ulong *>(offset_pointer(destination, destination->offset_to_bit_vector));
+			auto in_use_bit_vector = reinterpret_cast<ulong *>(
+				offset_pointer(destination, destination->offset_to_bit_vector));
 
 			if (destination->in_use_bit_vector != in_use_bit_vector)
 				destination->in_use_bit_vector = in_use_bit_vector;
@@ -520,7 +506,7 @@ void *data_iterator_next(
 
 	assert(iterator);
 
-	s_data_array *data = iterator->data;
+	auto data = iterator->data;
 
 	assert(data);
 	assert(data->valid);
@@ -530,8 +516,9 @@ void *data_iterator_next(
 
 	data_verify(data);
 
-	long absolute_index = data_next_absolute_index(data, iterator->index + 1);
-	long datum_index = NONE;
+	auto absolute_index = data_next_absolute_index(data, iterator->index + 1);
+	auto datum_index = static_cast<long>(NONE);
+	
 	s_datum_header *result = nullptr;
 
 	if (absolute_index == NONE)
@@ -562,14 +549,14 @@ bool datum_available_at_index(
 
 	data_verify(data);
 
-	ushort absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
-	ushort identifier = DATUM_INDEX_TO_IDENTIFIER(index);
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
 
 	assert(identifier != 0);
 
 	if (absolute_index > NONE && absolute_index < data->maximum_count)
 	{
-		s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+		auto datum = reinterpret_cast<s_datum_header *>(
 			offset_pointer(data->data, absolute_index * data->size));
 
 		return datum->identifier != 0;
@@ -587,7 +574,7 @@ long datum_absolute_index_to_index(
 	if (index == NONE)
 		return NONE;
 
-	s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+	auto datum = reinterpret_cast<s_datum_header *>(
 		datum_get_absolute(data, index));
 
 	return BUILD_DATUM_INDEX(datum->identifier, index);
@@ -604,13 +591,13 @@ long datum_new(
 
 	data_verify(data);
 
-	long maximum_count = data->maximum_count;
-	long datum_size = data->size;
-	long next_index = data->next_index;
-	long datum_index = NONE;
-	long absolute_index = NONE;
+	auto maximum_count = data->maximum_count;
+	auto datum_size = data->size;
+	auto next_index = data->next_index;
+	auto datum_index = static_cast<long>(NONE);
+	auto absolute_index = static_cast<long>(NONE);
 
-	ulong *in_use_bit_vector = data->in_use_bit_vector;
+	auto in_use_bit_vector = data->in_use_bit_vector;
 
 	do
 	{
@@ -622,7 +609,7 @@ long datum_new(
 
 			if (absolute_index != NONE)
 			{
-				s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+				auto datum = reinterpret_cast<s_datum_header *>(
 					offset_pointer(data->data, absolute_index * datum_size));
 				
 				assert(datum->identifier == 0);
@@ -665,16 +652,16 @@ long datum_new_at_index(
 
 	data_verify(data);
 
-	ushort absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(requested_index);
-	ushort identifier = DATUM_INDEX_TO_IDENTIFIER(requested_index);
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(requested_index);
+	auto identifier = DATUM_INDEX_TO_IDENTIFIER(requested_index);
 
 	assert(identifier != 0);
 
-	long index = NONE;
+	auto index = static_cast<long>(NONE);
 
 	if (absolute_index > NONE && absolute_index < data->maximum_count)
 	{
-		s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+		auto datum = reinterpret_cast<s_datum_header *>(
 			offset_pointer(data->data, absolute_index * data->size));
 
 		if (datum->identifier == 0)
@@ -708,11 +695,11 @@ long datum_new_at_absolute_index(
 	assert(DATUM_INDEX_TO_ABSOLUTE_INDEX(absolute_index) == absolute_index);
 	assert(DATUM_INDEX_TO_IDENTIFIER(absolute_index) == 0);
 
-	long index = NONE;
+	auto index = static_cast<long>(NONE);
 
 	if (absolute_index > NONE && absolute_index < data->maximum_count)
 	{
-		s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+		auto datum = reinterpret_cast<s_datum_header *>(
 			offset_pointer(data->data, absolute_index * data->size));
 
 		if (datum->identifier == 0)
@@ -747,16 +734,16 @@ long datum_new_in_range(
 	assert(data->valid);
 	assert(minimum_index + count_indices <= data->maximum_count);
 
-	ulong *in_use_bit_vector = data->in_use_bit_vector;
+	auto in_use_bit_vector = data->in_use_bit_vector;
 	
-	long next_index = minimum_index;
+	auto next_index = minimum_index;
 
-	long last_index = (minimum_index + count_indices < data->first_unallocated) ?
+	auto last_index = (minimum_index + count_indices < data->first_unallocated) ?
 		minimum_index + count_indices :
 		data->first_unallocated;
 
-	long absolute_index = NONE;
-	long datum_index = NONE;
+	auto absolute_index = static_cast<long>(NONE);
+	auto datum_index = static_cast<long>(NONE);
 
 	do
 	{
@@ -768,7 +755,7 @@ long datum_new_in_range(
 
 			if (absolute_index != NONE)
 			{
-				s_datum_header *datum = reinterpret_cast<s_datum_header *>(
+				auto datum = reinterpret_cast<s_datum_header *>(
 					offset_pointer(data->data, absolute_index * data->size));
 
 				BIT_VECTOR_SET_FLAG(in_use_bit_vector, absolute_index, true);
@@ -779,7 +766,7 @@ long datum_new_in_range(
 
 				assert(datum->identifier == 0);
 
-				ushort *salt = (salt_type == _datum_salt_isolated_identifier) ?
+				auto salt = (salt_type == _datum_salt_isolated_identifier) ?
 					&data->next_identifier :
 					&data->isolated_next_identifier;
 
@@ -806,10 +793,292 @@ long datum_new_in_range(
 
 void datum_initialize(
 	s_data_array *data,
-	s_datum_header *datum,
+	s_datum_header *header,
 	ushort *out_identifier)
 {
-	//
-	// TODO
-	//
+	static char temporary[256];
+
+	assert(data);
+	assert(header);
+	assert(out_identifier);
+
+	auto datum_size = data->size;
+	auto datum_offset = pointer_distance(data->data, header);
+	auto absolute_index = datum_offset / datum_size;
+
+	if (data_should_verify_data_pattern(data))
+	{
+		for (auto offset = sizeof(s_datum_header);
+			offset < datum_size;
+			offset++)
+		{
+			auto current = reinterpret_cast<uchar *>(offset_pointer(header, offset));
+
+			vassert(*current == 0xBA,
+				csnzprintf(temporary, 256,
+					"%s index #%d byte#%d @%p isn\'t as free as it should be (something is writing to an unused datum)",
+					data->name, absolute_index, offset, current));
+		}
+	}
+
+	if (datum_size > 32 || !pointer_is_aligned(header, 2) || datum_size & 3)
+	{
+		csmemset(header, 0, datum_size);
+	}
+	else
+	{
+		for (int x = 0; x < datum_size / sizeof(ulong); x++)
+			*reinterpret_cast<ulong *>(offset_pointer(header, x * sizeof(ulong))) = 0;
+	}
+
+	ushort identifier = *out_identifier;
+
+	if (identifier == NONE)
+		identifier = k_datum_base_identifier;
+
+	header->identifier = identifier;
+
+	assert(header->identifier != 0 && header->identifier != NONE);
+
+	*out_identifier = identifier + 1;
+}
+
+void *datum_try_and_get(
+	s_data_array *data,
+	long index)
+{
+	static char temporary[256];
+
+	assert(data);
+	assert(data->valid);
+
+	s_datum_header *result = nullptr;
+
+	if (index != NONE)
+	{
+		auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+		auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
+
+		vassert(identifier != 0,
+			csnzprintf(temporary, 256,
+				"tried to access %s using datum_try_and_get() with an absolute index #%d",
+				data->name, index));
+
+		vassert(absolute_index >= 0 && absolute_index < data->maximum_count,
+			csnzprintf(temporary, 256,
+				"tried to access %s using datum_try_and_get() with an index 0x%08X outside maximum range [0, %d)",
+				data->name, index, data->maximum_count));
+
+		if (absolute_index < data->first_unallocated)
+		{
+			auto datum = reinterpret_cast<s_datum_header *>(
+				offset_pointer(data->data, absolute_index * data->size));
+
+			if (datum->identifier != 0 && datum->identifier == identifier)
+				result = datum;
+		}
+	}
+
+	assert(result == align_pointer(result, data->alignment_bits));
+
+	return result;
+}
+
+void *datum_try_and_get_unsafe(
+	s_data_array *data,
+	long index)
+{
+	assert(data);
+	assert(data->valid);
+
+	s_datum_header *result = nullptr;
+
+	if (index != NONE)
+	{
+		auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+		auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
+
+		if (absolute_index > NONE && absolute_index < data->first_unallocated)
+		{
+			auto datum = reinterpret_cast<s_datum_header *>(
+				offset_pointer(data->data, absolute_index * data->size));
+
+			if (datum->identifier != 0 && datum->identifier == identifier)
+				result = datum;
+		}
+	}
+
+	assert(result == align_pointer(result, data->alignment_bits));
+
+	return result;
+}
+
+void *datum_try_and_get_absolute(
+	s_data_array *data,
+	long absolute_index)
+{
+	static char temporary[256];
+
+	assert(data);
+	assert(data->valid);
+
+	s_datum_header *result = nullptr;
+
+	if (absolute_index != NONE)
+	{
+		auto identifier = DATUM_INDEX_TO_IDENTIFIER(absolute_index);
+
+		vassert(DATUM_INDEX_TO_IDENTIFIER(absolute_index) == 0,
+			csnzprintf(temporary, 256,
+				"tried to access %s using datum_try_and_get_absolute() with a non absolute index #%d (0x%x)",
+				data->name, DATUM_INDEX_TO_ABSOLUTE_INDEX(absolute_index), absolute_index));
+
+		vassert(absolute_index >= 0 && absolute_index < data->maximum_count,
+			csnzprintf(temporary, 256,
+				"tried to access %s using datum_try_and_get_absolute() with an absolute index 0x%04X outside maximum range [0, %d]",
+				data->name, DATUM_INDEX_TO_ABSOLUTE_INDEX(absolute_index), data->maximum_count));
+
+		if (absolute_index > NONE && absolute_index < data->first_unallocated)
+		{
+			auto datum = reinterpret_cast<s_datum_header *>(
+				offset_pointer(data->data, absolute_index * data->size));
+
+			if (datum->identifier != 0)
+				result = datum;
+		}
+	}
+
+	assert(result == align_pointer(result, data->alignment_bits));
+
+	return result;
+}
+
+void *datum_get(
+	s_data_array *data,
+	long index)
+{
+	static char temporary[256];
+
+	assert(data);
+	assert(data->valid);
+
+	vassert(index != NONE,
+		csnzprintf(temporary, 256,
+			"tried to access %s index NONE",
+			data->name));
+
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
+
+	vassert(identifier != 0,
+		csnzprintf(temporary, 256,
+			"tried to access %s using datum_get() with an absolute index #%d",
+			data->name, index));
+
+	vassert(absolute_index >= 0 && absolute_index < data->first_unallocated,
+		csnzprintf(temporary, 256,
+			"%s index #%d (0x%x) is out of range (%d)",
+			data->name, absolute_index, index, data->first_unallocated));
+
+	auto header = reinterpret_cast<s_datum_header *>(
+		offset_pointer(data->data, absolute_index * data->size));
+
+	vassert(header->identifier != 0,
+		csnzprintf(temporary, 256,
+			"%s index #%d (0x%x) is unused",
+			data->name, absolute_index, index));
+
+	auto datum_index = BUILD_DATUM_INDEX(header->identifier, absolute_index);
+
+	vassert(header->identifier == identifier,
+		csnzprintf(temporary, 256,
+			"%s index #%d (0x%x) is changed, should be 0x%x",
+			data->name, absolute_index, index, datum_index));
+
+	assert(data->alignment_bits == 0 || header == align_pointer(header, data->alignment_bits));
+
+	return header;
+}
+
+void *datum_get_absolute(
+	s_data_array *data,
+	long index)
+{
+	static char temporary[256];
+
+	assert(data);
+	assert(data->valid);
+
+	vassert(index != NONE,
+		csnzprintf(temporary, 256,
+			"tried to access %s index NONE",
+			data->name));
+
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
+
+	vassert(identifier == 0,
+		csnzprintf(temporary, 256,
+			"tried to access %s using datum_get_absolute() with a non absolute index #%d",
+			data->name, index));
+
+	vassert(absolute_index >= 0 && absolute_index < data->first_unallocated,
+		csnzprintf(temporary, 256,
+			"%s absolute index #%d (0x%x) is out of range (%d)",
+			data->name, absolute_index, index, data->first_unallocated));
+
+	auto header = reinterpret_cast<s_datum_header *>(
+		offset_pointer(data->data, absolute_index * data->size));
+
+	vassert(header->identifier != 0,
+		csnzprintf(temporary, 256,
+			"%s absolute index #%d (0x%x) is unused",
+			data->name, absolute_index, index));
+
+	assert(data->alignment_bits == 0 || header == align_pointer(header, data->alignment_bits));
+
+	return header;
+}
+
+void datum_delete(
+	s_data_array *data,
+	long index)
+{
+	assert(data);
+
+	auto datum_size = data->size;
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+	auto datum = reinterpret_cast<s_datum_header *>(datum_get(data, index));
+
+	if (data_should_verify_data_pattern(data))
+	{
+		if (datum_size > 32 || !pointer_is_aligned(datum, 2) || datum_size & 3)
+		{
+			csmemset(datum, 0xBA, datum_size);
+		}
+		else
+		{
+			for (int x = 0; x < datum_size / sizeof(ulong); x++)
+				*reinterpret_cast<ulong *>(offset_pointer(datum, x * sizeof(ulong))) = 0xBABABABA;
+		}
+	}
+
+	BIT_VECTOR_SET_FLAG(data->in_use_bit_vector, absolute_index, false);
+
+	datum->identifier = 0;
+
+	if (absolute_index < data->next_index)
+		data->next_index = absolute_index;
+
+	if (absolute_index + 1 == data->first_unallocated)
+	{
+		do
+		{
+			datum = offset_pointer(datum, -static_cast<long>(datum_size));
+			data->first_unallocated--;
+			if (data->first_unallocated < 1) break;
+		} while (datum->identifier == 0);
+	}
+
+	data->actual_count--;
 }
