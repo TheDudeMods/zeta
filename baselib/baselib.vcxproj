@@ -32,6 +32,7 @@
     <ClCompile Include="source\files\file_synchronous_utilities.cpp" />
     <ClCompile Include="source\files\file_synchronous_utilities_windows.cpp" />
     <ClCompile Include="source\files\simple_file.cpp" />
+    <ClCompile Include="source\memory\allocation_interface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\datatypes\constant_pool.h" />

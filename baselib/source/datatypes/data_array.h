@@ -178,7 +178,34 @@ class c_data_array final : public s_data_array
 {
 	static_assert(is_base_of<s_datum_header, t_datum>);
 
+private:
+	c_data_array() {}
+
 public:
+	static c_data_array<t_datum> *allocate(
+		char const *name,
+		long maximum_count,
+		long alignment_bits,
+		char const *file,
+		long line,
+		c_allocation_interface *allocation)
+	{
+		return reinterpret_cast<c_data_array<t_datum> *>(
+			data_new(name, maximum_count, sizeof(t_datum), alignment_bits, file, line, allocation));
+	}
+
+	static c_data_array<t_datum> *allocate_disconnected(
+		char const *name,
+		long maximum_count,
+		long alignment_bits,
+		char const *file,
+		long line,
+		c_allocation_interface *allocation)
+	{
+		return reinterpret_cast<c_data_array<t_datum> *>(
+			data_new_disconnected(name, maximum_count, sizeof(t_datum), alignment_bits, file, line, allocation));
+	}
+
 	bool is_empty() const { return data_is_empty(this); }
 	bool is_full() const { return data_is_full(this); }
 	bool should_verify_pattern() const { return data_should_verify_data_pattern(this); }

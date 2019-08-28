@@ -269,10 +269,11 @@ struct s_compression_info
 {
 	c_flags<e_compression_flags, ushort> flags;
 	short : 16;
-	real_point3d position_lower;
-	real_point3d position_upper;
-	real_point2d texcoord_lower;
-	real_point2d texcoord_upper;
+	real_bounds position_x;
+	real_bounds position_y;
+	real_bounds position_z;
+	real_bounds texcoord_u;
+	real_bounds texcoord_v;
 	long : 32;
 	long : 32;
 };

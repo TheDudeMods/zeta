@@ -165,19 +165,19 @@ bool extract_render_model_execute(
 					auto v = (float *)&vertex_data[(i * vertex_buffer->vertex_size) + 0];
 					auto x = v[0], y = v[1], z = v[2];
 
-					if (compression_info && (compression_info->flags & FLAG(_compressed_position_bit)))
+					if (compression_info && compression_info->flags.test(_compressed_position_bit))
 					{
-						auto x_length = (compression_info->position_upper.x - compression_info->position_lower.x);
+						auto x_length = (compression_info->position_x.upper - compression_info->position_x.lower);
 						if (x_length != 0.0f)
-							x *= x_length + compression_info->position_lower.x;
+							x = x * x_length + compression_info->position_x.lower;
 
-						auto y_length = (compression_info->position_upper.y - compression_info->position_lower.y);
+						auto y_length = (compression_info->position_y.upper - compression_info->position_y.lower);
 						if (y_length != 0.0f)
-							y *= y_length + compression_info->position_lower.y;
+							y = y * y_length + compression_info->position_y.lower;
 
-						auto z_length = (compression_info->position_upper.z - compression_info->position_lower.z);
+						auto z_length = (compression_info->position_z.upper - compression_info->position_z.lower);
 						if (z_length != 0.0f)
-							z *= z_length + compression_info->position_lower.z;
+							z = z * z_length + compression_info->position_z.lower;
 					}
 
 					fprintf(obj_stream, "v %.6f %.6f %.6f\n", x, z, y);
@@ -197,19 +197,18 @@ bool extract_render_model_execute(
 				{
 					auto vt = (ushort *)&vertex_data[(i * vertex_buffer->vertex_size) + 16];
 					auto u = (float)vt[0] / (float)USHRT_MAX;
-					auto v = -((float)vt[1] / (float)USHRT_MAX);
+					auto v = (float)vt[1] / (float)USHRT_MAX;
 
-					/* TODO: find out if this is necessary
-					if (compression_info && (compression_info->flags & FLAG(_compressed_texcoord_bit)))
+					if (compression_info && compression_info->flags.test(_compressed_texcoord_bit))
 					{
-						auto u_length = (compression_info->texcoord_upper.x - compression_info->texcoord_lower.x);
+						auto u_length = (compression_info->texcoord_u.upper - compression_info->texcoord_u.lower);
 						if (u_length != 0)
-							u *= u_length + compression_info->texcoord_lower.x;
+							u = u * u_length + compression_info->texcoord_u.lower;
 
-						auto v_length = (compression_info->texcoord_upper.y - compression_info->texcoord_lower.y);
+						auto v_length = (compression_info->texcoord_v.upper - compression_info->texcoord_v.lower);
 						if (v_length != 0)
-							v *= v_length + compression_info->texcoord_lower.y;
-					}*/
+							v = 1.0f - (v * v_length + compression_info->texcoord_v.lower);
+					}
 
 					fprintf(obj_stream, "vt %.6f %.6f\n", u, v);
 				}

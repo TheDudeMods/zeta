@@ -169,9 +169,11 @@ void data_dispose(
 
 	data_verify(data);
 
+	auto allocation = data->allocation;
+
 	csmemset(data, 0, sizeof(s_data_array));
 
-	data->allocation->deallocate(data, file, line);
+	allocation->deallocate(data, file, line);
 }
 
 long data_get_count(
@@ -374,21 +376,21 @@ void data_delete_all(
 	data->next_identifier = next_identifier;
 	data->isolated_next_identifier = ~next_identifier | k_datum_base_identifier;
 
-	assert(data->next_identifier < k_datum_base_identifier);
-	assert(data->isolated_next_identifier < k_datum_base_identifier);
+	assert(data->next_identifier >= k_datum_base_identifier);
+	assert(data->isolated_next_identifier >= k_datum_base_identifier);
 
 	if (data_should_verify_data_pattern(data))
 	{
 		auto total_size = data->maximum_count * data->size;
 
-		if (total_size > 32 || !pointer_is_aligned(data, 2) || total_size & 3)
+		if (total_size > 32 || !pointer_is_aligned(data->data, 2) || total_size & 3)
 		{
-			csmemset(data, 0xBA, total_size);
+			csmemset(data->data, 0xBA, total_size);
 		}
 		else
 		{
 			for (auto x = 0; x < total_size / sizeof(ulong); x++)
-				*reinterpret_cast<ulong *>(offset_pointer(data, x * sizeof(ulong))) = 0xBABABABA;
+				*reinterpret_cast<ulong *>(offset_pointer(data->data, x * sizeof(ulong))) = 0xBABABABA;
 		}
 	}
 
