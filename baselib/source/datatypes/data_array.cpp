@@ -456,7 +456,7 @@ void data_set_new_base_address(
 	{
 		if (destination->offset_to_data == 0)
 		{
-			destination->data = (void *)0x0;
+			destination->data = nullptr;
 		}
 		else
 		{
