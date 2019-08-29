@@ -1,5 +1,39 @@
 #pragma once
 
+/* ---------- is_same
+
+Examples:
+
+    static_assert(is_same<int, int>); // passes
+
+    static_assert(is_same<int, long>); // fails
+
+*/
+
+template <typename, typename>
+constexpr bool is_same = false;
+
+template <typename t_type>
+constexpr bool is_same<t_type, t_type> = true;
+
+/* ---------- is_any
+
+Examples:
+
+    static_assert(is_any<int, char, short, long, int>); // passes
+
+    static_assert(is_any<int, char, short, long>); // fails
+
+*/
+
+template <typename, typename...>
+constexpr bool is_any = false;
+
+template <typename t_type1, typename t_type2, typename... t_types>
+constexpr bool is_any<t_type1, t_type2, t_types...> =
+    is_same<t_type1, t_type2> ||
+    is_any<t_type1, t_types...>;
+
 /* ---------- is_base_of
 
 Example:
