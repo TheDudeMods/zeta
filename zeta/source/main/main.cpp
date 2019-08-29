@@ -12,9 +12,7 @@ int main()
 	puts("Zeta v0.0.1");
 
 	auto file = cache_file_load();
-
 	command_loop_execute(file);
-
 	delete file;
 
 	return EXIT_SUCCESS;

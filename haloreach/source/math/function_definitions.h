@@ -6,7 +6,7 @@
 #include <math/real_math.h>
 #include <tag_files/tag_groups.h>
 
-/* ---------- enumerators */
+/* ---------- types */
 
 enum e_function_output_modifier
 {

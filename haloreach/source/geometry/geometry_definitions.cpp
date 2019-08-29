@@ -1,5 +1,5 @@
 #include <geometry/geometry_definitions.h>
-#include <render/render_methods.h>
+#include <render_methods/render_method_definitions.h>
 
 /* ---------- definitions */
 

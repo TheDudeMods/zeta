@@ -257,5 +257,5 @@ public:
 
 /* ---------- prototypes/CACHE_FILES.CPP */
 
+[[nodiscard]]
 c_cache_file_reach *cache_file_load();
-void cache_files_close();

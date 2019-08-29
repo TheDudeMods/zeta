@@ -8,6 +8,7 @@
 
 /* ---------- code */
 
+[[nodiscard]]
 c_cache_file_reach *cache_file_load()
 {
 	static char cache_file_path[1024];
@@ -83,10 +84,6 @@ c_cache_file_reach *cache_file_load()
 	//
 
 	return new c_cache_file_reach(cache_file_path);
-}
-
-void cache_files_close()
-{
 }
 
 c_cache_file_reach::c_cache_file_reach(char const *filename) :
