@@ -262,22 +262,58 @@ public:
 
 	long absolute_index_to_index(long index) { return datum_absolute_index_to_index(this, index); }
 
-	long new_datum() { return datum_new(this); }
-	long new_datum_at_index(long requested_index) { return datum_new_at_index(this, requested_index); }
-	long new_datum_at_absolute_index(long absolute_index) { return datum_new_at_absolute_index(this, absolute_index); }
+	long new_datum()
+	{
+		return datum_new(this);
+	}
+
+	long new_datum_at_index(long requested_index)
+	{
+		return datum_new_at_index(this, requested_index);
+	}
+
+	long new_datum_at_absolute_index(long absolute_index)
+	{
+		return datum_new_at_absolute_index(this, absolute_index);
+	}
+
 	long new_datum_in_range(long minimum_index, long count_indices, e_datum_salt salt_type)
 	{
 		datum_new_in_range(this, minimum_index, count_indices, salt_type);
 	}
 
-	void initialize_datum(s_datum_header *header, ushort *out_identifier) { datum_initialize(this, header, out_identifier); }
+	void initialize_datum(s_datum_header *header, ushort *out_identifier)
+	{
+		datum_initialize(this, header, out_identifier);
+	}
 
-	void *try_and_get_datum(long index) { return datum_try_and_get(this, index); }
-	void *try_and_get_datum_unsafe(long index) { return datum_try_and_get_unsafe(this, index); }
-	void *try_and_get_datum_absolute(long absolute_index) { return datum_try_and_get_absolute(this, absolute_index); }
+	t_datum *try_and_get_datum(long index)
+	{
+		return reinterpret_cast<t_datum *>(datum_try_and_get(this, index));
+	}
 
-	void *get_datum(long index) { return datum_get(this, index); }
-	void *get_datum_absolute(long index) { return datum_get_absolute(this, index); }
+	t_datum *try_and_get_datum_unsafe(long index)
+	{
+		return reinterpret_cast<t_datum *>(datum_try_and_get_unsafe(this, index));
+	}
 
-	void delete_datum(long index) { datum_delete(this, index); }
+	t_datum *try_and_get_datum_absolute(long absolute_index)
+	{
+		return reinterpret_cast<t_datum *>(datum_try_and_get_absolute(this, absolute_index));
+	}
+
+	t_datum *get_datum(long index)
+	{
+		return reinterpret_cast<t_datum *>(datum_get(this, index));
+	}
+
+	t_datum *get_datum_absolute(long index)
+	{
+		return reinterpret_cast<t_datum *>(datum_get_absolute(this, index));
+	}
+
+	void delete_datum(long index)
+	{
+		datum_delete(this, index);
+	}
 };

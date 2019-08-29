@@ -8,7 +8,7 @@ template <typename t_type>
 inline ulonglong address_from_pointer(
 	t_type *pointer)
 {
-	return reinterpret_cast<ulonglong>(pointer);
+	return (ulonglong)pointer;
 }
 
 template <typename t_type>
@@ -24,7 +24,7 @@ inline t_type *offset_pointer(
 	t_offset offset)
 {
 	static_assert(__is_convertible_to(t_offset, ulonglong));
-	return pointer_from_address<t_type>(address_from_pointer(pointer) + static_cast<ulonglong>(offset));
+	return pointer_from_address<t_type>(address_from_pointer(pointer) + (ulonglong)offset);
 }
 
 inline ulonglong align_address(

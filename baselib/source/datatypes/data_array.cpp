@@ -1,6 +1,10 @@
 #include <datatypes/data_array.h>
 #include <memory/memory_interface.h>
 
+/* ---------- private globals */
+
+static c_static_string<1024> temporary;
+
 /* ---------- code */
 
 uint data_allocation_size(
@@ -110,7 +114,7 @@ void data_initialize(
 	assert(allocation);
 
 	auto base_address = align_pointer(data + 1, alignment_bits);
-	auto in_use_bit_vector = reinterpret_cast<ulong *>(offset_pointer(base_address, maximum_count * size));
+	auto in_use_bit_vector = (ulong *)((char *)base_address + ((ulonglong)maximum_count * (ulonglong)size));
 
 	data_initialize_disconnected(data, name, maximum_count, size, alignment_bits, allocation, in_use_bit_vector);
 
@@ -120,7 +124,7 @@ void data_initialize(
 	data->flags.set(_data_array_can_disconnect_bit, false);
 	data->flags.set(_data_array_disconnected_bit, false);
 
-	csmemset(data->in_use_bit_vector, 0, BIT_VECTOR_SIZE_IN_BYTES((ulonglong)maximum_count * size));
+	csmemset(data->in_use_bit_vector, 0, BIT_VECTOR_SIZE_IN_BYTES(maximum_count));
 }
 
 void data_initialize_disconnected(
@@ -412,8 +416,6 @@ void data_delete_all(
 void data_verify(
 	s_data_array *data)
 {
-	static char temporary[256];
-
 	vassert(data
 		&& (data->signature == k_data_signature)
 		&& (data->maximum_count >= 0)
@@ -426,7 +428,8 @@ void data_verify(
 		&& !data->flags.test(_data_array_disconnected_bit)
 		&& (data->offset_to_data != 0)
 		&& (data->offset_to_bit_vector != 0),
-		csnzprintf(temporary, 256, "%s data array @%p is bad or not allocated", data->name, data));
+		csnzprintf(temporary, temporary.max_length(),
+			"%s data array @%p is bad or not allocated", data->name, data));
 }
 
 void data_make_valid(
@@ -504,8 +507,6 @@ void data_iterator_begin(
 void *data_iterator_next(
 	s_data_iterator *iterator)
 {
-	static char temporary[256];
-
 	assert(iterator);
 
 	auto data = iterator->data;
@@ -514,7 +515,8 @@ void *data_iterator_next(
 	assert(data->valid);
 
 	vassert(iterator->signature == (reinterpret_cast<ulong>(data) ^ k_data_iterator_signature),
-		csnzprintf(temporary, 256, "uninitialized iterator passed to %s", __FUNCTION__));
+		csnzprintf(temporary, temporary.max_length(),
+			"uninitialized iterator passed to %s", __FUNCTION__));
 
 	data_verify(data);
 
@@ -798,8 +800,6 @@ void datum_initialize(
 	s_datum_header *header,
 	ushort *out_identifier)
 {
-	static char temporary[256];
-
 	assert(data);
 	assert(header);
 	assert(out_identifier);
@@ -817,7 +817,7 @@ void datum_initialize(
 			auto current = reinterpret_cast<uchar *>(offset_pointer(header, offset));
 
 			vassert(*current == 0xBA,
-				csnzprintf(temporary, 256,
+				csnzprintf(temporary, temporary.max_length(),
 					"%s index #%d byte#%d @%p isn\'t as free as it should be (something is writing to an unused datum)",
 					data->name, absolute_index, offset, current));
 		}
@@ -849,8 +849,6 @@ void *datum_try_and_get(
 	s_data_array *data,
 	long index)
 {
-	static char temporary[256];
-
 	assert(data);
 	assert(data->valid);
 
@@ -919,8 +917,6 @@ void *datum_try_and_get_absolute(
 	s_data_array *data,
 	long absolute_index)
 {
-	static char temporary[256];
-
 	assert(data);
 	assert(data->valid);
 
@@ -931,12 +927,12 @@ void *datum_try_and_get_absolute(
 		auto identifier = DATUM_INDEX_TO_IDENTIFIER(absolute_index);
 
 		vassert(DATUM_INDEX_TO_IDENTIFIER(absolute_index) == 0,
-			csnzprintf(temporary, 256,
+			csnzprintf(temporary, temporary.max_length(),
 				"tried to access %s using datum_try_and_get_absolute() with a non absolute index #%d (0x%x)",
 				data->name, DATUM_INDEX_TO_ABSOLUTE_INDEX(absolute_index), absolute_index));
 
 		vassert(absolute_index >= 0 && absolute_index < data->maximum_count,
-			csnzprintf(temporary, 256,
+			csnzprintf(temporary, temporary.max_length(),
 				"tried to access %s using datum_try_and_get_absolute() with an absolute index 0x%04X outside maximum range [0, %d]",
 				data->name, DATUM_INDEX_TO_ABSOLUTE_INDEX(absolute_index), data->maximum_count));
 
@@ -959,8 +955,6 @@ void *datum_get(
 	s_data_array *data,
 	long index)
 {
-	static char temporary[256];
-
 	assert(data);
 	assert(data->valid);
 
@@ -973,12 +967,12 @@ void *datum_get(
 	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
 
 	vassert(identifier != 0,
-		csnzprintf(temporary, 256,
+		csnzprintf(temporary, temporary.max_length(),
 			"tried to access %s using datum_get() with an absolute index #%d",
 			data->name, index));
 
 	vassert(absolute_index >= 0 && absolute_index < data->first_unallocated,
-		csnzprintf(temporary, 256,
+		csnzprintf(temporary, temporary.max_length(),
 			"%s index #%d (0x%x) is out of range (%d)",
 			data->name, absolute_index, index, data->first_unallocated));
 
@@ -986,14 +980,14 @@ void *datum_get(
 		offset_pointer(data->data, absolute_index * data->size));
 
 	vassert(header->identifier != 0,
-		csnzprintf(temporary, 256,
+		csnzprintf(temporary, temporary.max_length(),
 			"%s index #%d (0x%x) is unused",
 			data->name, absolute_index, index));
 
 	auto datum_index = BUILD_DATUM_INDEX(header->identifier, absolute_index);
 
 	vassert(header->identifier == identifier,
-		csnzprintf(temporary, 256,
+		csnzprintf(temporary, temporary.max_length(),
 			"%s index #%d (0x%x) is changed, should be 0x%x",
 			data->name, absolute_index, index, datum_index));
 
@@ -1006,13 +1000,11 @@ void *datum_get_absolute(
 	s_data_array *data,
 	long index)
 {
-	static char temporary[256];
-
 	assert(data);
 	assert(data->valid);
 
 	vassert(index != NONE,
-		csnzprintf(temporary, 256,
+		csnzprintf(temporary, temporary.max_length(),
 			"tried to access %s index NONE",
 			data->name));
 
@@ -1020,12 +1012,12 @@ void *datum_get_absolute(
 	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
 
 	vassert(identifier == 0,
-		csnzprintf(temporary, 256,
+		csnzprintf(temporary, temporary.max_length(),
 			"tried to access %s using datum_get_absolute() with a non absolute index #%d",
 			data->name, index));
 
 	vassert(absolute_index >= 0 && absolute_index < data->first_unallocated,
-		csnzprintf(temporary, 256,
+		csnzprintf(temporary, temporary.max_length(),
 			"%s absolute index #%d (0x%x) is out of range (%d)",
 			data->name, absolute_index, index, data->first_unallocated));
 
@@ -1033,7 +1025,7 @@ void *datum_get_absolute(
 		offset_pointer(data->data, absolute_index * data->size));
 
 	vassert(header->identifier != 0,
-		csnzprintf(temporary, 256,
+		csnzprintf(temporary, temporary.max_length(),
 			"%s absolute index #%d (0x%x) is unused",
 			data->name, absolute_index, index));
 

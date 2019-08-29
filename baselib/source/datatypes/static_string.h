@@ -40,7 +40,7 @@ public:
 		return m_string;
 	}
 
-	static unsigned long max_length()
+	static long max_length()
 	{
 		return k_maximum_count;
 	}

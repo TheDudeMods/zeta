@@ -1,7 +1,5 @@
 #include <memory/allocation_interface.h>
 
-#include <cstdlib>
-
 /* ---------- private globals */
 
 static c_heap_allocation g_heap_allocation_instance;
@@ -19,7 +17,7 @@ void *c_heap_allocation::allocate(
 	[[maybe_unused]] char const *file,
 	[[maybe_unused]] long line)
 {
-	return malloc(size);
+	return new char[size];
 }
 
 void c_heap_allocation::deallocate(
@@ -27,7 +25,7 @@ void c_heap_allocation::deallocate(
 	[[maybe_unused]] char const *file,
 	[[maybe_unused]] long line)
 {
-	free(address);
+	delete address;
 }
 
 void *c_null_allocation::allocate(
