@@ -3,8 +3,6 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "gzguts.h"
 
 #if defined(_WIN32) && !defined(__BORLANDC__) && !defined(__MINGW32__)
@@ -33,13 +31,13 @@ local gzFile gz_open OF((const void *, int, const char *));
    The gz_strwinerror function does not change the current setting of
    GetLastError. */
 char ZLIB_INTERNAL *gz_strwinerror (error)
-     ulong error;
+     DWORD error;
 {
     static char buf[1024];
 
     wchar_t *msgbuf;
-    ulong lasterr = GetLastError();
-    ulong chars = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM
+    DWORD lasterr = GetLastError();
+    DWORD chars = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM
         | FORMAT_MESSAGE_ALLOCATE_BUFFER,
         NULL,
         error,
@@ -244,7 +242,7 @@ local gzFile gz_open(path, fd, mode)
 #ifdef WIDECHAR
         fd == -2 ? _wopen(path, oflag, 0666) :
 #endif
-        _open((const char *)path, oflag, 0666));
+        open((const char *)path, oflag, 0666));
     if (state->fd == -1) {
         free(state->path);
         free(state);
