@@ -15,6 +15,7 @@
 #include <items/item_definitions.h>
 #include <items/projectile_definitions.h>
 #include <units/unit_definitions.h>
+#include <rasterizer/rasterizer_shader_definitions.h>
 #include <render_methods/render_method_definitions.h>
 
 #include <cstdio>
@@ -32,12 +33,14 @@ extern s_tag_group_definition device_group;
 extern s_tag_group_definition item_group;
 extern s_tag_group_definition machine_group;
 extern s_tag_group_definition object_group;
+extern s_tag_group_definition pixel_shader_group;
 extern s_tag_group_definition projectile_group;
 extern s_tag_group_definition render_method_group;
 extern s_tag_group_definition render_method_shader_group;
 extern s_tag_group_definition render_model_group;
 extern s_tag_group_definition scenery_group;
 extern s_tag_group_definition unit_group;
+extern s_tag_group_definition vertex_shader_group;
 
 static struct tag_definition
 {
@@ -55,12 +58,14 @@ static struct tag_definition
 	{ k_item_group_tag, &item_group },
 	{ k_machine_group_tag, &machine_group },
 	{ k_object_group_tag, &object_group },
+	{ k_pixel_shader_group_tag, &pixel_shader_group },
 	{ k_projectile_group_tag, &projectile_group },
 	{ k_render_method_group_tag, &render_method_group },
 	{ k_render_method_shader_group_tag, &render_method_shader_group },
 	{ k_render_model_group_tag, &render_model_group },
 	{ k_scenery_group_tag, &scenery_group },
 	{ k_unit_group_tag, &unit_group },
+	{ k_vertex_shader_group_tag, &vertex_shader_group },
 	{ static_cast<tag>(NONE) }
 };
 

@@ -7,6 +7,9 @@
 
 /* ---------- macros */
 
+#define NUMBEROF(xs) \
+	(sizeof((xs)) / sizeof((xs)[0]))
+
 #define FLAG(bit) \
 	(1U << (bit))
 
