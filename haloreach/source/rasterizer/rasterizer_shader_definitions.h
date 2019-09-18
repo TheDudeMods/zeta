@@ -45,15 +45,31 @@ struct s_rasterizer_compiled_shader
 	long unknown0;
 	s_tag_data xbox_data;
 	s_tag_data pc_data;
-	c_tag_block<s_rasterizer_shader_constant> xbox_constants;
-	long unknown38;
-	c_tag_block<s_rasterizer_shader_constant> pc_constants;
+	s_tag_data unknown2C;
+	long unknown40;
+	long unknown44;
 	long unknown48;
 	long unknown4C;
-	long global_cache_shader_index;
-	ulong address;
+	long unknown50;
+	long unknown54;
+	long unknown58;
+	long unknown5C;
+	long unknown60;
+	long unknown64;
+	long unknown68;
+	long unknown6C;
+	long unknown70;
+	long unknown74;
+	long unknown78;
+	long unknown7C;
+	long unknown80;
+	long unknown84;
+	long unknown88;
+	long unknown8C;
+	long unknown90;
+	long unknown94;
 };
-static_assert(sizeof(s_rasterizer_compiled_shader) == 0x58);
+static_assert(sizeof(s_rasterizer_compiled_shader) == 0x98);
 
 /* ---------- classes */
 
