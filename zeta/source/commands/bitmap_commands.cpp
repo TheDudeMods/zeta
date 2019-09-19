@@ -7,7 +7,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-
 /* ---------- constants */
 
 enum
@@ -20,7 +19,7 @@ enum
 
 extern s_tag_group_definition bitmap_group;
 
-s_command g_bitmap_commands[k_number_of_bitmap_commands] =
+static s_command g_bitmap_commands[k_number_of_bitmap_commands] =
 {
 	{
 		"extract_bitmap",

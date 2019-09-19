@@ -22,6 +22,7 @@
     <ClCompile Include="source\commands\bitmap_commands.cpp" />
     <ClCompile Include="source\commands\commands.cpp" />
     <ClCompile Include="source\commands\editing_commands.cpp" />
+    <ClCompile Include="source\commands\rasterizer_shader_commands.cpp" />
     <ClCompile Include="source\commands\render_model_commands.cpp" />
     <ClCompile Include="source\commands\tag_commands.cpp" />
     <ClCompile Include="source\main\main.cpp" />
@@ -31,6 +32,7 @@
     <ClInclude Include="source\commands\commands.h" />
     <ClInclude Include="source\commands\editing_commands.h" />
     <ClInclude Include="source\commands\render_model_commands.h" />
+    <ClInclude Include="source\commands\rasterizer_shader_commands.h" />
     <ClInclude Include="source\commands\tag_commands.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

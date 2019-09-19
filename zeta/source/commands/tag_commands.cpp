@@ -3,6 +3,7 @@
 #include <cache/cache_file_tag_resources.h>
 #include <commands/bitmap_commands.h>
 #include <commands/editing_commands.h>
+#include <commands/rasterizer_shader_commands.h>
 #include <commands/render_model_commands.h>
 #include <commands/tag_commands.h>
 
@@ -173,10 +174,26 @@ bool edit_tag_execute(
 			g_command_context);
 		break;
 
+	case k_pixel_shader_group_tag:
+		g_command_context = new c_pixel_shader_command_context(
+			tag_name_string.get_buffer(),
+			(c_rasterizer_pixel_shader *)tag_definition,
+			file,
+			g_command_context);
+		break;
+
 	case k_render_model_group_tag:
 		g_command_context = new c_render_model_command_context(
 			tag_name_string.get_buffer(),
 			(s_render_model_definition *)tag_definition,
+			file,
+			g_command_context);
+		break;
+
+	case k_vertex_shader_group_tag:
+		g_command_context = new c_vertex_shader_command_context(
+			tag_name_string.get_buffer(),
+			(c_rasterizer_vertex_shader *)tag_definition,
 			file,
 			g_command_context);
 		break;
