@@ -89,6 +89,13 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 
 	auto definition = get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
 
+	auto play_index = c_tag_iterator<k_cache_file_resource_layout_table_group_tag>(this).next();
+	if (play_index != NONE)
+	{
+		auto play_definition = get_tag_definition<s_cache_file_resource_layout_table>(play_index);
+		csmemcpy(&definition->layout_table, play_definition, sizeof(s_cache_file_resource_layout_table));
+	}
+
 	s_cache_file_tag_resource *resource = nullptr;
 	if (!definition->tag_resources.try_get_element(this, resource_absolute_index, &resource))
 		return false;
@@ -162,59 +169,58 @@ void *c_cache_file_reach::get_resource_page_data(
 	s_cache_file_header *cache_header = nullptr;
 
 	FILE *stream = nullptr;
-	if (fopen_s(&stream, resource_cache_file_path, "rb+") == 0 && stream)
+
+	if (fopen_s(&stream, resource_cache_file_path, "rb+") != 0 || !stream)
+		return nullptr;
+
+	if (location)
 	{
-		if (location)
-		{
-			cache_header = &resource_cache_header;
-			fseek(stream, 0, SEEK_SET);
-			fread(cache_header, sizeof(s_cache_file_header), 1, stream);
-		}
-		else
-		{
-			cache_header = &m_header;
-		}
-
-		fseek(stream, page->block_offset, SEEK_SET);
-
-		if (location)
-			fseek(stream, location->block_offset, SEEK_CUR);
-		
-		auto uncompressed_data = new uchar[page->uncompressed_block_size];
-		csmemset(uncompressed_data, 0, page->uncompressed_block_size);
-
-		if (!page->compression_codec)
-		{
-			fread(uncompressed_data, page->uncompressed_block_size, 1, stream);
-		}
-		else
-		{
-			auto compressed_data = new uchar[page->compressed_block_size];
-			csmemset(compressed_data, 0, page->compressed_block_size);
-
-			fread(compressed_data, page->compressed_block_size, 1, stream);
-
-			z_stream inflate_stream;
-			inflate_stream.zalloc = Z_NULL;
-			inflate_stream.zfree = Z_NULL;
-			inflate_stream.opaque = Z_NULL;
-
-			inflate_stream.total_in = inflate_stream.avail_in = page->compressed_block_size;
-			inflate_stream.total_out = inflate_stream.avail_out = page->uncompressed_block_size;
-			inflate_stream.next_in = compressed_data;
-			inflate_stream.next_out = uncompressed_data;
-
-			inflateInit2(&inflate_stream, -15);
-			inflate(&inflate_stream, Z_FINISH);
-			inflateEnd(&inflate_stream);
-
-			delete[] compressed_data;
-		}
-
-		fclose(stream);
-
-		return uncompressed_data;
+		cache_header = &resource_cache_header;
+		fseek(stream, 0, SEEK_SET);
+		fread(cache_header, sizeof(s_cache_file_header), 1, stream);
+	}
+	else
+	{
+		cache_header = &m_header;
 	}
 
-	return nullptr;
+	fseek(stream, page->block_offset, SEEK_SET);
+
+	if (location)
+		fseek(stream, location->block_offset, SEEK_CUR);
+
+	auto uncompressed_data = new uchar[page->uncompressed_block_size];
+	csmemset(uncompressed_data, 0, page->uncompressed_block_size);
+
+	if (!page->compression_codec)
+	{
+		fread(uncompressed_data, page->uncompressed_block_size, 1, stream);
+	}
+	else
+	{
+		auto compressed_data = new uchar[page->compressed_block_size];
+		csmemset(compressed_data, 0, page->compressed_block_size);
+
+		fread(compressed_data, page->compressed_block_size, 1, stream);
+
+		z_stream inflate_stream;
+		inflate_stream.zalloc = Z_NULL;
+		inflate_stream.zfree = Z_NULL;
+		inflate_stream.opaque = Z_NULL;
+
+		inflate_stream.total_in = inflate_stream.avail_in = page->compressed_block_size;
+		inflate_stream.total_out = inflate_stream.avail_out = page->uncompressed_block_size;
+		inflate_stream.next_in = compressed_data;
+		inflate_stream.next_out = uncompressed_data;
+
+		inflateInit2(&inflate_stream, -15);
+		inflate(&inflate_stream, Z_FINISH);
+		inflateEnd(&inflate_stream);
+
+		delete[] compressed_data;
+	}
+
+	fclose(stream);
+
+	return uncompressed_data;
 }

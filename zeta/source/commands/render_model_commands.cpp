@@ -83,7 +83,7 @@ bool extract_render_model_execute(
 	}
 
 	auto render_model = context->get_render_model();
-	auto render_model_name = file->get_string(render_model->name);
+	auto render_model_name = "render_model";// TODO: file->get_string(render_model->name);
 
 	auto geometry_resource = c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition>(
 		file, render_model->geometry.resource_index);
@@ -105,14 +105,18 @@ bool extract_render_model_execute(
 	for (auto region_index = 0; region_index < render_model->regions.count; region_index++)
 	{
 		auto region = &regions[region_index];
-		auto region_name = file->get_string(region->name);
+		
+		char region_name_buf[256];
+		auto region_name = csnzprintf(region_name_buf, 256, "region_%i", region_index);// TODO: file->get_string(region->name);
 
 		auto permutations = file->get_page_data<s_render_model_permutation>(region->permutations.address);
 
 		for (auto permutation_index = 0; permutation_index < region->permutations.count; permutation_index++)
 		{
 			auto permutation = &permutations[permutation_index];
-			auto permutation_name = file->get_string(permutation->name);
+
+			char permutation_name_buf[256];
+			auto permutation_name = csnzprintf(permutation_name_buf, 256, "permutation_%i", region_index);// TODO: file->get_string(permutation->name);
 
 			s_mesh *meshes = nullptr;
 			permutation->first_mesh.try_resolve(file, &render_model->geometry.meshes, &meshes);
@@ -150,6 +154,9 @@ bool extract_render_model_execute(
 
 				auto indices = geometry_resource.get_data<short>(
 					index_buffer->data.address);
+
+				if (vertex_data == nullptr)
+					continue;
 
 				if (vertex_buffer->format != _vertex_buffer_type_world &&
 					vertex_buffer->format != _vertex_buffer_type_rigid &&

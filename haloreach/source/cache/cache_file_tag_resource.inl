@@ -55,7 +55,9 @@ public:
 		if (!address)
 			return m_data;
 
-		switch ((address >> 28) & 0xF)
+		auto type = (address >> 28) & 0xF;
+
+		switch (type)
 		{
 		case 4: // points to compressed data
 		{
