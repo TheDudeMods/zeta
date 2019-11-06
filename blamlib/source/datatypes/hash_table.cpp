@@ -156,7 +156,7 @@ bool hash_table_add(
 	auto hash = hash_table->hash_function(key);
 
 	auto bucket_count = hash_table->bucket_count;
-	auto target_bucket_index = hash - (hash / bucket_count) * bucket_count;
+	auto target_bucket_index = (long)(hash - (hash / bucket_count) * bucket_count);
 	auto buckets = get_buckets(hash_table);
 
 	auto new_element = hash_table->free_list;
@@ -193,7 +193,7 @@ bool hash_table_remove(
 {
 	auto hash = hash_table->hash_function(key);
 	auto bucket_count = hash_table->bucket_count;
-	auto target_bucket_index = hash - (hash / bucket_count) * bucket_count;
+	auto target_bucket_index = (long)(hash - (hash / bucket_count) * bucket_count);
 	auto buckets = get_buckets(hash_table);
 
 	assert(VALID_INDEX(target_bucket_index, hash_table->bucket_count));
@@ -365,7 +365,7 @@ s_hash_table_bucket *hash_table_find_internal(
 	auto hash = table->hash_function(key);
 	auto bucket_count = table->bucket_count;
 
-	auto target_bucket_index = hash - (hash / bucket_count) * bucket_count;
+	auto target_bucket_index = (long)(hash - (hash / bucket_count) * bucket_count);
 	auto buckets = get_buckets(table);
 
 	assert(VALID_INDEX(target_bucket_index, table->bucket_count));

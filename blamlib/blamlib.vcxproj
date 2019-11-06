@@ -20,12 +20,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\cache\cache_files_base.cpp" />
+    <ClCompile Include="source\cseries\cseries_asserts.cpp" />
+    <ClCompile Include="source\cseries\cseries_memory.cpp" />
+    <ClCompile Include="source\cseries\cseries_string.cpp" />
+    <ClCompile Include="source\datatypes\constant_pool.cpp" />
+    <ClCompile Include="source\datatypes\data_array.cpp" />
+    <ClCompile Include="source\datatypes\datum_handle.cpp" />
+    <ClCompile Include="source\datatypes\hash_table.cpp" />
+    <ClCompile Include="source\datatypes\memory_pool.cpp" />
+    <ClCompile Include="source\datatypes\tag.cpp" />
+    <ClCompile Include="source\files\file_location_manager.cpp" />
+    <ClCompile Include="source\files\file_path.cpp" />
+    <ClCompile Include="source\files\file_synchronous_io.cpp" />
+    <ClCompile Include="source\files\file_synchronous_io_windows.cpp" />
+    <ClCompile Include="source\files\file_synchronous_utilities.cpp" />
+    <ClCompile Include="source\files\file_synchronous_utilities_windows.cpp" />
+    <ClCompile Include="source\files\simple_file.cpp" />
     <ClCompile Include="source\math\integer_math.cpp" />
     <ClCompile Include="source\math\periodic_functions.cpp" />
     <ClCompile Include="source\math\perlin.cpp" />
     <ClCompile Include="source\math\polygon_math.cpp" />
     <ClCompile Include="source\math\real_math.cpp" />
     <ClCompile Include="source\math\spherical_harmonics.cpp" />
+    <ClCompile Include="source\memory\allocation_interface.cpp" />
     <ClCompile Include="source\zlib\adler32.c" />
     <ClCompile Include="source\zlib\compress.c" />
     <ClCompile Include="source\zlib\crc32.c" />
@@ -44,13 +61,40 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cache\cache_files_base.h" />
-    <ClInclude Include="source\math\function_definitions.h" />
+    <ClInclude Include="source\cseries\cseries.h" />
+    <ClInclude Include="source\cseries\cseries_asserts.h" />
+    <ClInclude Include="source\cseries\cseries_memory.h" />
+    <ClInclude Include="source\cseries\cseries_string.h" />
+    <ClInclude Include="source\cseries\cseries_traits.h" />
+    <ClInclude Include="source\datatypes\constant_pool.h" />
+    <ClInclude Include="source\datatypes\data_array.h" />
+    <ClInclude Include="source\datatypes\datum_handle.h" />
+    <ClInclude Include="source\datatypes\enum.h" />
+    <ClInclude Include="source\datatypes\flags.h" />
+    <ClInclude Include="source\datatypes\hash_table.h" />
+    <ClInclude Include="source\datatypes\indexed_list.h" />
+    <ClInclude Include="source\datatypes\indexed_pool.h" />
+    <ClInclude Include="source\datatypes\memory_pool.h" />
+    <ClInclude Include="source\datatypes\static_array.h" />
+    <ClInclude Include="source\datatypes\static_bitarray.h" />
+    <ClInclude Include="source\datatypes\static_hash_table.h" />
+    <ClInclude Include="source\datatypes\static_hash_table_data.h" />
+    <ClInclude Include="source\datatypes\static_stack.h" />
+    <ClInclude Include="source\datatypes\static_string.h" />
+    <ClInclude Include="source\datatypes\tag.h" />
+    <ClInclude Include="source\files\file_location_manager.h" />
+    <ClInclude Include="source\files\file_path.h" />
+    <ClInclude Include="source\files\file_synchronous_io.h" />
+    <ClInclude Include="source\files\file_synchronous_utilities.h" />
+    <ClInclude Include="source\files\simple_file.h" />
     <ClInclude Include="source\math\integer_math.h" />
     <ClInclude Include="source\math\periodic_functions.h" />
     <ClInclude Include="source\math\perlin.h" />
     <ClInclude Include="source\math\polygon_math.h" />
     <ClInclude Include="source\math\real_math.h" />
     <ClInclude Include="source\math\spherical_harmonics.h" />
+    <ClInclude Include="source\memory\allocation_interface.h" />
+    <ClInclude Include="source\memory\memory_interface.h" />
     <ClInclude Include="source\tag_files\string_ids_base.h" />
     <ClInclude Include="source\tag_files\tag_definitions_base.h" />
     <ClInclude Include="source\zlib\crc32.h" />
@@ -139,22 +183,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)source;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)source;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)source;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)corelib/source;$(SolutionDir)baselib/source;$(ProjectDir)source;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)source;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -169,7 +213,7 @@
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4267;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4267;4996;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -195,7 +239,7 @@
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4267;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4267;4996;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -223,7 +267,7 @@
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4267;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4267;4996;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -253,7 +297,7 @@
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderOutputFile />
-      <DisableSpecificWarnings>4267;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4267;4996;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

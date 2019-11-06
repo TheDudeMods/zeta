@@ -119,7 +119,7 @@ void data_initialize(
 	data_initialize_disconnected(data, name, maximum_count, size, alignment_bits, allocation, in_use_bit_vector);
 
 	data->data = base_address;
-	data->offset_to_data = pointer_distance(data, base_address);
+	data->offset_to_data = (long)pointer_distance(data, base_address);
 
 	data->flags.set(_data_array_can_disconnect_bit, false);
 	data->flags.set(_data_array_disconnected_bit, false);
@@ -416,8 +416,8 @@ void data_delete_all(
 void data_verify(
 	s_data_array *data)
 {
-	vassert(data
-		&& (data->signature == k_data_signature)
+	assert(data);
+	vassert(data->signature == k_data_signature
 		&& (data->maximum_count >= 0)
 		&& (data->first_unallocated >= 0)
 		&& (data->maximum_count >= data->first_unallocated)
@@ -488,6 +488,17 @@ void data_set_new_base_address(
 	*source = destination;
 }
 
+tag inline data_iterator_build_signature(
+	s_data_iterator *iterator)
+{
+	assert(iterator);
+
+	auto data = iterator->data;
+	assert(data);
+
+	return (ulong)((ulonglong)data & k_uint32_max) ^ k_data_iterator_signature;
+}
+
 void data_iterator_begin(
 	s_data_iterator *iterator,
 	s_data_array *data)
@@ -501,7 +512,7 @@ void data_iterator_begin(
 	iterator->data = data;
 	iterator->index = NONE;
 	iterator->next_index = NONE;
-	iterator->signature = reinterpret_cast<ulong>(data) ^ k_data_iterator_signature;
+	iterator->signature = data_iterator_build_signature(iterator);
 }
 
 void *data_iterator_next(
@@ -514,7 +525,7 @@ void *data_iterator_next(
 	assert(data);
 	assert(data->valid);
 
-	vassert(iterator->signature == (reinterpret_cast<ulong>(data) ^ k_data_iterator_signature),
+	vassert(iterator->signature == data_iterator_build_signature(iterator),
 		csnzprintf(temporary, temporary.max_length(),
 			"uninitialized iterator passed to %s", __FUNCTION__));
 

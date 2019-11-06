@@ -249,7 +249,7 @@ bool extract_render_model_execute(
 						auto triangle_count = part->index_count - 2;
 						
 						auto f_indices = new ushort[(ulonglong)triangle_count * 3];
-						ushort f_prev[2] = { part_indices[0], part_indices[1] };
+						short f_prev[2] = { part_indices[0], part_indices[1] };
 						
 						part_indices += 2;
 

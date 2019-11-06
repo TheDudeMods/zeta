@@ -2,7 +2,7 @@
 #include <cseries/cseries_memory.h>
 #include <cstring>
 
-void *csmemcpy(void *destination, void const *source, unsigned long length)
+void *csmemcpy(void *destination, void const *source, unsigned long long length)
 {
 	assert(destination && source);
 
@@ -12,7 +12,7 @@ void *csmemcpy(void *destination, void const *source, unsigned long length)
 	return destination;
 }
 
-void *csmemmove(void *destination, void const *source, unsigned long length)
+void *csmemmove(void *destination, void const *source, unsigned long long length)
 {
 	assert(destination && source);
 
@@ -22,7 +22,7 @@ void *csmemmove(void *destination, void const *source, unsigned long length)
 	return destination;
 }
 
-void *csmemset(void *address, int m_value, unsigned long length)
+void *csmemset(void *address, int m_value, unsigned long long length)
 {
 	assert(address);
 
@@ -32,7 +32,7 @@ void *csmemset(void *address, int m_value, unsigned long length)
 	return memset_result;
 }
 
-int csmemcmp(void *p1, void *p2, unsigned long length)
+int csmemcmp(void *p1, void *p2, unsigned long long length)
 {
 	assert(p1 && p2);
 	return memcmp(p1, p2, length);

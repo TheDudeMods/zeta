@@ -140,7 +140,7 @@ static_assert(sizeof(s_cache_file_tag_instance) == 0x8);
 
 struct s_cache_file_tags_section
 {
-	ulong count = 0;
+	long count = 0;
 	tag post_count_signature = k_cache_file_tags_section_signature;
 	ulonglong address = 0;
 };

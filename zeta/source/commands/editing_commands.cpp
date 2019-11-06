@@ -184,7 +184,7 @@ bool edit_block_execute(
 		auto block_definition = (s_tag_block_definition *)field->definition;
 
 		auto index = csstrcmp(arg_values[1], "*") != 0 ?
-			strtoul(arg_values[1], nullptr, 0) :
+			(long)strtoul(arg_values[1], nullptr, 0) :
 			block->count - 1;
 
 		if (index < 0 || index >= block->count)
