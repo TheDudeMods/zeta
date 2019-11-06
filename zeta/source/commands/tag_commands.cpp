@@ -161,7 +161,9 @@ bool edit_tag_execute(
 	c_static_string<256> tag_name_string;
 
 	auto tag_name = file->get_tag_name(reference.index & k_uint16_max);
-	auto group_name = file->get_string(group->name);
+
+	char group_name[5];
+	tag_to_string(group->tags[0], group_name);
 	
 	auto separator = csstrrchr((char *)tag_name, '\\');
 	

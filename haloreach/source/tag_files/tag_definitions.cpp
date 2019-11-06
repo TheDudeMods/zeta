@@ -359,7 +359,7 @@ void field_print(
 		break;
 
 	case _field_string_id:
-		printf("%s: string_id = %s\n", name, file->get_string(*(string_id *)address));
+		printf("%s: string_id = %s\n", name, "<unsupported>");// TODO: file->get_string(*(string_id *)address));
 		break;
 
 	case _field_char_integer:
@@ -571,12 +571,13 @@ void field_print(
 		{
 			auto tag_name = file->get_tag_name(reference->index & k_uint16_max);
 			auto group = file->get_tag_group(instance->group_index);
+			char group_string[5];
 
 			printf("%s: tag_reference = (0x%04lX) %s.%s\n",
 				name,
 				reference->index & k_uint16_max,
 				tag_name,
-				file->get_string(group->name));
+				tag_to_string(group->tags[0], group_string));
 		}
 		break;
 	}
@@ -830,7 +831,7 @@ bool field_parse_tag_reference(
 			auto group = file->get_tag_group(current_instance->group_index);
 			if (!group) continue;
 
-			if (csstrcmp(group_name, file->get_string(group->name)) == 0 ||
+			if (//csstrcmp(group_name, file->get_string(group->name)) == 0 ||
 				csstrcmp(group_name, tag_to_string(group->tags[0], tag_string)) == 0)
 			{
 				if (tag_name_is_wildcard || csstrcmp(tag_name, file->get_tag_name(i)) == 0)
