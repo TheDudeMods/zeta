@@ -184,7 +184,11 @@ void *c_cache_file_reach::get_resource_page_data(
 		cache_header = &m_header;
 	}
 
-	fseek(stream, page->block_offset, SEEK_SET);
+	auto resource_buffer_offset =
+		cache_header->interop.offset_masks[_cache_file_section_resource] +
+		cache_header->interop.sections[_cache_file_section_resource].address;
+
+	fseek(stream, resource_buffer_offset + page->block_offset, SEEK_SET);
 
 	if (location)
 		fseek(stream, location->block_offset, SEEK_CUR);
