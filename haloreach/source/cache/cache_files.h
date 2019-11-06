@@ -58,17 +58,10 @@ static_assert(sizeof(s_cache_file_section) == 0x8);
 
 struct s_cache_file_interop
 {
-	ulong unknown0;
-	ulong unknown4;
-	ulong unknown8;
-	ulong unknownC;
-	ulong resource_base_offset;
-	ulong debug_section_size;
-	ulong runtime_base_offset;
-	ulong unknown_base_offset;
+	ulong offset_masks[k_number_of_cache_file_sections];
 	s_cache_file_section sections[k_number_of_cache_file_sections];
 };
-static_assert(sizeof(s_cache_file_interop) == 0x40);
+static_assert(sizeof(s_cache_file_interop) == 0x30);
 
 struct s_cache_file_header
 {
@@ -132,7 +125,7 @@ struct s_cache_file_header
 	long rsa[64];
 	s_cache_file_interop interop;
 	long guid[4];
-	long unknown34[0x26BE];
+	long unknown34[0x26C2];
 	tag footer_signature;
 };
 static_assert(sizeof(s_cache_file_header) == 0xA000);

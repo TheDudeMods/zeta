@@ -105,12 +105,20 @@ bool list_tags_execute(
 		auto cache_file_header = file->get_header();
 
 		if (group_tag == NONE || group->is_in_group(group_tag))
+		{
+			char group_string[5];
+
+			auto tags_section_offset =
+				cache_file_header->interop.offset_masks[_cache_file_section_tags] +
+				cache_file_header->interop.sections[_cache_file_section_tags].address;
+
 			printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",
 				i,
 				instance->identifier,
-				cache_file_header->memory_buffer_offset + file->get_page_offset(instance->address),
+				tags_section_offset + file->get_page_offset(instance->address),
 				tag_name_length == 0 ? "<unnamed>" : tag_name,
-				file->get_string(group->name));
+				tag_to_string(group->tags[0], group_string));
+		}
 	}
 
 	return true;

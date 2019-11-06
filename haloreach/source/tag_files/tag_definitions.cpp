@@ -905,13 +905,13 @@ bool field_parse(
 			if (!group || group->tags[0] == NONE)
 				continue;
 
-			auto group_name = file->get_string(group->name);
+			/*auto group_name = file->get_string(group->name);
 
 			if (group_name && csstrcmp(group_name, arg_values[0]) == 0)
 			{
 				*(tag *)address = group->tags[0];
 				return true;
-			}
+			}*/
 		}
 		*(tag *)address = string_to_tag(arg_values[0]);
 		return true;

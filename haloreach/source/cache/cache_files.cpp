@@ -112,7 +112,11 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 
 	m_memory_buffer = new char[m_header.memory_buffer_size];
 
-	fseek(stream, m_header.memory_buffer_offset, SEEK_SET);
+	auto memory_buffer_offset =
+		m_header.interop.offset_masks[_cache_file_section_tags] +
+		m_header.interop.sections[_cache_file_section_tags].address;
+
+	fseek(stream, memory_buffer_offset, SEEK_SET);
 	fread(m_memory_buffer, m_header.memory_buffer_size, 1, stream);
 
 	m_address_mask = ((ulonglong)m_memory_buffer - m_header.virtual_base_address);
@@ -135,14 +139,20 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	// Allocate and read the cache file tag names
 	//
 
+	auto debug_section_address = m_header.interop.sections[_cache_file_section_debug].address;
+
 	m_tag_name_indices = new long[m_header.tag_name_count];
 
-	fseek(stream, m_header.tag_name_indices_offset, SEEK_SET);
+	auto tag_name_indices_offset = (long)sizeof(s_cache_file_header) + (m_header.tag_name_indices_offset - debug_section_address);
+
+	fseek(stream, tag_name_indices_offset, SEEK_SET);
 	fread(m_tag_name_indices, sizeof(long), m_header.tag_name_count, stream);
 
 	m_tag_names_buffer = new char[m_header.tag_names_buffer_size];
 
-	fseek(stream, m_header.tag_names_buffer_offset, SEEK_SET);
+	auto tag_names_buffer_offset = (long)sizeof(s_cache_file_header) + (m_header.tag_names_buffer_offset - debug_section_address);
+
+	fseek(stream, tag_names_buffer_offset, SEEK_SET);
 	fread(m_tag_names_buffer, m_header.tag_names_buffer_size, 1, stream);
 
 	//
@@ -232,15 +242,17 @@ s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
 	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
 		return nullptr;
 
-	return &get_buffer_data<s_cache_file_tag_instance>(tags_header->instances.address)[absolute_index];
+	auto instances = get_buffer_data<s_cache_file_tag_instance>(tags_header->instances.address);
+
+	return &instances[absolute_index];
 }
 
 ulonglong c_cache_file_reach::get_page_offset(ulong address)
 {
-	return ((ulonglong)address * 4) - (m_header.virtual_base_address - 0x10000000);
+	return ((ulonglong)address * 4) - (m_header.virtual_base_address - 0x50000000);
 }
 
 ulong c_cache_file_reach::make_page_offset(ulonglong address)
 {
-	return (ulong)((address + (m_header.virtual_base_address - 0x10000000)) / 4);
+	return (ulong)((address + (m_header.virtual_base_address - 0x50000000)) / 4);
 }
