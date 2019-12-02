@@ -29,6 +29,7 @@
     <ClCompile Include="source\datatypes\hash_table.cpp" />
     <ClCompile Include="source\datatypes\memory_pool.cpp" />
     <ClCompile Include="source\datatypes\tag.cpp" />
+    <ClCompile Include="source\files\file_interface.cpp" />
     <ClCompile Include="source\files\file_location_manager.cpp" />
     <ClCompile Include="source\files\file_path.cpp" />
     <ClCompile Include="source\files\file_synchronous_io.cpp" />
@@ -82,6 +83,7 @@
     <ClInclude Include="source\datatypes\static_stack.h" />
     <ClInclude Include="source\datatypes\static_string.h" />
     <ClInclude Include="source\datatypes\tag.h" />
+    <ClInclude Include="source\files\file_interface.h" />
     <ClInclude Include="source\files\file_location_manager.h" />
     <ClInclude Include="source\files\file_path.h" />
     <ClInclude Include="source\files\file_synchronous_io.h" />

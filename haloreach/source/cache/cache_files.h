@@ -314,8 +314,3 @@ public:
 		return get_tags_section_pointer_from_page_offset<t_tag_definition>(instance->address);
 	}
 };
-
-/* ---------- prototypes/CACHE_FILES.CPP */
-
-[[nodiscard]]
-c_cache_file_reach *cache_file_load();

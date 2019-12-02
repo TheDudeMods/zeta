@@ -37,5 +37,18 @@ extern s_file_location_globals g_file_location_globals;
 
 /* ---------- prototypes/FILE_LOCATION_MANAGER.CPP */
 
-char *file_location_get_root_absolute_path(e_file_location file_location);
-// TODO
+/* TODO:
+file_locations_initialize
+file_location_globals_get
+file_location_available
+file_location_get_device_type
+*/
+
+char *file_location_get_root_absolute_path(
+	e_file_location file_location);
+
+/* TODO:
+file_locations_configure
+*/
+
+/* ---------- prototypes/FILE_LOCATION_MANAGER_WINDOWS.CPP */

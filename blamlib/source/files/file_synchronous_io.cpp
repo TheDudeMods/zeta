@@ -2,6 +2,12 @@
 
 /* ---------- code */
 
+ulong file_get_position(
+	s_file_accessor *file)
+{
+	return file->position;
+}
+
 //
 // TODO
 //

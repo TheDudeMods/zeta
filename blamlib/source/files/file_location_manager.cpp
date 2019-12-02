@@ -7,9 +7,5 @@ char *file_location_get_root_absolute_path(
 {
 	assert(VALID_INDEX(file_location, k_file_location_count));
 
-	//
-	// TODO: implement
-	//
-
-	throw nullptr;
+	return (char *)"";
 }

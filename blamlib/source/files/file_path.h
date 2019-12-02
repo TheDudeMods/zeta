@@ -4,14 +4,8 @@
 #include <datatypes/enum.h>
 #include <datatypes/flags.h>
 #include <datatypes/static_string.h>
+#include <files/file_interface.h>
 #include <files/file_location_manager.h>
-
-/* ---------- constants */
-
-enum
-{
-	k_maximum_filename_length = 256,
-};
 
 /* ---------- types */
 

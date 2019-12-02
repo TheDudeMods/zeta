@@ -174,7 +174,7 @@ char *c_file_path::get(
 	assert(name_length <= k_maximum_filename_length);
 
 	if (path_flags.test(_file_path_get_location_relative_bit))
-		get_full_path(temporary);
+		get_full_path<k_maximum_filename_length>(temporary);
 	else
 		temporary.set(m_filename.get_string());
 

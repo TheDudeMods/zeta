@@ -1,16 +1,23 @@
 #pragma once
 
-/* ---------- types */
+#include <cseries/cseries.h>
+#include <datatypes/flags.h>
+#include <files/file_interface.h>
+#include <files/file_path.h>
 
-enum e_file_error_mode
-{
-	// TODO
-	k_number_of_file_error_modes
-};
+/* ---------- types */
 
 enum e_file_open_flags
 {
-	// TODO
+	_file_open_read_bit,
+	_file_open_write_bit,
+	_file_open_write_append_bit,
+	_file_open_write_allow_read_bit,
+	_file_open_write_shared_bit,
+	_file_open_temporary_bit,
+	_file_open_delete_on_close_bit,
+	_file_open_random_access_bit,
+	_file_open_sequential_scan_bit,
 	k_number_of_file_open_flags
 };
 
@@ -20,15 +27,12 @@ enum e_file_open_result
 	k_number_of_file_open_results
 };
 
-struct s_file_accessor
-{
-	// TODO
-};
-
 /* ---------- prototypes/FILE_SYNCHRONOUS_IO.CPP */
 
+ulong file_get_position(
+	s_file_accessor *file);
+
 /* TODO:
-file_get_position
 file_read_from_position
 file_write_to_position
 file_print
@@ -38,16 +42,47 @@ file_vprintf
 
 /* ---------- prototypes/FILE_SYNCHRONOUS_IO_WINDOWS.CPP */
 
-/* TODO:
-file_open
-file_close
-file_get_read_only
-file_set_position
-file_set_position_eof
-file_get_eof
-file_set_eof
-file_at_eof
-file_flush
-file_read
-file_write
-*/
+void file_open(
+	c_file_path *path,
+	c_flags<e_file_open_flags, ulong, k_number_of_file_open_flags> flags,
+	e_file_error_mode error_mode,
+	s_file_accessor *out_file);
+
+bool file_close(
+	s_file_accessor *file);
+
+bool file_get_read_only(
+	s_file_accessor *file);
+
+bool file_set_position(
+	s_file_accessor *file,
+	uint position,
+	e_file_error_mode error_mode);
+
+bool file_set_position_eof(
+	s_file_accessor *file);
+
+uint file_get_eof(
+	s_file_accessor *file);
+
+bool file_set_eof(
+	s_file_accessor *file,
+	uint position);
+
+bool file_at_eof(
+	s_file_accessor *file);
+
+bool file_flush(
+	s_file_accessor *file);
+
+bool file_read(
+	s_file_accessor *file,
+	uint count,
+	e_file_error_mode error_mode,
+	void *buffer);
+
+bool file_write(
+	s_file_accessor *file,
+	uint count,
+	e_file_error_mode error_mode,
+	void *buffer);

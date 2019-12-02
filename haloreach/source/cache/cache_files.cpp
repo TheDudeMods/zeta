@@ -1,10 +1,9 @@
 #include <cache/cache_files.h>
 #include <datatypes/data_array.h>
+#include <files/file_interface.h>
+#include <files/file_synchronous_io.h>
 #include <tag_files/string_ids.h>
 #include <tag_files/tag_groups.h>
-
-#include <cstdio>
-#include <cstdlib>
 
 /* ---------- code */
 
@@ -31,15 +30,18 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	m_address_mask(0),
 	m_memory_buffers()
 {
-	FILE *stream = nullptr;
-	fopen_s(&stream, filename, "rb+");
+	c_file_path path;
+	path.set_filename(filename);
+
+	s_file_accessor file;
+	file_open(&path, FLAG(_file_open_read_bit), _file_error_mode_none, &file);
 
 	//
 	// Read the cache file header
 	//
 
-	fseek(stream, 0, SEEK_SET);
-	fread(&m_header, sizeof(s_cache_file_header), 1, stream);
+	file_set_position(&file, 0, _file_error_mode_none);
+	file_read(&file, sizeof(s_cache_file_header), _file_error_mode_none, &m_header);
 
 	//
 	// Allocate and read the debug section
@@ -55,8 +57,8 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	auto debug_section_size =
 		m_header.section_bounds[_cache_file_section_debug].size;
 
-	fseek(stream, debug_section_offset, SEEK_SET);
-	fread(m_memory_buffers[_cache_file_section_debug], debug_section_size, 1, stream);
+	file_set_position(&file, debug_section_offset, _file_error_mode_none);
+	file_read(&file, debug_section_size, _file_error_mode_none, m_memory_buffers[_cache_file_section_debug]);
 
 	//
 	// Allocate and read the tags section
@@ -72,8 +74,8 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	auto tags_section_size =
 		m_header.section_bounds[_cache_file_section_tags].size;
 
-	fseek(stream, tags_section_offset, SEEK_SET);
-	fread(m_memory_buffers[_cache_file_section_tags], tags_section_size, 1, stream);
+	file_set_position(&file, tags_section_offset, _file_error_mode_none);
+	file_read(&file, tags_section_size, _file_error_mode_none, m_memory_buffers[_cache_file_section_tags]);
 
 	m_address_mask = ((ulonglong)m_memory_buffers[_cache_file_section_tags] - m_header.virtual_base_address);
 
@@ -81,7 +83,7 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	// Close the file stream
 	//
 
-	fclose(stream);
+	file_close(&file);
 }
 
 c_cache_file_reach::~c_cache_file_reach()
@@ -187,82 +189,4 @@ ulonglong c_cache_file_reach::get_page_offset(ulong address)
 ulong c_cache_file_reach::make_page_offset(ulonglong address)
 {
 	return (ulong)((address + (m_header.virtual_base_address - 0x50000000)) / 4);
-}
-
-[[nodiscard]]
-c_cache_file_reach *cache_file_load()
-{
-	static char cache_file_path[1024];
-
-	//
-	// Look up the cache file to open
-	//
-
-	while (true)
-	{
-		puts("");
-		puts("Enter the path to a Halo cache file:");
-		printf("> ");
-
-		//
-		// Read the cache file path
-		//
-
-		csmemset(cache_file_path, 0, 1024);
-		fgets(cache_file_path, 1024, stdin);
-
-		auto newline = csstrchr(cache_file_path, '\n');
-		if (newline) *newline = '\0';
-
-		//
-		// If empty cache file path, start over
-		//
-
-		if (csstrlen(cache_file_path) == 0)
-			continue;
-
-		//
-		// Verify the cache file format
-		//
-
-		FILE *stream = nullptr;
-		if (fopen_s(&stream, cache_file_path, "rb+") == 0 && stream)
-		{
-			//
-			// Read limited cache file header info
-			//
-
-			struct {
-				tag header_signature;
-				long file_version;
-				long file_length;
-			} cache_file_info;
-
-			fseek(stream, 0, SEEK_SET);
-			fread(&cache_file_info, sizeof(cache_file_info), 1, stream);
-			fclose(stream);
-
-			//
-			// Check cache file header signature
-			//
-
-			if (cache_file_info.header_signature != k_cache_file_header_signature &&
-				_byteswap_ulong(cache_file_info.header_signature) != k_cache_file_header_signature)
-			{
-				puts("ERROR: Invalid cache file!");
-				continue;
-			}
-			else
-			{
-				puts("");
-				break;
-			}
-		}
-	}
-
-	//
-	// Allocate and load the cache file
-	//
-
-	return new c_cache_file_reach(cache_file_path);
 }
