@@ -271,27 +271,36 @@ public:
 		struct s_cache_file_resource_physical_location *location,
 		struct s_cache_file_resource_page *page);
 
-	template <typename t_data>
-	t_data *get_tag_section_data(ulonglong address)
+	template <typename t_type>
+	t_type *get_debug_section_pointer(long offset)
+	{
+		if (offset == 0)
+			return nullptr;
+
+		auto actual_offset = offset - m_header.section_bounds[_cache_file_section_debug].offset;
+
+		return reinterpret_cast<t_type *>(m_memory_buffers[_cache_file_section_debug] + actual_offset);
+	}
+
+	template <typename t_type>
+	t_type *get_tags_section_pointer(ulonglong address)
 	{
 		if (address == 0)
 			return nullptr;
 
-		return (t_data *)(address + m_address_mask);
+		return (t_type *)(address + m_address_mask);
 	}
 
 	ulonglong get_page_offset(ulong address);
 	ulong make_page_offset(ulonglong address);
 
-	template <typename t_data>
-	t_data *get_page_data(ulong address)
+	template <typename t_type>
+	t_type *get_tags_section_pointer_from_page_offset(ulong page_offset)
 	{
-		if (address == 0)
+		if (page_offset == 0)
 			return nullptr;
 
-		auto page_offset = get_page_offset(address);
-
-		return (t_data *)(m_memory_buffers[_cache_file_section_tags] + page_offset);
+		return (t_type *)(m_memory_buffers[_cache_file_section_tags] + get_page_offset(page_offset));
 	}
 
 	template <typename t_tag_definition>
@@ -302,7 +311,7 @@ public:
 		if (!instance || instance->address == 0)
 			return nullptr;
 		
-		return get_page_data<t_tag_definition>(instance->address);
+		return get_tags_section_pointer_from_page_offset<t_tag_definition>(instance->address);
 	}
 };
 

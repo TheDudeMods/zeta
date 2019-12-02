@@ -98,7 +98,7 @@ s_cache_file_header *c_cache_file_reach::get_header()
 
 s_cache_file_tags_header *c_cache_file_reach::get_tags_header()
 {
-	return get_tag_section_data<s_cache_file_tags_header>(m_header.tags_header_address);
+	return get_tags_section_pointer<s_cache_file_tags_header>(m_header.tags_header_address);
 }
 
 char const *c_cache_file_reach::get_string(string_id id)
@@ -114,13 +114,13 @@ char const *c_cache_file_reach::get_string(string_id id)
 	auto debug_section_offset = m_header.section_bounds[_cache_file_section_debug].offset;
 
 	auto string_id_indices_offset = m_header.string_id_indices_offset - debug_section_offset;
-	auto m_string_id_indices = (long *)(m_memory_buffers[_cache_file_section_debug] + string_id_indices_offset);
+	auto string_id_indices = (long *)(m_memory_buffers[_cache_file_section_debug] + string_id_indices_offset);
 
 	auto string_ids_buffer_offset = m_header.string_ids_buffer_offset - debug_section_offset;
 	auto m_string_ids_buffer = m_memory_buffers[_cache_file_section_debug] + string_ids_buffer_offset;
 
 	if (set == 0 && (index < set_min || index > set_max))
-		return m_string_ids_buffer + m_string_id_indices[index];
+		return m_string_ids_buffer + string_id_indices[index];
 
 	auto buffer = m_string_ids_buffer;
 
@@ -138,7 +138,7 @@ char const *c_cache_file_reach::get_string(string_id id)
 		}
 	}
 
-	return m_string_ids_buffer + m_string_id_indices[(index - set_min) + k_string_id_set_offsets[set]];
+	return m_string_ids_buffer + string_id_indices[(index - set_min) + k_string_id_set_offsets[set]];
 }
 
 char const *c_cache_file_reach::get_tag_name(long index)
@@ -182,7 +182,7 @@ s_cache_file_tag_group *c_cache_file_reach::get_tag_group(long index)
 	if (index < 0 || index >= tags_header->groups.count)
 		return nullptr;
 
-	return &get_tag_section_data<s_cache_file_tag_group>((ulonglong)tags_header->groups.address)[index];
+	return &get_tags_section_pointer<s_cache_file_tag_group>((ulonglong)tags_header->groups.address)[index];
 }
 
 s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
@@ -194,7 +194,7 @@ s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
 	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
 		return nullptr;
 
-	auto instances = get_tag_section_data<s_cache_file_tag_instance>((ulonglong)tags_header->instances.address);
+	auto instances = get_tags_section_pointer<s_cache_file_tag_instance>((ulonglong)tags_header->instances.address);
 
 	return &instances[absolute_index];
 }

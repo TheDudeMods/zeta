@@ -271,7 +271,7 @@ bool list_local_resource_tags_execute(
 	auto zone_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(file).next();
 	auto zone = file->get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
 
-	auto tag_resources = file->get_page_data<s_cache_file_tag_resource>(zone->tag_resources.address);
+	auto tag_resources = file->get_tags_section_pointer_from_page_offset<s_cache_file_tag_resource>(zone->tag_resources.address);
 
 	for (auto i = 0; i < zone->tag_resources.count; i++)
 	{

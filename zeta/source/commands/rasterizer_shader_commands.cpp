@@ -121,11 +121,11 @@ bool extract_shader_files_execute(
 	printf("%s", "Extracting shader files...");
 
 	auto stream1 = fopen(filename1, "wb");
-	fwrite(file->get_page_data<uchar>(compiled_shader->pc_data.address), sizeof(uchar), compiled_shader->pc_data.size, stream1);
+	fwrite(file->get_tags_section_pointer_from_page_offset<uchar>(compiled_shader->pc_data.address), sizeof(uchar), compiled_shader->pc_data.size, stream1);
 	fclose(stream1);
 
 	auto stream2 = fopen(filename2, "wb");
-	fwrite(file->get_page_data<uchar>(compiled_shader->unknown2C.address), sizeof(uchar), compiled_shader->unknown2C.size, stream2);
+	fwrite(file->get_tags_section_pointer_from_page_offset<uchar>(compiled_shader->unknown2C.address), sizeof(uchar), compiled_shader->unknown2C.size, stream2);
 	fclose(stream2);
 
 	printf("%s\n", "done.");

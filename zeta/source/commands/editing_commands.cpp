@@ -194,7 +194,7 @@ bool edit_block_execute(
 			return true;
 		}
 
-		address = file->get_page_data<char>(block->address) + ((ulonglong)index * (ulonglong)block_definition->size);
+		address = file->get_tags_section_pointer_from_page_offset<char>(block->address) + ((ulonglong)index * (ulonglong)block_definition->size);
 		sprintf(context_name.get_buffer(), "%s[%u]", field->name, index);
 		break;
 	}

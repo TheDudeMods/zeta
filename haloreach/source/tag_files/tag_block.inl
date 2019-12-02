@@ -10,15 +10,19 @@ public:
 	{
 		if (index < 0 || index >= count || !out_element)
 			return false;
-		*out_element = &file->get_page_data<t_element>(address)[index];
+
+		*out_element = &file->get_tags_section_pointer_from_page_offset<t_element>(address)[index];
+
 		return true;
 	}
 
 	t_element *get_element(c_cache_file_reach *file, int index)
 	{
 		t_element *result = nullptr;
+
 		if (try_get_element(file, index, &result))
 			return result;
+
 		return nullptr;
 	}
 };

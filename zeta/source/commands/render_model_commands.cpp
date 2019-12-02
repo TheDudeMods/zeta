@@ -95,10 +95,12 @@ bool extract_render_model_execute(
 		geometry_resource->index_buffers.address);
 
 	auto compression_info = render_model->geometry.compression_info.count ?
-		file->get_page_data<s_compression_info>(render_model->geometry.compression_info.address) :
+		file->get_tags_section_pointer_from_page_offset<s_compression_info>(
+			render_model->geometry.compression_info.address) :
 		nullptr;
 
-	auto regions = file->get_page_data<s_render_model_region>(render_model->regions.address);
+	auto regions = file->get_tags_section_pointer_from_page_offset<s_render_model_region>(
+		render_model->regions.address);
 
 	auto base_index = 1;
 
@@ -109,7 +111,8 @@ bool extract_render_model_execute(
 		char region_name_buf[256];
 		auto region_name = csnzprintf(region_name_buf, 256, "%s", file->get_string(region->name));
 
-		auto permutations = file->get_page_data<s_render_model_permutation>(region->permutations.address);
+		auto permutations = file->get_tags_section_pointer_from_page_offset<s_render_model_permutation>(
+			region->permutations.address);
 
 		for (auto permutation_index = 0; permutation_index < region->permutations.count; permutation_index++)
 		{

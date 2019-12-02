@@ -35,11 +35,17 @@ bool c_cache_file_reach::tag_resource_definition_try_and_get(
 	if ((tag_resource->identifier != (ushort)NONE) && resource_identifier != tag_resource->identifier)
 		return false;
 
-	auto gestalt_definition_data = get_page_data<char>(resource_gestalt->definition_data.address);
+	auto gestalt_definition_data = get_tags_section_pointer_from_page_offset<char>(
+		resource_gestalt->definition_data.address);
+
 	auto definition_data = &gestalt_definition_data[tag_resource->definition_data_offset];
 
-	auto fixups = get_page_data<s_cache_file_tag_resource_fixup>(tag_resource->resource_fixups.address);
-	auto definition_fixups = get_page_data<s_cache_file_tag_resource_fixup>(tag_resource->resource_definition_fixups.address);
+	auto fixups = get_tags_section_pointer_from_page_offset<s_cache_file_tag_resource_fixup>(
+		tag_resource->resource_fixups.address);
+
+	auto definition_fixups = get_tags_section_pointer_from_page_offset<s_cache_file_tag_resource_fixup>(
+		tag_resource->resource_definition_fixups.address);
+
 	auto definition_offset = tag_resource->definition_address & 0x1FFFFFFF;
 
 	for (auto i = 0; i < tag_resource->resource_fixups.count; i++)
