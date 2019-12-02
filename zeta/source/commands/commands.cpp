@@ -110,11 +110,11 @@ void command_loop_execute(c_cache_file_reach *file)
 		csmemset(g_command_arg_values, 0, sizeof(char *) * 64);
 
 		auto g_command_arg_count = 0;
-		char* arg_token = csstrtok(input_buffer, " ");
 
-		auto command = g_command_context->get_command(arg_token);
+		auto command_name = csstrtok(input_buffer, " ");
+		auto command = g_command_context->get_command(command_name);
 
-		while (arg_token = csstrtok(nullptr, " "))
+		for (char *arg_token = nullptr; arg_token = csstrtok(nullptr, " "); )
 			g_command_arg_values[g_command_arg_count++] = arg_token;
 
 		//
@@ -131,6 +131,10 @@ void command_loop_execute(c_cache_file_reach *file)
 			auto old_context = g_command_context;
 			g_command_context = g_command_context->get_parent();
 			delete old_context;
+		}
+		else
+		{
+			printf("ERROR: \"%s\" is not a valid command name.\n", command_name);
 		}
 
 		puts("");
