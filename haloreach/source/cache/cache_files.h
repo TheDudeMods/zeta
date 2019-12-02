@@ -226,13 +226,9 @@ struct s_cache_file_tag_group;
 class c_cache_file_reach : public c_cache_file
 {
 private:
-	ulonglong m_address_mask;
 	s_cache_file_header m_header;
-	char *m_memory_buffer;
-	long *m_string_id_indices;
-	char *m_string_ids_buffer;
-	long *m_tag_name_indices;
-	char *m_tag_names_buffer;
+	ulonglong m_address_mask;
+	char *m_memory_buffers[k_number_of_cache_file_sections];
 
 public:
 	c_cache_file_reach(char const *filename);
@@ -276,7 +272,7 @@ public:
 		struct s_cache_file_resource_page *page);
 
 	template <typename t_data>
-	t_data *get_buffer_data(ulonglong address)
+	t_data *get_tag_section_data(ulonglong address)
 	{
 		if (address == 0)
 			return nullptr;
@@ -295,7 +291,7 @@ public:
 
 		auto page_offset = get_page_offset(address);
 
-		return (t_data *)(m_memory_buffer + page_offset);
+		return (t_data *)(m_memory_buffers[_cache_file_section_tags] + page_offset);
 	}
 
 	template <typename t_tag_definition>

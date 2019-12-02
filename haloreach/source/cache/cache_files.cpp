@@ -27,13 +27,9 @@ bool s_cache_file_tag_group::is_in_group(s_cache_file_tag_group &group) const
 
 c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	c_cache_file(filename),
-	m_address_mask(0),
 	m_header(),
-	m_memory_buffer(nullptr),
-	m_string_id_indices(nullptr),
-	m_string_ids_buffer(nullptr),
-	m_tag_name_indices(nullptr),
-	m_tag_names_buffer(nullptr)
+	m_address_mask(0),
+	m_memory_buffers()
 {
 	FILE *stream = nullptr;
 	fopen_s(&stream, filename, "rb+");
@@ -46,57 +42,40 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	fread(&m_header, sizeof(s_cache_file_header), 1, stream);
 
 	//
-	// Allocate and read the cache file memory buffer
+	// Allocate and read the debug section
 	//
 
-	m_memory_buffer = new char[m_header.memory_buffer_size];
+	m_memory_buffers[_cache_file_section_debug] =
+		new char[m_header.section_bounds[_cache_file_section_debug].size];
 
-	auto memory_buffer_offset =
+	auto debug_section_offset =
+		m_header.section_offsets[_cache_file_section_debug] +
+		m_header.section_bounds[_cache_file_section_debug].offset;
+
+	auto debug_section_size =
+		m_header.section_bounds[_cache_file_section_debug].size;
+
+	fseek(stream, debug_section_offset, SEEK_SET);
+	fread(m_memory_buffers[_cache_file_section_debug], debug_section_size, 1, stream);
+
+	//
+	// Allocate and read the tags section
+	//
+
+	m_memory_buffers[_cache_file_section_tags] =
+		new char[m_header.section_bounds[_cache_file_section_tags].size];
+
+	auto tags_section_offset =
 		m_header.section_offsets[_cache_file_section_tags] +
 		m_header.section_bounds[_cache_file_section_tags].offset;
 
-	fseek(stream, memory_buffer_offset, SEEK_SET);
-	fread(m_memory_buffer, m_header.memory_buffer_size, 1, stream);
+	auto tags_section_size =
+		m_header.section_bounds[_cache_file_section_tags].size;
 
-	m_address_mask = ((ulonglong)m_memory_buffer - m_header.virtual_base_address);
+	fseek(stream, tags_section_offset, SEEK_SET);
+	fread(m_memory_buffers[_cache_file_section_tags], tags_section_size, 1, stream);
 
-	//
-	// Allocate and read the cache file string ids
-	//
-
-	auto debug_section_address = m_header.section_bounds[_cache_file_section_debug].offset;
-
-	auto string_id_indices_offset = (long)sizeof(s_cache_file_header) + (m_header.string_id_indices_offset - debug_section_address);
-
-	m_string_id_indices = new long[m_header.string_id_count];
-
-	fseek(stream, string_id_indices_offset, SEEK_SET);
-	fread(m_string_id_indices, sizeof(long), m_header.string_id_count, stream);
-
-	auto string_ids_buffer_offset = (long)sizeof(s_cache_file_header) + (m_header.string_ids_buffer_offset - debug_section_address);
-
-	m_string_ids_buffer = new char[m_header.string_ids_buffer_size];
-
-	fseek(stream, string_ids_buffer_offset, SEEK_SET);
-	fread(m_string_ids_buffer, m_header.string_ids_buffer_size, 1, stream);
-
-	//
-	// Allocate and read the cache file tag names
-	//
-
-	m_tag_name_indices = new long[m_header.tag_name_count];
-
-	auto tag_name_indices_offset = (long)sizeof(s_cache_file_header) + (m_header.tag_name_indices_offset - debug_section_address);
-
-	fseek(stream, tag_name_indices_offset, SEEK_SET);
-	fread(m_tag_name_indices, sizeof(long), m_header.tag_name_count, stream);
-
-	m_tag_names_buffer = new char[m_header.tag_names_buffer_size];
-
-	auto tag_names_buffer_offset = (long)sizeof(s_cache_file_header) + (m_header.tag_names_buffer_offset - debug_section_address);
-
-	fseek(stream, tag_names_buffer_offset, SEEK_SET);
-	fread(m_tag_names_buffer, m_header.tag_names_buffer_size, 1, stream);
+	m_address_mask = ((ulonglong)m_memory_buffers[_cache_file_section_tags] - m_header.virtual_base_address);
 
 	//
 	// Close the file stream
@@ -107,11 +86,9 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 
 c_cache_file_reach::~c_cache_file_reach()
 {
-	if (m_tag_names_buffer) delete[] m_tag_names_buffer;
-	if (m_tag_name_indices) delete[] m_tag_name_indices;
-	if (m_string_ids_buffer) delete[] m_string_ids_buffer;
-	if (m_string_id_indices) delete[] m_string_id_indices;
-	if (m_memory_buffer) delete[] m_memory_buffer;
+	for (auto i = 0; i < k_number_of_cache_file_sections; i++)
+		if (m_memory_buffers[i])
+			delete[] m_memory_buffers[i];
 }
 
 s_cache_file_header *c_cache_file_reach::get_header()
@@ -121,7 +98,7 @@ s_cache_file_header *c_cache_file_reach::get_header()
 
 s_cache_file_tags_header *c_cache_file_reach::get_tags_header()
 {
-	return get_buffer_data<s_cache_file_tags_header>(m_header.tags_header_address);
+	return get_tag_section_data<s_cache_file_tags_header>(m_header.tags_header_address);
 }
 
 char const *c_cache_file_reach::get_string(string_id id)
@@ -133,6 +110,14 @@ char const *c_cache_file_reach::get_string(string_id id)
 
 	if (set < 0 || set >= k_number_of_string_id_sets)
 		return nullptr;
+
+	auto debug_section_offset = m_header.section_bounds[_cache_file_section_debug].offset;
+
+	auto string_id_indices_offset = m_header.string_id_indices_offset - debug_section_offset;
+	auto m_string_id_indices = (long *)(m_memory_buffers[_cache_file_section_debug] + string_id_indices_offset);
+
+	auto string_ids_buffer_offset = m_header.string_ids_buffer_offset - debug_section_offset;
+	auto m_string_ids_buffer = m_memory_buffers[_cache_file_section_debug] + string_ids_buffer_offset;
 
 	if (set == 0 && (index < set_min || index > set_max))
 		return m_string_ids_buffer + m_string_id_indices[index];
@@ -160,6 +145,14 @@ char const *c_cache_file_reach::get_tag_name(long index)
 {
 	auto tags_header = get_tags_header();
 	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+
+	auto debug_section_offset = m_header.section_bounds[_cache_file_section_debug].offset;
+
+	auto tag_name_indices_offset = m_header.tag_name_indices_offset - debug_section_offset;
+	auto m_tag_name_indices = (long *)(m_memory_buffers[_cache_file_section_debug] + tag_name_indices_offset);
+
+	auto tag_names_buffer_offset = m_header.tag_names_buffer_offset - debug_section_offset;
+	auto m_tag_names_buffer = m_memory_buffers[_cache_file_section_debug] + tag_names_buffer_offset;
 
 	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
 		return nullptr;
@@ -189,7 +182,7 @@ s_cache_file_tag_group *c_cache_file_reach::get_tag_group(long index)
 	if (index < 0 || index >= tags_header->groups.count)
 		return nullptr;
 
-	return &get_buffer_data<s_cache_file_tag_group>((ulonglong)tags_header->groups.address)[index];
+	return &get_tag_section_data<s_cache_file_tag_group>((ulonglong)tags_header->groups.address)[index];
 }
 
 s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
@@ -201,7 +194,7 @@ s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
 	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
 		return nullptr;
 
-	auto instances = get_buffer_data<s_cache_file_tag_instance>((ulonglong)tags_header->instances.address);
+	auto instances = get_tag_section_data<s_cache_file_tag_instance>((ulonglong)tags_header->instances.address);
 
 	return &instances[absolute_index];
 }
