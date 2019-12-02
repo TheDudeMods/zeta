@@ -111,34 +111,16 @@ char const *c_cache_file_reach::get_string(string_id id)
 	if (set < 0 || set >= k_number_of_string_id_sets)
 		return nullptr;
 
-	auto debug_section_offset = m_header.section_bounds[_cache_file_section_debug].offset;
+	auto string_id_indices = get_debug_section_pointer<long>(
+		m_header.string_id_indices_offset);
 
-	auto string_id_indices_offset = m_header.string_id_indices_offset - debug_section_offset;
-	auto string_id_indices = (long *)(m_memory_buffers[_cache_file_section_debug] + string_id_indices_offset);
-
-	auto string_ids_buffer_offset = m_header.string_ids_buffer_offset - debug_section_offset;
-	auto m_string_ids_buffer = m_memory_buffers[_cache_file_section_debug] + string_ids_buffer_offset;
+	auto string_ids_buffer = get_debug_section_pointer<char>(
+		m_header.string_ids_buffer_offset);
 
 	if (set == 0 && (index < set_min || index > set_max))
-		return m_string_ids_buffer + string_id_indices[index];
+		return string_ids_buffer + string_id_indices[index];
 
-	auto buffer = m_string_ids_buffer;
-
-	for (auto i = 0; i < m_header.string_id_count; i++)
-	{
-		while (buffer[0] != '\0')
-			buffer++;
-		
-		buffer++;
-
-		if (csstrcmp("render_model", buffer) == 0)
-		{
-			auto offset = buffer - m_string_ids_buffer;
-			break;
-		}
-	}
-
-	return m_string_ids_buffer + string_id_indices[(index - set_min) + k_string_id_set_offsets[set]];
+	return string_ids_buffer + string_id_indices[(index - set_min) + k_string_id_set_offsets[set]];
 }
 
 char const *c_cache_file_reach::get_tag_name(long index)
@@ -146,18 +128,16 @@ char const *c_cache_file_reach::get_tag_name(long index)
 	auto tags_header = get_tags_header();
 	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
 
-	auto debug_section_offset = m_header.section_bounds[_cache_file_section_debug].offset;
+	auto tag_name_indices = get_debug_section_pointer<long>(
+		m_header.tag_name_indices_offset);
 
-	auto tag_name_indices_offset = m_header.tag_name_indices_offset - debug_section_offset;
-	auto m_tag_name_indices = (long *)(m_memory_buffers[_cache_file_section_debug] + tag_name_indices_offset);
-
-	auto tag_names_buffer_offset = m_header.tag_names_buffer_offset - debug_section_offset;
-	auto m_tag_names_buffer = m_memory_buffers[_cache_file_section_debug] + tag_names_buffer_offset;
+	auto tag_names_buffer = get_debug_section_pointer<char>(
+		m_header.tag_names_buffer_offset);
 
 	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
 		return nullptr;
 
-	return m_tag_names_buffer + m_tag_name_indices[absolute_index];
+	return tag_names_buffer + tag_name_indices[absolute_index];
 }
 
 long c_cache_file_reach::find_tag_group(tag group_tag)
