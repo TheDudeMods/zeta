@@ -75,18 +75,32 @@ bool list_tags_execute(
 		return false;
 
 	auto file = g_command_context->get_file();
+	auto header = file->get_header();
+	auto tags_header = file->get_tags_header();
 
 	tag group_tag = NONE;
-	
-	if (arg_count > 0 && !field_parse(file, _field_tag, "group_tag", nullptr, &group_tag, 1, &arg_values[0]))
+
+	if (arg_count > 0)
 	{
-		printf("ERROR: failed to parse group: %s\n", arg_values[0]);
-		return true;
+		for (auto i = 0; i < tags_header->groups.count; i++)
+		{
+			auto group = file->get_tag_group(i);
+
+			if (csstrcmp(arg_values[0], file->get_string(group->name)) == 0)
+			{
+				group_tag = group->group_tags[0];
+				break;
+			}
+		}
+
+		if (group_tag == NONE && !field_parse(file, _field_tag, "group_tag", nullptr, &group_tag, 1, &arg_values[0]))
+		{
+			printf("ERROR: failed to parse group: %s\n", arg_values[0]);
+			return true;
+		}
 	}
 
 	auto filter = arg_count > 1 ? arg_values[1] : nullptr;
-
-	auto tags_header = file->get_tags_header();
 
 	for (auto i = 0; i < tags_header->instances.count; i++)
 	{
@@ -105,20 +119,12 @@ bool list_tags_execute(
 		auto cache_file_header = file->get_header();
 
 		if (group_tag == NONE || group->is_in_group(group_tag))
-		{
-			char group_string[5];
-
-			auto tags_section_offset =
-				cache_file_header->interop.offset_masks[_cache_file_section_tags] +
-				cache_file_header->interop.sections[_cache_file_section_tags].address;
-
 			printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",
 				i,
 				instance->identifier,
-				tags_section_offset + file->get_page_offset(instance->address),
+				cache_file_header->memory_buffer_offset + file->get_page_offset(instance->address),
 				tag_name_length == 0 ? "<unnamed>" : tag_name,
-				tag_to_string(group->tags[0], group_string));
-		}
+				file->get_string(group->name));
 	}
 
 	return true;
@@ -150,11 +156,11 @@ bool edit_tag_execute(
 		return true;
 	}
 
-	auto group_definition = tag_group_definition_get(group->tags[0]);
+	auto group_definition = tag_group_definition_get(group->group_tags[0]);
 	if (!group_definition)
 	{
 		char tag_string[5];
-		printf("ERROR: tag group definition not found for group tag '%s'!\n", tag_to_string(group->tags[0], tag_string));
+		printf("ERROR: tag group definition not found for group tag '%s'!\n", tag_to_string(group->group_tags[0], tag_string));
 		return true;
 	}
 
@@ -163,7 +169,7 @@ bool edit_tag_execute(
 	auto tag_name = file->get_tag_name(reference.index & k_uint16_max);
 
 	char group_name[5];
-	tag_to_string(group->tags[0], group_name);
+	tag_to_string(group->group_tags[0], group_name);
 	
 	auto separator = csstrrchr((char *)tag_name, '\\');
 	
@@ -174,7 +180,7 @@ bool edit_tag_execute(
 
 	auto tag_definition = file->get_tag_definition<void>(reference.index & k_uint16_max);
 
-	switch (group->tags[0])
+	switch (group->group_tags[0])
 	{
 	case k_bitmap_group_tag:
 		g_command_context = new c_bitmap_command_context(
@@ -248,7 +254,7 @@ bool list_local_resource_tags_execute(
 	auto file = g_command_context->get_file();
 
 	tag group_tag = NONE;
-	s_tag_group *group = nullptr;
+	s_cache_file_tag_group *group = nullptr;
 
 	if (arg_count != 0)
 	{

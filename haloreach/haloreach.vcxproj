@@ -55,7 +55,6 @@
     <ClCompile Include="source\tag_files\string_ids.cpp" />
     <ClCompile Include="source\tag_files\tag_definitions.cpp" />
     <ClCompile Include="source\tag_files\tag_files.cpp" />
-    <ClCompile Include="source\tag_files\tag_groups.cpp" />
     <ClCompile Include="source\units\unit_definitions.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +104,7 @@
     <ClInclude Include="source\scenario\scenario.h" />
     <ClInclude Include="source\simulation\game_interface\simulation_game_position_updates.h" />
     <ClInclude Include="source\sound\sound_definitions.h" />
+    <ClInclude Include="source\structures\structure_bsp_definitions.h" />
     <ClInclude Include="source\tag_files\string_ids.h" />
     <ClInclude Include="source\tag_files\tag_definitions.h" />
     <ClInclude Include="source\tag_files\tag_files.h" />

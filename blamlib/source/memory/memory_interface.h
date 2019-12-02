@@ -2,6 +2,28 @@
 
 #include <cseries/cseries.h>
 
+/* ---------- classes */
+
+template <typename t_element>
+class c_basic_buffer
+{
+private:
+	t_element *m_elements;
+	long m_size;
+
+public:
+	c_basic_buffer() :
+		c_basic_buffer(nullptr, 0)
+	{
+	}
+
+	c_basic_buffer(t_element *elements, long size) :
+		m_elements(elements),
+		m_size(size)
+	{
+	}
+};
+
 /* ---------- inline code */
 
 template <typename t_type>

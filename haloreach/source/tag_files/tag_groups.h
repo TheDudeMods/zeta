@@ -6,16 +6,6 @@
 
 /* ---------- structures */
 
-struct s_tag_group
-{
-	tag tags[3];
-	string_id name;
-
-	bool is_in_group(tag group_tag) const;
-	bool is_in_group(s_tag_group &group) const;
-};
-static_assert(sizeof(s_tag_group) == 0x10);
-
 struct s_tag_reference
 {
 	tag group_tag;

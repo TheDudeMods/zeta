@@ -83,7 +83,7 @@ bool extract_render_model_execute(
 	}
 
 	auto render_model = context->get_render_model();
-	auto render_model_name = "render_model";// TODO: file->get_string(render_model->name);
+	auto render_model_name = file->get_string(render_model->name);
 
 	auto geometry_resource = c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition>(
 		file, render_model->geometry.resource_index);
@@ -107,7 +107,7 @@ bool extract_render_model_execute(
 		auto region = &regions[region_index];
 		
 		char region_name_buf[256];
-		auto region_name = csnzprintf(region_name_buf, 256, "region_%i", region_index);// TODO: file->get_string(region->name);
+		auto region_name = csnzprintf(region_name_buf, 256, "%s", file->get_string(region->name));
 
 		auto permutations = file->get_page_data<s_render_model_permutation>(region->permutations.address);
 
@@ -116,7 +116,7 @@ bool extract_render_model_execute(
 			auto permutation = &permutations[permutation_index];
 
 			char permutation_name_buf[256];
-			auto permutation_name = csnzprintf(permutation_name_buf, 256, "permutation_%i", region_index);// TODO: file->get_string(permutation->name);
+			auto permutation_name = csnzprintf(permutation_name_buf, 256, "%s", file->get_string(permutation->name));
 
 			s_mesh *meshes = nullptr;
 			permutation->first_mesh.try_resolve(file, &render_model->geometry.meshes, &meshes);
