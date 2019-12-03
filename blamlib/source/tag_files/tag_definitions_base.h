@@ -33,11 +33,11 @@
 
 #define TAG_GROUP(name, group_tag, size, ...) \
 	extern s_field_definition name##_fields[]; \
-	s_tag_group_definition name = { #name, group_tag, size, NONE, name##_fields, __VA_ARGS__ }; \
+	s_tag_group name = { #name, group_tag, size, NONE, name##_fields, __VA_ARGS__ }; \
 	s_field_definition name##_fields[] =
 
-#define TAG_PADDING(type, name, length, ...) \
-	s_padding_definition name = { type, #name, length, __VA_ARGS__ }
+#define TAG_PAD(type, name, length, ...) \
+	s_pad_definition name = { type, #name, length, __VA_ARGS__ }
 
 /* ---------- enumerators */
 
@@ -163,12 +163,12 @@ struct s_tag_reference_definition
 	tag *group_tags;
 };
 
-struct s_tag_group_definition :
+struct s_tag_group :
 	s_struct_definition
 {
 };
 
-struct s_padding_definition
+struct s_pad_definition
 {
 	e_field_type type;
 	char const *name;

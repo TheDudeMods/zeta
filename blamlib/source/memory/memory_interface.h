@@ -9,7 +9,7 @@ class c_basic_buffer
 {
 private:
 	t_element *m_elements;
-	long m_size;
+	long long m_size;
 
 public:
 	c_basic_buffer() :
@@ -21,6 +21,46 @@ public:
 		m_elements(elements),
 		m_size(size)
 	{
+	}
+
+	t_element *get_elements()
+	{
+		return m_elements;
+	}
+
+	t_element const *get_elements() const
+	{
+		return m_elements;
+	}
+
+	t_element *begin()
+	{
+		return m_elements;
+	}
+
+	t_element const *begin() const
+	{
+		return m_elements;
+	}
+
+	t_element *end()
+	{
+		return (t_element *)((char *)m_elements + m_size);
+	}
+
+	t_element const *end() const
+	{
+		return (t_element *)((char *)m_elements + m_size);
+	}
+
+	operator t_element *()
+	{
+		return m_elements;
+	}
+
+	operator t_element const *() const
+	{
+		return m_elements;
 	}
 };
 

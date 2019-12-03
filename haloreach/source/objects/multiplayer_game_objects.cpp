@@ -98,7 +98,7 @@ TAG_ARRAY(
 	k_number_of_multiplayer_object_boundary_shapes,
 	&multiplayer_object_boundary_shader_struct);
 
-TAG_PADDING(
+TAG_PAD(
 	_field_char_integer,
 	multiplayer_object_post_teleporter_padding,
 	1);

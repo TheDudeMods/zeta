@@ -9,7 +9,7 @@ TAG_ENUM(
     { "lens_enabled", _camera_track_lens_enabled_bit }
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_char_integer,
     camera_track_post_flags_padding,
     3);

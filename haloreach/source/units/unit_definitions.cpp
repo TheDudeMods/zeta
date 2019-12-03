@@ -14,7 +14,7 @@
 #include <units/biped_definitions.h>
 #include <units/vehicle_definitions.h>
 
-extern s_tag_group_definition object_group;
+extern s_tag_group object_group;
 extern s_enum_definition campaign_team_enum;
 extern s_enum_definition ai_sound_volume_enum;
 extern s_tag_block_definition campaign_metagame_bucket_block;
@@ -90,7 +90,7 @@ TAG_ENUM(
     { "use_aiming_vector_instead_of_marker_forward", _unit_camera_use_aiming_vector_instead_of_marker_forward_bit },
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_short_integer,
     unit_camera_post_flags_padding,
     1);
@@ -136,7 +136,7 @@ TAG_ENUM(
     { "roll", _unit_camera_acceleration_input_variable_roll },
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_char_integer,
     unit_camera_acceleration_function_post_input_variable_padding,
     3);
@@ -175,7 +175,7 @@ TAG_ENUM(
     { "unit_square", _unit_camera_gamepad_input_shape_unit_square },
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_char_integer,
     unit_camera_gamepad_stick_info_post_input_shape_padding,
     1);
@@ -308,7 +308,7 @@ TAG_BLOCK(
     { _field_terminator }
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_short_integer,
     unit_dialogue_variant_post_variant_padding,
     1);
@@ -448,7 +448,7 @@ TAG_ENUM(
 
 extern s_tag_block_definition unit_seat_block;
 
-TAG_PADDING(
+TAG_PAD(
     _field_short_integer,
     unit_boarding_seat_post_seat_padding,
     1);

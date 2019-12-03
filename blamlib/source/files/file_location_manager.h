@@ -8,8 +8,9 @@
 enum e_file_location
 {
 	k_file_location_invalid = -1,
-	_file_location_unknown,
-	// TODO
+	_file_location_absolute,
+	_file_location_application_relative,
+	// TODO: add more
 	k_file_location_count
 };
 

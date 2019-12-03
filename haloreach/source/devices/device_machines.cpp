@@ -1,6 +1,6 @@
 #include <devices/device_machines.h>
 
-extern s_tag_group_definition device_group;
+extern s_tag_group device_group;
 
 /* ---------- definitions */
 
@@ -47,7 +47,7 @@ TAG_ENUM(
 	{ "none", _machine_pathfinding_policy_none },
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_short_integer,
 	machine_post_pathfinding_policy_padding,
 	1);

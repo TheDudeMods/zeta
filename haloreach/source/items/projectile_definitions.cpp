@@ -6,7 +6,7 @@
 #include <physics/grounded_friction.h>
 #include <sound/sound_definitions.h>
 
-extern s_tag_group_definition object_group;
+extern s_tag_group object_group;
 extern s_enum_definition damage_reporting_type_enum;
 extern s_enum_definition object_type_enum;
 extern s_enum_definition ai_sound_volume_enum;
@@ -82,7 +82,7 @@ TAG_REFERENCE(
 	k_sound_group_tag
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_char_integer,
 	projectile_post_damage_porting_type_padding,
 	1);
@@ -141,17 +141,17 @@ TAG_ENUM(
 	{ "angle", _projectile_material_response_effect_scale_angle },
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_short_integer,
 	projectile_material_response_old_post_default_response_padding,
 	1);
 
-TAG_PADDING(
+TAG_PAD(
 	_field_short_integer,
 	projectile_material_response_old_post_runtime_material_index_padding,
 	1);
 
-TAG_PADDING(
+TAG_PAD(
 	_field_short_integer,
 	projectile_material_response_old_post_scale_effects_by_padding,
 	1);

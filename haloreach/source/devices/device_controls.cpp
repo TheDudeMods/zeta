@@ -1,6 +1,6 @@
 #include <devices/device_controls.h>
 
-extern s_tag_group_definition device_group;
+extern s_tag_group device_group;
 extern s_tag_reference_definition device_effect_sound_reference;
 
 /* ---------- definitions */

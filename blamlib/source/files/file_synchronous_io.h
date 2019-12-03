@@ -59,6 +59,11 @@ bool file_set_position(
 	uint position,
 	e_file_error_mode error_mode);
 
+bool file_set_position_relative(
+	s_file_accessor *file,
+	uint position,
+	e_file_error_mode error_mode);
+
 bool file_set_position_eof(
 	s_file_accessor *file);
 

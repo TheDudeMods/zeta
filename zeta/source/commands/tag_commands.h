@@ -8,7 +8,7 @@
 
 enum
 {
-	k_number_of_tag_commands = 4
+	k_number_of_tag_commands = 5
 };
 
 /* ---------- globals */
@@ -23,3 +23,4 @@ bool list_tags_execute(long arg_count, char const **arg_values);
 bool edit_tag_execute(long arg_count, char const **arg_values);
 bool file_offset_execute(long arg_count, char const **arg_values);
 bool list_local_resource_tags_execute(long arg_count, char const **arg_values);
+bool list_resource_tag_metrics_execute(long arg_count, char const **arg_values);

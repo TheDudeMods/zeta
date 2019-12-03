@@ -16,8 +16,8 @@ enum
 
 /* ---------- globals */
 
-extern s_tag_group_definition pixel_shader_group;
-extern s_tag_group_definition vertex_shader_group;
+extern s_tag_group pixel_shader_group;
+extern s_tag_group vertex_shader_group;
 
 static s_command g_bitmap_commands[k_number_of_rasterizer_shader_commands] =
 {
@@ -41,7 +41,7 @@ static s_command_set g_bitmap_command_sets[k_number_of_rasterizer_shader_command
 c_rasterizer_shader_command_context::c_rasterizer_shader_command_context(
 	char const *name,
 	c_rasterizer_shader *rasterizer_shader,
-	s_tag_group_definition *definition,
+	s_tag_group *definition,
 	c_cache_file_reach *file,
 	c_command_context *parent) :
 	c_editing_command_context(

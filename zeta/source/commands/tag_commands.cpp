@@ -51,6 +51,13 @@ s_command g_tag_commands[k_number_of_tag_commands] =
 		true,
 		list_local_resource_tags_execute
 	},
+	{
+		"list_resource_tag_metrics",
+		"list_resource_tag_metrics",
+		"TODO",
+		true,
+		list_resource_tag_metrics_execute
+	},
 };
 
 static s_command_set g_tag_command_sets[k_number_of_tag_command_sets] =
@@ -311,6 +318,97 @@ bool list_local_resource_tags_execute(
 			cache_file_header->memory_buffer_offset + file->get_page_offset(instance->address),
 			tag_name_length == 0 ? "<unnamed>" : tag_name,
 			file->get_string(tag_group->name));
+	}
+
+	return true;
+}
+
+bool list_resource_tag_metrics_execute(
+	long arg_count,
+	char const **arg_values)
+{
+	if (arg_count != 0)
+		return false;
+
+	auto file = g_command_context->get_file();
+
+	s_tag_iterator iterator;
+	tag_iterator_initialize(&iterator, k_cache_file_resource_gestalt_group_tag);
+	tag_iterator_next(file, &iterator);
+
+	if (iterator.index == NONE)
+		return false;
+
+	auto zone = file->get_tag_definition<s_cache_file_resource_gestalt>(iterator.index);
+
+	if (!zone)
+		return false;
+
+	tag_iterator_initialize(&iterator, k_cache_file_resource_layout_table_group_tag);
+	tag_iterator_next(file, &iterator);
+
+	if (iterator.index != (short)NONE)
+	{
+		auto play = file->get_tag_definition<s_cache_file_resource_layout_table>(iterator.index);
+		csmemcpy(&zone->layout_table, play, sizeof(s_cache_file_resource_layout_table));
+	}
+
+	for (auto i = 0; i < zone->tag_resources.count; i++)
+	{
+		auto tag_resource = zone->tag_resources.get_element(file, i);
+
+		auto segment = tag_resource->segment_index.resolve(file, &zone->layout_table.segments);
+
+		if (!segment)
+			continue;
+
+		auto primary_page = segment->primary_page.resolve(file, &zone->layout_table.pages);
+		auto secondary_page = segment->secondary_page.resolve(file, &zone->layout_table.pages);
+
+		auto should_print = false;
+
+		if (primary_page)
+		{
+			if (primary_page->shared_cache_file != (short)NONE)
+			{
+				auto shared_cache_file = primary_page->shared_cache_file.resolve(file, &zone->layout_table.physical_locations);
+				
+				if (shared_cache_file && csstrstr(shared_cache_file->path, "campaign.map"))
+					should_print = true;
+			}
+		}
+		
+		if (!should_print && secondary_page)
+		{
+			if (secondary_page->shared_cache_file != (short)NONE)
+			{
+				auto shared_cache_file = secondary_page->shared_cache_file.resolve(file, &zone->layout_table.physical_locations);
+
+				if (shared_cache_file && csstrstr(shared_cache_file->path, "campaign.map"))
+					should_print = true;
+			}
+		}
+
+		if (should_print)
+		{
+			auto instance = file->get_tag_instance(i);
+
+			if (!instance || !instance->address || instance->group_index == NONE)
+				continue;
+
+			auto tag_name = file->get_tag_name(i);
+			auto tag_name_length = csstrlen(tag_name);
+
+			auto group = file->get_tag_group(instance->group_index);
+			auto cache_file_header = file->get_header();
+
+			printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",
+				i,
+				instance->identifier,
+				cache_file_header->memory_buffer_offset + file->get_page_offset(instance->address),
+				tag_name_length == 0 ? "<unnamed>" : tag_name,
+				file->get_string(group->name));
+		}
 	}
 
 	return true;

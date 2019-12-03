@@ -112,6 +112,24 @@ bool file_set_position(
 	return true;
 }
 
+bool file_set_position_relative(
+	s_file_accessor *file,
+	uint position,
+	e_file_error_mode error_mode)
+{
+	assert(file_valid(file));
+
+	file->position = SetFilePointer(file->handle, position, nullptr, FILE_CURRENT);
+
+	if (file->position == INVALID_SET_FILE_POINTER)
+	{
+		// TODO: file_error(__FUNCTION__, error_mode, file);
+		return false;
+	}
+
+	return true;
+}
+
 bool file_set_position_eof(
 	s_file_accessor *file)
 {

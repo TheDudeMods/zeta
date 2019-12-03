@@ -76,8 +76,8 @@ TAG_ENUM(
     { "standard_vehicle", _campaign_metagame_bucket_class_standard_vehicle },
 };
 
-TAG_PADDING(_field_char_integer, campaign_metagame_bucket_post_class_padding, 1);
-TAG_PADDING(_field_short_integer, campaign_metagame_bucket_post_point_count_padding, 1);
+TAG_PAD(_field_char_integer, campaign_metagame_bucket_post_class_padding, 1);
+TAG_PAD(_field_short_integer, campaign_metagame_bucket_post_point_count_padding, 1);
 
 TAG_BLOCK(
     campaign_metagame_bucket_block,

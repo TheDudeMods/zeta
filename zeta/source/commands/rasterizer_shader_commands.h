@@ -14,7 +14,7 @@ public:
 	c_rasterizer_shader_command_context(
 		char const *name,
 		c_rasterizer_shader *rasterizer_shader,
-		s_tag_group_definition *definition,
+		s_tag_group *definition,
 		c_cache_file_reach *file,
 		c_command_context *parent = nullptr);
 

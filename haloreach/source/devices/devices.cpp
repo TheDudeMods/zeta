@@ -2,7 +2,7 @@
 #include <effects/effects.h>
 #include <sound/sound_definitions.h>
 
-extern s_tag_group_definition object_group;
+extern s_tag_group object_group;
 
 /* ---------- definitions */
 
@@ -30,7 +30,7 @@ TAG_ENUM(
     { "dont_use_in_lightprobe", _device_dont_use_in_lightprobe_bit },
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_short_integer,
     device_post_lightmap_flags_padding,
     1);

@@ -1,6 +1,6 @@
 #include <objects/scenery.h>
 
-extern s_tag_group_definition object_group;
+extern s_tag_group object_group;
 
 /* ---------- definitions */
 
@@ -31,7 +31,7 @@ TAG_ENUM(
     { "dynamic", _scenery_lightmapping_policy_dynamic },
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_short_integer,
     scenery_post_lightmapping_policy_padding,
     1);

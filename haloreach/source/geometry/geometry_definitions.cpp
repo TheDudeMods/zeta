@@ -202,7 +202,7 @@ TAG_BLOCK(
     { _field_terminator }
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_short_integer,
     part_post_budget_vertex_count_padding,
     1);
@@ -305,12 +305,12 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_short_block_index,
 	compression_info_post_flags_padding,
 	1);
 
-TAG_PADDING(
+TAG_PAD(
 	_field_long_integer,
 	compression_info_post_bounds_padding,
 	2);
@@ -428,7 +428,7 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_long_integer,
 	render_geometry_post_resource_index_padding,
 	1);

@@ -219,6 +219,13 @@ struct s_cache_file_combined_state
 	// TODO
 };
 
+struct s_cached_map_file
+{
+	s_cache_file_header header;
+	// TODO: c_cache_file_reader *reader;
+	// TODO: c_reference_count<ulong> reference_count;
+};
+
 /* ---------- classes */
 
 struct s_cache_file_tag_group;

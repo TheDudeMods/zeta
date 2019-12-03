@@ -23,29 +23,29 @@
 
 /* ---------- globals */
 
-extern s_tag_group_definition bitmap_group;
-extern s_tag_group_definition cache_file_resource_gestalt_group;
-extern s_tag_group_definition cache_file_resource_layout_table_group;
-extern s_tag_group_definition camera_track_group;
-extern s_tag_group_definition control_group;
-extern s_tag_group_definition crate_group;
-extern s_tag_group_definition device_group;
-extern s_tag_group_definition item_group;
-extern s_tag_group_definition machine_group;
-extern s_tag_group_definition object_group;
-extern s_tag_group_definition pixel_shader_group;
-extern s_tag_group_definition projectile_group;
-extern s_tag_group_definition render_method_group;
-extern s_tag_group_definition render_method_shader_group;
-extern s_tag_group_definition render_model_group;
-extern s_tag_group_definition scenery_group;
-extern s_tag_group_definition unit_group;
-extern s_tag_group_definition vertex_shader_group;
+extern s_tag_group bitmap_group;
+extern s_tag_group cache_file_resource_gestalt_group;
+extern s_tag_group cache_file_resource_layout_table_group;
+extern s_tag_group camera_track_group;
+extern s_tag_group control_group;
+extern s_tag_group crate_group;
+extern s_tag_group device_group;
+extern s_tag_group item_group;
+extern s_tag_group machine_group;
+extern s_tag_group object_group;
+extern s_tag_group pixel_shader_group;
+extern s_tag_group projectile_group;
+extern s_tag_group render_method_group;
+extern s_tag_group render_method_shader_group;
+extern s_tag_group render_model_group;
+extern s_tag_group scenery_group;
+extern s_tag_group unit_group;
+extern s_tag_group vertex_shader_group;
 
 static struct tag_definition
 {
 	tag group_tag;
-	s_tag_group_definition *definition;
+	s_tag_group *definition;
 } g_tag_group_definitions[] =
 {
 	{ k_bitmap_group_tag, &bitmap_group },
@@ -192,7 +192,7 @@ ulonglong field_get_size(
 	}
 	case _field_padding:
 	{
-		auto padding = (s_padding_definition *)definition;
+		auto padding = (s_pad_definition *)definition;
 		return padding->length * field_get_size(padding->type, padding->definition);
 	}
 	}
@@ -1197,7 +1197,7 @@ s_field_definition *struct_get_field(
 	return nullptr;
 }
 
-s_tag_group_definition *tag_group_definition_get(
+s_tag_group *tag_group_definition_get(
 	tag group_tag)
 {
 	auto definition = g_tag_group_definitions;

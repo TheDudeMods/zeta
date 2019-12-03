@@ -382,7 +382,7 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_short_integer,
 	bitmap_sequence_sprite_post_bitmap_index_padding,
 	3);
@@ -402,7 +402,7 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_long_integer,
 	bitmap_sequence_post_bitmap_count_padding,
 	4);
@@ -430,7 +430,7 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_long_integer,
 	bitmap_resource_info_post_resource_index_padding,
 	1);

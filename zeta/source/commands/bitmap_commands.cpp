@@ -17,7 +17,7 @@ enum
 
 /* ---------- globals */
 
-extern s_tag_group_definition bitmap_group;
+extern s_tag_group bitmap_group;
 
 static s_command g_bitmap_commands[k_number_of_bitmap_commands] =
 {

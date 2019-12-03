@@ -22,7 +22,7 @@ TAG_ENUM(
 	{ "effects_only", _water_physics_hull_surface_effects_only_bit },
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_short_integer,
 	water_physics_hull_surface_post_flags_padding,
 	1);

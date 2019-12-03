@@ -18,7 +18,7 @@ enum
 
 /* ---------- globals */
 
-extern s_tag_group_definition render_model_group;
+extern s_tag_group render_model_group;
 
 s_command g_render_model_commands[k_number_of_render_model_commands] =
 {

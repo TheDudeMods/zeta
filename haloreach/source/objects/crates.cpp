@@ -1,6 +1,6 @@
 #include <objects/crates.h>
 
-extern s_tag_group_definition object_group;
+extern s_tag_group object_group;
 extern s_tag_block_definition campaign_metagame_bucket_block;
 
 /* ---------- definitions */
@@ -27,7 +27,7 @@ TAG_ENUM(
 	{ "reject_all_contact_points_outside", _crate_reject_all_contact_points_outside_bit },
 };
 
-TAG_PADDING(
+TAG_PAD(
     _field_short_integer,
     crate_post_crate_flags_padding,
     1);

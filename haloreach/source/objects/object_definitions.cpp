@@ -21,7 +21,7 @@ extern s_tag_block_definition multiplayer_object_definition_block;
 
 TAG_REFERENCE(object_any_reference, 1) { (tag)NONE };
 
-TAG_PADDING(_field_short_integer, post_object_type_padding, 1);
+TAG_PAD(_field_short_integer, post_object_type_padding, 1);
 
 TAG_ENUM(object_flags_enum, k_number_of_object_flags)
 {
@@ -241,7 +241,7 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
-TAG_PADDING(_field_short_integer, object_post_hud_text_message_padding, 1);
+TAG_PAD(_field_short_integer, object_post_hud_text_message_padding, 1);
 
 TAG_ENUM(
 	object_attachment_change_color_enum,

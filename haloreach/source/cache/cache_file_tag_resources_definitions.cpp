@@ -16,7 +16,7 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_long_integer,
 	cache_file_resource_physical_location_unknown_padding,
 	58);
@@ -45,7 +45,7 @@ TAG_ENUM(
 	{ "unknown7", _cache_file_resource_page_unknown7_bit },
 };
 
-TAG_PADDING(
+TAG_PAD(
 	_field_short_integer,
 	cache_file_resource_page_post_physical_location_padding,
 	1);

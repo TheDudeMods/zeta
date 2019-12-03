@@ -1,9 +1,8 @@
 #include <cache/cache_file_tag_resources.h>
 #include <datatypes/data_array.h>
+#include <files/file_synchronous_io.h>
 #include <tag_files/tag_files.h>
 #include <zlib/zlib.h>
-
-#include <cstdio>
 
 /* ---------- code */
 
@@ -174,16 +173,17 @@ void *c_cache_file_reach::get_resource_page_data(
 
 	s_cache_file_header *cache_header = nullptr;
 
-	FILE *stream = nullptr;
+	c_file_path path;
+	path.set_file_path(_file_location_application_relative, resource_cache_file_path);
 
-	if (fopen_s(&stream, resource_cache_file_path, "rb+") != 0 || !stream)
-		return nullptr;
+	s_file_accessor file;
+	file_open(&path, FLAG(_file_open_read_bit), _file_error_mode_none, &file);
 
 	if (location)
 	{
 		cache_header = &resource_cache_header;
-		fseek(stream, 0, SEEK_SET);
-		fread(cache_header, sizeof(s_cache_file_header), 1, stream);
+		file_set_position(&file, 0, _file_error_mode_none);
+		file_read(&file, sizeof(s_cache_file_header), _file_error_mode_none, cache_header);
 	}
 	else
 	{
@@ -194,24 +194,24 @@ void *c_cache_file_reach::get_resource_page_data(
 		cache_header->section_offsets[_cache_file_section_resource] +
 		cache_header->section_bounds[_cache_file_section_resource].offset;
 
-	fseek(stream, resource_buffer_offset + page->block_offset, SEEK_SET);
+	file_set_position(&file, resource_buffer_offset + page->block_offset, _file_error_mode_none);
 
 	if (location)
-		fseek(stream, location->block_offset, SEEK_CUR);
+		file_set_position_relative(&file, location->block_offset, _file_error_mode_none);
 
 	auto uncompressed_data = new uchar[page->uncompressed_block_size];
 	csmemset(uncompressed_data, 0, page->uncompressed_block_size);
 
 	if (!page->compression_codec)
 	{
-		fread(uncompressed_data, page->uncompressed_block_size, 1, stream);
+		file_read(&file, page->uncompressed_block_size, _file_error_mode_none, uncompressed_data);
 	}
 	else
 	{
 		auto compressed_data = new uchar[page->compressed_block_size];
 		csmemset(compressed_data, 0, page->compressed_block_size);
 
-		fread(compressed_data, page->compressed_block_size, 1, stream);
+		file_read(&file, page->compressed_block_size, _file_error_mode_none, compressed_data);
 
 		z_stream inflate_stream;
 		inflate_stream.zalloc = Z_NULL;
@@ -230,7 +230,7 @@ void *c_cache_file_reach::get_resource_page_data(
 		delete[] compressed_data;
 	}
 
-	fclose(stream);
+	file_close(&file);
 
 	return uncompressed_data;
 }
