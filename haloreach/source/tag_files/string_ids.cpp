@@ -4,7 +4,7 @@
 
 long const k_string_id_set_offsets[k_number_of_string_id_sets] =
 {
-	0x173C,
+	0x1273,
 	0x4C9,
 	0xB2E,
 	0xC07,
