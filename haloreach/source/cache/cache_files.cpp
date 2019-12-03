@@ -119,10 +119,15 @@ char const *c_cache_file_reach::get_string(string_id id)
 	auto string_ids_buffer = get_debug_section_pointer<char>(
 		m_header.string_ids_buffer_offset);
 
-	if (set == 0 && (index < set_min || index > set_max))
-		return string_ids_buffer + string_id_indices[index];
+	if (set == 0)
+	{
+		if (index < set_min || index > set_max)
+			return string_ids_buffer + string_id_indices[index];
+		
+		index -= set_min;
+	}
 
-	return string_ids_buffer + string_id_indices[(index - set_min) + k_string_id_set_offsets[set]];
+	return string_ids_buffer + string_id_indices[index + k_string_id_set_offsets[set]];
 }
 
 char const *c_cache_file_reach::get_tag_name(long index)
