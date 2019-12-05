@@ -47,6 +47,7 @@
     <ClCompile Include="source\objects\scenery.cpp" />
     <ClCompile Include="source\objects\widgets\antenna.cpp" />
     <ClCompile Include="source\objects\widgets\cloth.cpp" />
+    <ClCompile Include="source\physics\character_physics_definitions.cpp" />
     <ClCompile Include="source\physics\water_physics.cpp" />
     <ClCompile Include="source\rasterizer\rasterizer_shader_definitions.cpp" />
     <ClCompile Include="source\render_methods\render_method_definitions.cpp" />
@@ -96,6 +97,7 @@
     <ClInclude Include="source\objects\scenery.h" />
     <ClInclude Include="source\objects\widgets\antenna.h" />
     <ClInclude Include="source\objects\widgets\cloth.h" />
+    <ClInclude Include="source\physics\character_physics_definitions.h" />
     <ClInclude Include="source\physics\grounded_friction.h" />
     <ClInclude Include="source\physics\havok_collision_damage.h" />
     <ClInclude Include="source\physics\spring_acceleration.h" />

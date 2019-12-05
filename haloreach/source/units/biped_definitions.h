@@ -4,6 +4,7 @@
 #include <math/real_math.h>
 #include <tag_files/tag_groups.h>
 #include <units/unit_definitions.h>
+#include <physics/character_physics_definitions.h>
 
 /* ---------- constants */
 
@@ -52,6 +53,84 @@ struct s_biped_movement_gate
 };
 static_assert(sizeof(s_biped_movement_gate) == 0x28);
 
+struct s_contact_point
+{
+	string_id marker_name;
+};
+static_assert(sizeof(s_contact_point) == 0x4);
+
+enum e_biped_leap_flags
+{
+	_biped_leap_force_early_roll_bit,
+	k_number_of_biped_leap_flags
+};
+
+struct s_biped_leaping_data
+{
+	c_flags<e_biped_leap_flags, ulong> leap_flags;
+	real dampening_scale;
+	real roll_delay;
+	real cannonball_off_axis_scale;
+	real cannonball_off_track_scale;
+	angle_bounds cannonball_roll_bounds;
+	real_bounds anticipation_ratio_bounds;
+	real_bounds reaction_force_bounds;
+	real lobbing_desire;
+};
+static_assert(sizeof(s_biped_leaping_data) == 0x30);
+
+enum e_biped_ground_fitting_flags
+{
+	_biped_ground_fitting_foot_fixup_enabled_bit,
+	_biped_ground_fitting_root_offset_enabled_bit,
+	_biped_ground_fitting_free_foot_enabled_bit,
+	_biped_ground_fitting_z_leg_enabled_bit,
+	_biped_ground_fitting_foot_pull_pinned_bit,
+	_biped_ground_fitting_footlock_adjusts_root_bit,
+	_biped_ground_fitting_raycast_vehicles_bit,
+	_biped_ground_fitting_foot_fixup_on_composites_bit,
+	_biped_ground_fitting_allow_feet_below_grade_bit,
+	_biped_ground_fitting_use_biped_up_direction_bit,
+	_biped_ground_fitting_snap_marker_above_contact_bit,
+	_biped_ground_fitting_allow_ball_roll_on_foot_when_idle_bit,
+	k_number_of_biped_ground_fitting_flags
+};
+
+struct s_biped_ground_fitting_data
+{
+	c_flags<e_biped_ground_fitting_flags, ulong> ground_fitting_flags;
+	real ground_normal_dampening;
+	real root_offset_max_scale_idle;
+	real root_offset_max_scale_moving;
+	real root_offset_dampening;
+	real following_cam_scale;
+	real root_leaning_scale;
+	real stance_width_scale;
+	angle foot_roll_max;
+	angle foot_pitch_max;
+	real foot_normal_dampening;
+	real unknown1;
+	real unknown2;
+	real unknown3;
+	real unknown4;
+	real unknown5;
+	real unknown6;
+	real unknown7;
+	real unknown8;
+	real unknown9;
+	real unknown10;
+	real unknown11;
+	real unknown12;
+	real unknown13;
+	angle unknown14;
+	real unknown15;
+	real unknown16;
+	real unknown17;
+	real unknown18;
+	real unknown19;
+};
+static_assert(sizeof(s_biped_ground_fitting_data) == 0x78);
+
 struct s_biped_definition : s_unit_definition
 {
 	real moving_turning_speed;
@@ -65,6 +144,7 @@ struct s_biped_definition : s_unit_definition
 
 	real jump_velocity;
 	c_tag_block<s_unit_trick_definition> tricks;
+	s_tag_block unknown_biped_block1;
 	real maximum_soft_landing_time;
 	real maximum_hard_landing_time;
 	real minimum_soft_landing_velocity;
@@ -79,9 +159,6 @@ struct s_biped_definition : s_unit_definition
 	real crouching_camera_height;
 	real crouch_walking_camera_height;
 	real crouch_transition_time;
-	real crouch_unknown1;
-	real crouch_unknown2;
-	real crouch_unknown3;
 	s_tag_data camera_height_velocity_function;
 	c_tag_block<s_biped_camera_height> camera_heights;
 	angle camera_interpolation_start;
@@ -97,11 +174,30 @@ struct s_biped_definition : s_unit_definition
 	real runtime_camera_height_velocity;
 	short pelvis_node;
 	short head_node;
-	s_tag_block unknown1;
+	s_tag_block unknown_biped_block2;
 	s_tag_reference area_damage_effect;
 	s_tag_reference health_station_recharge_effect;
 	c_tag_block<s_biped_movement_gate> movement_gates;
 	c_tag_block<s_biped_movement_gate> movement_gates_crouching;
+	real unknown1;
+	real unknown2;
+	real unknown3;
+	real unknown4;
+	real unknown5;
+	real unknown6;
 
-	// TODO: finish
+	/* ------ physics */
+
+	s_character_physics_definition physics;
+	c_tag_block<s_contact_point> contact_points;
+
+	s_tag_reference reanimation_character;
+	s_tag_reference transformation_muffin;
+	s_tag_reference death_spawn_character;
+	short death_spawn_count;
+	short : 16;
+
+	s_biped_leaping_data leaping_data;
+	s_biped_ground_fitting_data ground_fitting_data;
 };
+static_assert(sizeof(s_biped_definition) == sizeof(s_unit_definition) + 0x2BC);

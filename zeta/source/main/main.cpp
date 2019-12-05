@@ -2,6 +2,8 @@
 #include <cache/cache_files.h>
 #include <commands/commands.h>
 
+#include <units/biped_definitions.h>
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -15,6 +17,8 @@ c_cache_file_reach *cache_file_load();
 int main()
 {
 	puts("Zeta v0.0.1");
+
+	printf("%zX\n", sizeof(s_biped_definition));
 
 	auto file = cache_file_load();
 	command_loop_execute(file);

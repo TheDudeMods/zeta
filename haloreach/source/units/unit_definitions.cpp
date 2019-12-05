@@ -631,7 +631,7 @@ TAG_GROUP(
     { _field_short_enum, "default_team", &campaign_team_enum },
     { _field_short_enum, "constant_sound_volume", &ai_sound_volume_enum },
     { _field_tag_reference, "hologram_unit", &unit_hologram_unit_reference },
-	{ _field_block, "unknown_unit_block", nullptr },
+	{ _field_block, "unknown_unit_block", nullptr }, // TODO
     { _field_block, "campaign_metagame_bucket", &campaign_metagame_bucket_block },
     { _field_block, "screen_effects", &unit_screen_effect_reference_block },
     { _field_real, "camera_stiffness" },
