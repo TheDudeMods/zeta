@@ -145,6 +145,7 @@ TAG_STRUCT(
 	{ _field_real, "unknown17" },
 	{ _field_real, "unknown18" },
 	{ _field_real, "unknown19" },
+	{ _field_terminator }
 };
 
 TAG_GROUP(
