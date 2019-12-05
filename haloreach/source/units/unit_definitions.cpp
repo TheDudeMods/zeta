@@ -146,7 +146,7 @@ TAG_STRUCT(
     sizeof(s_unit_camera_acceleration_function))
 {
     { _field_char_enum, "input_variable", &unit_camera_acceleration_input_variable_enum },
-    { _field_padding, "post_input_variable_padding", &unit_camera_acceleration_function_post_input_variable_padding },
+    { _field_pad, "post_input_variable_padding", &unit_camera_acceleration_function_post_input_variable_padding },
     { _field_data, "data" },
     { _field_real, "maximum_value" },
     { _field_real, "camera_scale_axial" },
@@ -195,7 +195,7 @@ TAG_BLOCK(
     k_maximum_number_of_unit_camera_gamepad_stick_overrides)
 {
     { _field_char_enum, "input_shape", &unit_camera_gamepad_input_shape_enum },
-    { _field_padding, "post_input_shape_padding", &unit_camera_gamepad_stick_info_post_input_shape_padding },
+    { _field_pad, "post_input_shape_padding", &unit_camera_gamepad_stick_info_post_input_shape_padding },
     { _field_real_fraction, "peg_threshold" },
     { _field_real_point2d, "pegged_time" },
     { _field_real_point2d, "pegged_scale" },
@@ -209,7 +209,7 @@ TAG_STRUCT(
     sizeof(s_unit_camera))
 {
     { _field_word_flags, "flags", &unit_camera_flags_enum },
-    { _field_padding, "post_flags_padding", &unit_camera_post_flags_padding },
+    { _field_pad, "post_flags_padding", &unit_camera_post_flags_padding },
     { _field_string_id, "camera_marker_name" },
     { _field_angle, "pitch_auto_level" },
     { _field_angle_bounds, "pitch_range" },
@@ -326,7 +326,7 @@ TAG_BLOCK(
     k_maximum_number_of_unit_dialogue_variants)
 {
     { _field_short_integer, "variant_number" },
-    { _field_padding, "post_variant_padding", &unit_dialogue_variant_post_variant_padding },
+    { _field_pad, "post_variant_padding", &unit_dialogue_variant_post_variant_padding },
     { _field_tag_reference, "dialogue", &unit_dialogue_reference },
     { _field_terminator }
 };
@@ -459,7 +459,7 @@ TAG_BLOCK(
     k_maximum_number_of_unit_boarding_seats)
 {
     { _field_short_block_index, "seat", &unit_seat_block },
-    { _field_padding, "post_seat_padding", &unit_boarding_seat_post_seat_padding },
+    { _field_pad, "post_seat_padding", &unit_boarding_seat_post_seat_padding },
     { _field_terminator }
 };
 
@@ -507,6 +507,72 @@ TAG_BLOCK(
     { _field_string_id, "invisible_seat_region" },
     { _field_long_integer, "runtime_invisible_seat_region_index" },
     { _field_terminator }
+};
+
+TAG_ENUM(
+	unit_trick_activation_type_enum,
+	k_number_of_unit_trick_activation_types)
+{
+	{ "brake_left", _unit_trick_activation_brake_left },
+	{ "brake_right", _unit_trick_activation_brake_right },
+	{ "brake_up", _unit_trick_activation_brake_up },
+	{ "brake_down", _unit_trick_activation_brake_down },
+	{ "throw_movement_left", _unit_trick_activation_throw_movement_left },
+	{ "throw_movement_right", _unit_trick_activation_throw_movement_right },
+	{ "throw_movement_up", _unit_trick_activation_throw_movement_up },
+	{ "throw_movement_down", _unit_trick_activation_throw_movement_down },
+	{ "throw_look_left", _unit_trick_activation_throw_look_left },
+	{ "throw_look_right", _unit_trick_activation_throw_look_right },
+	{ "throw_look_up", _unit_trick_activation_throw_look_up },
+	{ "throw_look_down", _unit_trick_activation_throw_look_down },
+	{ "peg_flick_jump_left", _unit_trick_activation_peg_flick_jump_left },
+	{ "peg_flick_jump_right", _unit_trick_activation_peg_flick_jump_right },
+	{ "peg_flick_jump_up", _unit_trick_activation_peg_flick_jump_up },
+	{ "peg_flick_jump_down", _unit_trick_activation_peg_flick_jump_down },
+	{ "double_jump_left", _unit_trick_activation_double_jump_left },
+	{ "double_jump_right", _unit_trick_activation_double_jump_right },
+	{ "double_jump_up", _unit_trick_activation_double_jump_up },
+	{ "double_jump_down", _unit_trick_activation_double_jump_down },
+};
+
+TAG_ENUM(
+	unit_trick_velocity_preservation_mode_enum,
+	k_number_of_unit_trick_velocity_preservation_modes)
+{
+	{ "none", _unit_trick_velocity_preservation_mode_none },
+	{ "trick_relative", _unit_trick_velocity_preservation_mode_trick_relative },
+	{ "word_relative", _unit_trick_velocity_preservation_mode_word_relative },
+};
+
+TAG_ENUM(
+	unit_trick_flags_enum,
+	k_number_of_unit_trick_flags)
+{
+	{ "use_following_camera", _unit_trick_use_following_camera_bit },
+	{ "do_not_slam_player_control", _unit_trick_do_not_slam_player_control_bit },
+};
+
+TAG_PAD(
+	_field_char_integer,
+	unit_trick_post_flags_padding,
+	1);
+
+TAG_BLOCK(
+	unit_trick_block,
+	sizeof(s_unit_trick_definition),
+	NONE)
+{
+	{ _field_string_id, "animation_name" },
+	{ _field_char_enum, "activation_type", &unit_trick_activation_type_enum },
+	{ _field_char_enum, "velocity_preservation", &unit_trick_velocity_preservation_mode_enum },
+	{ _field_byte_flags, "flags", &unit_trick_flags_enum },
+	{ _field_pad, "post_flags_padding", &unit_trick_post_flags_padding },
+	{ _field_real, "camera_interpolation_time" },
+	{ _field_real, "trick_exit_time" },
+	{ _field_real_bounds, "trick_exit_camera_interpolation_time" },
+	{ _field_real, "trick_exit_displacement_reference" },
+	{ _field_real, "cooldown_time" },
+	{ _field_terminator }
 };
 
 TAG_REFERENCE(
@@ -565,6 +631,7 @@ TAG_GROUP(
     { _field_short_enum, "default_team", &campaign_team_enum },
     { _field_short_enum, "constant_sound_volume", &ai_sound_volume_enum },
     { _field_tag_reference, "hologram_unit", &unit_hologram_unit_reference },
+	{ _field_block, "unknown_unit_block", nullptr },
     { _field_block, "campaign_metagame_bucket", &campaign_metagame_bucket_block },
     { _field_block, "screen_effects", &unit_screen_effect_reference_block },
     { _field_real, "camera_stiffness" },

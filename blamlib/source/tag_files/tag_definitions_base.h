@@ -98,7 +98,7 @@ enum e_field_type
 	_field_datum_index,
 	_field_struct,
 	_field_array,
-	_field_padding,
+	_field_pad,
 	_field_skip,
 	_field_explanation,
 	_field_terminator,

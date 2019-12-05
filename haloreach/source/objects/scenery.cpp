@@ -45,6 +45,6 @@ TAG_GROUP(
     { _field_short_enum, "pathfinding_policy", &scenery_pathfinding_policy_enum },
     { _field_word_flags, "scenery_flags", &scenery_flags_enum },
     { _field_short_enum, "lightmapping_policy", &scenery_lightmapping_policy_enum },
-    { _field_padding, "post_lightmapping_policy_padding", &scenery_post_lightmapping_policy_padding },
+    { _field_pad, "post_lightmapping_policy_padding", &scenery_post_lightmapping_policy_padding },
     { _field_terminator }
 };

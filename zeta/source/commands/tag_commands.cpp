@@ -53,11 +53,18 @@ s_command g_tag_commands[k_number_of_tag_commands] =
 	},
 	{
 		"list_resource_tag_metrics",
-		"list_resource_tag_metrics",
-		"TODO",
+		"list_resource_tag_metrics <filename>",
+		"Lists all tags that reference a resource within the given cache file.",
 		true,
 		list_resource_tag_metrics_execute
 	},
+	{
+		"save_cache_file",
+		"save_cache_file",
+		"Saves the changes to the current cache file.",
+		true,
+		save_cache_file_execute
+	}
 };
 
 static s_command_set g_tag_command_sets[k_number_of_tag_command_sets] =
@@ -171,19 +178,19 @@ bool edit_tag_execute(
 		return true;
 	}
 
+	c_static_string<256> tag_group_string;
 	c_static_string<256> tag_name_string;
 
 	auto tag_name = file->get_tag_name(reference.index & k_uint16_max);
-
-	char group_name[5];
-	tag_to_string(group->group_tags[0], group_name);
-	
 	auto separator = csstrrchr((char *)tag_name, '\\');
 	
 	if (separator)
 		tag_name = separator + 1;
 
-	sprintf(tag_name_string.get_buffer(), "(0x%04lX) %s.%s", reference.index & k_uint16_max, tag_name, group_name);
+	sprintf(tag_name_string.get_buffer(), "(0x%04lX) %s.%s",
+		reference.index & k_uint16_max,
+		tag_name,
+		file->get_string(group->name));
 
 	auto tag_definition = file->get_tag_definition<void>(reference.index & k_uint16_max);
 
@@ -327,7 +334,7 @@ bool list_resource_tag_metrics_execute(
 	long arg_count,
 	char const **arg_values)
 {
-	if (arg_count != 0)
+	if (arg_count != 1)
 		return false;
 
 	auto file = g_command_context->get_file();
@@ -347,23 +354,25 @@ bool list_resource_tag_metrics_execute(
 	tag_iterator_initialize(&iterator, k_cache_file_resource_layout_table_group_tag);
 	tag_iterator_next(file, &iterator);
 
-	if (iterator.index != (short)NONE)
-	{
-		auto play = file->get_tag_definition<s_cache_file_resource_layout_table>(iterator.index);
-		csmemcpy(&zone->layout_table, play, sizeof(s_cache_file_resource_layout_table));
-	}
+	if (iterator.index == NONE)
+		return false;
+
+	auto play = file->get_tag_definition<s_cache_file_resource_layout_table>(iterator.index);
+
+	if (!play)
+		return false;
 
 	for (auto i = 0; i < zone->tag_resources.count; i++)
 	{
 		auto tag_resource = zone->tag_resources.get_element(file, i);
 
-		auto segment = tag_resource->segment_index.resolve(file, &zone->layout_table.segments);
+		auto segment = tag_resource->segment_index.resolve(file, &play->segments);
 
 		if (!segment)
 			continue;
 
-		auto primary_page = segment->primary_page.resolve(file, &zone->layout_table.pages);
-		auto secondary_page = segment->secondary_page.resolve(file, &zone->layout_table.pages);
+		auto primary_page = segment->primary_page.resolve(file, &play->pages);
+		auto secondary_page = segment->secondary_page.resolve(file, &play->pages);
 
 		auto should_print = false;
 
@@ -371,7 +380,7 @@ bool list_resource_tag_metrics_execute(
 		{
 			if (primary_page->shared_cache_file != (short)NONE)
 			{
-				auto shared_cache_file = primary_page->shared_cache_file.resolve(file, &zone->layout_table.physical_locations);
+				auto shared_cache_file = primary_page->shared_cache_file.resolve(file, &play->physical_locations);
 				
 				if (shared_cache_file && csstrstr(shared_cache_file->path, "campaign.map"))
 					should_print = true;
@@ -382,7 +391,7 @@ bool list_resource_tag_metrics_execute(
 		{
 			if (secondary_page->shared_cache_file != (short)NONE)
 			{
-				auto shared_cache_file = secondary_page->shared_cache_file.resolve(file, &zone->layout_table.physical_locations);
+				auto shared_cache_file = secondary_page->shared_cache_file.resolve(file, &play->physical_locations);
 
 				if (shared_cache_file && csstrstr(shared_cache_file->path, "campaign.map"))
 					should_print = true;
@@ -410,6 +419,33 @@ bool list_resource_tag_metrics_execute(
 				file->get_string(group->name));
 		}
 	}
+
+	return true;
+}
+
+bool save_cache_file_execute(
+	long arg_count,
+	char const **arg_values)
+{
+	if (arg_count != 0)
+		return false;
+
+	auto file = g_command_context->get_file();
+	auto header = file->get_header();
+
+	auto stream = fopen(file->get_filename(), "rb+");
+
+	long tags_section_offset, tags_section_size;
+
+	auto tags_section_buffer =
+		file->get_section_buffer(_cache_file_section_tags, &tags_section_offset, &tags_section_size);
+
+	fseek(stream, tags_section_offset, SEEK_SET);
+	fwrite(tags_section_buffer, 1, tags_section_size, stream);
+
+	auto pos = ftell(stream);
+
+	fclose(stream);
 
 	return true;
 }

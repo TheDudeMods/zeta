@@ -278,6 +278,8 @@ public:
 		struct s_cache_file_resource_physical_location *location,
 		struct s_cache_file_resource_page *page);
 
+	char *get_section_buffer(e_cache_file_section section, long *out_offset, long *out_size);
+
 	template <typename t_type>
 	t_type *get_debug_section_pointer(long offset)
 	{

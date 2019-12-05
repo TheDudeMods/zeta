@@ -28,148 +28,7 @@ enum
     k_maximum_number_of_unit_boarding_seats = k_maximum_number_of_unit_seats,
 };
 
-/* ---------- enumerators */
-
-enum e_unit_definition_flags
-{
-    _unit_definition_circular_aiming_bit,
-    _unit_definition_destroyed_after_dying_bit,
-    _unit_definition_half_speed_interpolation_bit,
-    _unit_definition_fires_from_camera_bit,
-    _unit_definition_entrance_inside_bounding_sphere_bit,
-    _unit_definition_doesnt_show_readied_weapon_bit,
-    _unit_definition_causes_passenger_dialogue_bit,
-    _unit_definition_resists_pings_bit,
-    _unit_definition_melee_attack_is_fatal_bit,
-    _unit_definition_dont_reface_during_pings_bit,
-    _unit_definition_has_no_aiming_bit,
-    _unit_definition_simple_creature_bit,
-    _unit_definition_impact_melee_attaches_to_unit_bit,
-    _unit_definition_impact_melee_dies_on_shield_bit,
-    _unit_definition_cannot_open_doors_automatically_bit,
-    _unit_definition_melee_attackers_cannot_attach_bit,
-    _unit_definition_not_instantly_killed_by_melee_bit,
-    _unit_definition_shield_sapping_bit,
-    _unit_definition_runs_around_flaming_bit,
-    _unit_definition_inconsequential_bit,
-    _unit_definition_special_cinematic_unit_bit,
-    _unit_definition_ignored_by_autoaiming_bit,
-    _unit_definition_shields_fry_infection_forms_bit,
-    _unit_definition_can_dual_wield_bit,
-    _unit_definition_acts_as_gunner_for_parent_bit,
-    _unit_definition_controlled_by_parent_gunner_bit,
-    _unit_definition_parents_primary_weapon_bit,
-    _unit_definition_parents_secondary_weapon_bit,
-    _unit_definition_unit_has_boost_bit,
-    k_number_of_unit_definition_flags
-};
-
-enum e_unit_camera_flags
-{
-    _unit_camera_pitch_bounds_absolute_space_bit,
-    _unit_camera_only_collides_with_environment_bit,
-    _unit_camera_hides_player_unit_from_camera_bit,
-    _unit_camera_use_aiming_vector_instead_of_marker_forward_bit,
-    k_number_of_unit_camera_flags
-};
-
-enum e_unit_camera_acceleration_input_variable
-{
-    _unit_camera_acceleration_input_variable_linear_velocity,
-    _unit_camera_acceleration_input_variable_linear_acceleration,
-    _unit_camera_acceleration_input_variable_yaw,
-    _unit_camera_acceleration_input_variable_pitch,
-    _unit_camera_acceleration_input_variable_roll,
-    k_number_of_unit_camera_acceleration_input_variables
-};
-
-enum e_unit_camera_gamepad_input_shape
-{
-    _unit_camera_gamepad_input_shape_none,
-    _unit_camera_gamepad_input_shape_unit_circle,
-    _unit_camera_gamepad_input_shape_unit_square,
-    k_number_of_unit_camera_gamepad_input_shapes
-};
-
-enum e_unit_motion_sensor_blip_size
-{
-    _unit_motion_sensor_blip_size_medium,
-    _unit_motion_sensor_blip_size_small,
-    _unit_motion_sensor_blip_size_large,
-    k_number_of_unit_motion_sensor_blip_sizes
-};
-
-enum e_unit_item_owner_size
-{
-    _unit_item_owner_size_small,
-    _unit_item_owner_size_medium,
-    _unit_item_owner_size_large,
-    _unit_item_owner_size_huge,
-    k_number_of_unit_item_owner_sizes
-};
-
-enum e_unit_grenade_type
-{
-    _unit_grenade_type_human_fragmentation,
-    _unit_grenade_type_covenant_plasma,
-    k_number_of_unit_grenade_types
-};
-
-enum e_unit_seat_flags
-{
-    _unit_seat_invisible_bit,
-    _unit_seat_locked_bit,
-    _unit_seat_driver_bit,
-    _unit_seat_gunner_bit,
-    _unit_seat_third_person_camera_bit,
-    _unit_seat_allows_weapons_bit,
-    _unit_seat_third_person_on_enter_bit,
-    _unit_seat_first_person_camera_slaved_to_gun_bit,
-    _unit_seat_allow_vehicle_communication_animations_bit,
-    _unit_seat_not_valid_without_driver_bit,
-    _unit_seat_boarding_seat_bit,
-    _unit_seat_ai_firing_disabled_by_max_acceleration_bit,
-    _unit_seat_boarding_enters_seat_bit,
-    _unit_seat_boarding_need_any_passenger_bit,
-    _unit_seat_invalid_for_player_bit,
-    _unit_seat_invalid_for_non_player_bit,
-    _unit_seat_invalid_for_hero_bit,
-    _unit_seat_gunner_player_only_bit,
-    _unit_seat_invisible_under_major_damage_bit,
-    _unit_seat_melee_instant_killable_bit,
-    _unit_seat_leader_preference_bit,
-    _unit_seat_allows_exit_and_detach_bit,
-    _unit_seat_blocks_headshots_bit,
-    _unit_seat_exits_to_ground_bit,
-    _unit_seat_forward_from_attachment_bit,
-    _unit_seat_disallow_ai_shooting_bit,
-    _unit_seat_prevents_weapon_stowing_bit,
-    _unit_seat_takes_top_level_aoe_damage_bit,
-    _unit_seat_disallow_exit_bit,
-    _unit_seat_local_aiming_bit,
-    _unit_seat_pelvis_relative_attachment_bit,
-    _unit_seat_apply_velocity_on_death_exit_bit,
-    k_number_of_unit_seat_flags
-};
-
-enum e_unit_ai_seat_type
-{
-    _unit_ai_seat_type_none,
-    _unit_ai_seat_type_passenger,
-    _unit_ai_seat_type_gunner,
-    _unit_ai_seat_type_small_cargo,
-    _unit_ai_seat_type_large_cargo,
-    _unit_ai_seat_type_driver,
-    k_number_of_unit_ai_seat_types
-};
-
-enum e_unit_boost_flags
-{
-    _unit_boost_pegs_throttle_bit,
-    k_number_of_unit_boost_flags
-};
-
-/* ---------- structures */
+/* ---------- types */
 
 struct s_unit_screen_effect_reference
 {
@@ -194,6 +53,16 @@ struct s_unit_camera_obstruction
     real obstruction_return_delay;
 };
 static_assert(sizeof(s_unit_camera_obstruction) == 0x18);
+
+enum e_unit_camera_acceleration_input_variable
+{
+	_unit_camera_acceleration_input_variable_linear_velocity,
+	_unit_camera_acceleration_input_variable_linear_acceleration,
+	_unit_camera_acceleration_input_variable_yaw,
+	_unit_camera_acceleration_input_variable_pitch,
+	_unit_camera_acceleration_input_variable_roll,
+	k_number_of_unit_camera_acceleration_input_variables
+};
 
 struct s_unit_camera_acceleration_function
 {
@@ -222,6 +91,14 @@ struct s_unit_camera_gamepad_stick_function
 };
 static_assert(sizeof(s_unit_camera_gamepad_stick_function) == 0x14);
 
+enum e_unit_camera_gamepad_input_shape
+{
+	_unit_camera_gamepad_input_shape_none,
+	_unit_camera_gamepad_input_shape_unit_circle,
+	_unit_camera_gamepad_input_shape_unit_square,
+	k_number_of_unit_camera_gamepad_input_shapes
+};
+
 struct s_unit_camera_gamepad_stick_info
 {
     c_enum<e_unit_camera_gamepad_input_shape, char> input_shape;
@@ -234,6 +111,15 @@ struct s_unit_camera_gamepad_stick_info
     c_tag_block<s_unit_camera_gamepad_stick_function> input_mapping_function;
 };
 static_assert(sizeof(s_unit_camera_gamepad_stick_info) == 0x28);
+
+enum e_unit_camera_flags
+{
+	_unit_camera_pitch_bounds_absolute_space_bit,
+	_unit_camera_only_collides_with_environment_bit,
+	_unit_camera_hides_player_unit_from_camera_bit,
+	_unit_camera_use_aiming_vector_instead_of_marker_forward_bit,
+	k_number_of_unit_camera_flags
+};
 
 struct s_unit_camera
 {
@@ -318,6 +204,54 @@ struct s_unit_boarding_seat
 };
 static_assert(sizeof(s_unit_boarding_seat) == 0x4);
 
+enum e_unit_seat_flags
+{
+	_unit_seat_invisible_bit,
+	_unit_seat_locked_bit,
+	_unit_seat_driver_bit,
+	_unit_seat_gunner_bit,
+	_unit_seat_third_person_camera_bit,
+	_unit_seat_allows_weapons_bit,
+	_unit_seat_third_person_on_enter_bit,
+	_unit_seat_first_person_camera_slaved_to_gun_bit,
+	_unit_seat_allow_vehicle_communication_animations_bit,
+	_unit_seat_not_valid_without_driver_bit,
+	_unit_seat_boarding_seat_bit,
+	_unit_seat_ai_firing_disabled_by_max_acceleration_bit,
+	_unit_seat_boarding_enters_seat_bit,
+	_unit_seat_boarding_need_any_passenger_bit,
+	_unit_seat_invalid_for_player_bit,
+	_unit_seat_invalid_for_non_player_bit,
+	_unit_seat_invalid_for_hero_bit,
+	_unit_seat_gunner_player_only_bit,
+	_unit_seat_invisible_under_major_damage_bit,
+	_unit_seat_melee_instant_killable_bit,
+	_unit_seat_leader_preference_bit,
+	_unit_seat_allows_exit_and_detach_bit,
+	_unit_seat_blocks_headshots_bit,
+	_unit_seat_exits_to_ground_bit,
+	_unit_seat_forward_from_attachment_bit,
+	_unit_seat_disallow_ai_shooting_bit,
+	_unit_seat_prevents_weapon_stowing_bit,
+	_unit_seat_takes_top_level_aoe_damage_bit,
+	_unit_seat_disallow_exit_bit,
+	_unit_seat_local_aiming_bit,
+	_unit_seat_pelvis_relative_attachment_bit,
+	_unit_seat_apply_velocity_on_death_exit_bit,
+	k_number_of_unit_seat_flags
+};
+
+enum e_unit_ai_seat_type
+{
+	_unit_ai_seat_type_none,
+	_unit_ai_seat_type_passenger,
+	_unit_ai_seat_type_gunner,
+	_unit_ai_seat_type_small_cargo,
+	_unit_ai_seat_type_large_cargo,
+	_unit_ai_seat_type_driver,
+	k_number_of_unit_ai_seat_types
+};
+
 struct s_unit_seat
 {
     c_flags<e_unit_seat_flags, long> flags;
@@ -361,6 +295,12 @@ struct s_unit_seat
 };
 static_assert(sizeof(s_unit_seat) == 0x13C);
 
+enum e_unit_boost_flags
+{
+	_unit_boost_pegs_throttle_bit,
+	k_number_of_unit_boost_flags
+};
+
 struct s_unit_boost
 {
     s_tag_reference collision_damage;
@@ -382,12 +322,126 @@ struct s_unit_lipsync
 };
 static_assert(sizeof(s_unit_lipsync) == 0x8);
 
+enum e_unit_trick_activation_type
+{
+	_unit_trick_activation_brake_left,
+	_unit_trick_activation_brake_right,
+	_unit_trick_activation_brake_up,
+	_unit_trick_activation_brake_down,
+	_unit_trick_activation_throw_movement_left,
+	_unit_trick_activation_throw_movement_right,
+	_unit_trick_activation_throw_movement_up,
+	_unit_trick_activation_throw_movement_down,
+	_unit_trick_activation_throw_look_left,
+	_unit_trick_activation_throw_look_right,
+	_unit_trick_activation_throw_look_up,
+	_unit_trick_activation_throw_look_down,
+	_unit_trick_activation_peg_flick_jump_left,
+	_unit_trick_activation_peg_flick_jump_right,
+	_unit_trick_activation_peg_flick_jump_up,
+	_unit_trick_activation_peg_flick_jump_down,
+	_unit_trick_activation_double_jump_left,
+	_unit_trick_activation_double_jump_right,
+	_unit_trick_activation_double_jump_up,
+	_unit_trick_activation_double_jump_down,
+	k_number_of_unit_trick_activation_types
+};
+
+enum e_unit_trick_velocity_preservation_mode
+{
+	_unit_trick_velocity_preservation_mode_none,
+	_unit_trick_velocity_preservation_mode_trick_relative,
+	_unit_trick_velocity_preservation_mode_word_relative,
+	k_number_of_unit_trick_velocity_preservation_modes
+};
+
+enum e_unit_trick_flags
+{
+	_unit_trick_use_following_camera_bit,
+	_unit_trick_do_not_slam_player_control_bit,
+	k_number_of_unit_trick_flags
+};
+
+struct s_unit_trick_definition
+{
+	string_id animation_name;
+	c_enum<e_unit_trick_activation_type, char> activation_type;
+	c_enum<e_unit_trick_velocity_preservation_mode, char> velocity_preservation;
+	c_flags<e_unit_trick_flags, uchar> flags;
+	char : 8;
+	real camera_interpolation_time;
+	real trick_exit_time;
+	real_bounds trick_exit_camera_interpolation_time;
+	real trick_exit_displacement_reference;
+	real cooldown_time;
+};
+static_assert(sizeof(s_unit_trick_definition) == 0x20);
+
+enum e_unit_definition_flags
+{
+	_unit_definition_circular_aiming_bit,
+	_unit_definition_destroyed_after_dying_bit,
+	_unit_definition_half_speed_interpolation_bit,
+	_unit_definition_fires_from_camera_bit,
+	_unit_definition_entrance_inside_bounding_sphere_bit,
+	_unit_definition_doesnt_show_readied_weapon_bit,
+	_unit_definition_causes_passenger_dialogue_bit,
+	_unit_definition_resists_pings_bit,
+	_unit_definition_melee_attack_is_fatal_bit,
+	_unit_definition_dont_reface_during_pings_bit,
+	_unit_definition_has_no_aiming_bit,
+	_unit_definition_simple_creature_bit,
+	_unit_definition_impact_melee_attaches_to_unit_bit,
+	_unit_definition_impact_melee_dies_on_shield_bit,
+	_unit_definition_cannot_open_doors_automatically_bit,
+	_unit_definition_melee_attackers_cannot_attach_bit,
+	_unit_definition_not_instantly_killed_by_melee_bit,
+	_unit_definition_shield_sapping_bit,
+	_unit_definition_runs_around_flaming_bit,
+	_unit_definition_inconsequential_bit,
+	_unit_definition_special_cinematic_unit_bit,
+	_unit_definition_ignored_by_autoaiming_bit,
+	_unit_definition_shields_fry_infection_forms_bit,
+	_unit_definition_can_dual_wield_bit,
+	_unit_definition_acts_as_gunner_for_parent_bit,
+	_unit_definition_controlled_by_parent_gunner_bit,
+	_unit_definition_parents_primary_weapon_bit,
+	_unit_definition_parents_secondary_weapon_bit,
+	_unit_definition_unit_has_boost_bit,
+	k_number_of_unit_definition_flags
+};
+
+enum e_unit_motion_sensor_blip_size
+{
+	_unit_motion_sensor_blip_size_medium,
+	_unit_motion_sensor_blip_size_small,
+	_unit_motion_sensor_blip_size_large,
+	k_number_of_unit_motion_sensor_blip_sizes
+};
+
+enum e_unit_item_owner_size
+{
+	_unit_item_owner_size_small,
+	_unit_item_owner_size_medium,
+	_unit_item_owner_size_large,
+	_unit_item_owner_size_huge,
+	k_number_of_unit_item_owner_sizes
+};
+
+enum e_unit_grenade_type
+{
+	_unit_grenade_type_human_fragmentation,
+	_unit_grenade_type_covenant_plasma,
+	k_number_of_unit_grenade_types
+};
+
 struct s_unit_definition : s_object_definition
 {
     c_flags<e_unit_definition_flags, long> unit_flags;
     c_enum<e_campaign_team, short> default_team;
     c_enum<e_ai_sound_volume, short> constant_sound_volume;
     s_tag_reference hologram_unit;
+	s_tag_block unknown_unit_block;
     c_tag_block<s_campaign_metagame_bucket> campaign_metagame_bucket;
     c_tag_block<s_unit_screen_effect_reference> screen_effects;
     real camera_stiffness;
@@ -475,4 +529,4 @@ struct s_unit_definition : s_object_definition
     s_tag_reference exit_and_detach_damage;
     s_tag_reference exit_and_detach_weapon;
 };
-static_assert(sizeof(s_unit_definition) == sizeof(s_object_definition) + 0x3A0);
+static_assert(sizeof(s_unit_definition) == sizeof(s_object_definition) + 0x3AC);

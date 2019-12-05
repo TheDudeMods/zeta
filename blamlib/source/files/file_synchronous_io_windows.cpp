@@ -5,6 +5,13 @@
 
 /* ---------- code */
 
+ulong file_get_position(
+	s_file_accessor *file)
+{
+	return SetFilePointer(file->handle, 0, nullptr, FILE_CURRENT);
+	//return file->position;
+}
+
 void file_open(
 	c_file_path *path,
 	c_flags<e_file_open_flags, ulong, k_number_of_file_open_flags> flags,

@@ -30,7 +30,7 @@ TAG_GROUP(
     sizeof(s_camera_track_definition))
 {
     { _field_byte_flags, "flags", &camera_track_flags_enum },
-    { _field_padding, "post_flags_padding", &camera_track_post_flags_padding },
+    { _field_pad, "post_flags_padding", &camera_track_post_flags_padding },
     { _field_block, "control_points", &camera_track_control_point_block },
     { _field_terminator }
 };

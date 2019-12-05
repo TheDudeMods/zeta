@@ -27,7 +27,7 @@ TAG_BLOCK(
 	NONE)
 {
 	{ _field_short_string, "path" },
-	{ _field_padding, "unknown", &cache_file_resource_physical_location_unknown_padding },
+	{ _field_pad, "unknown", &cache_file_resource_physical_location_unknown_padding },
 	{ _field_terminator }
 };
 
@@ -64,7 +64,7 @@ TAG_BLOCK(
 	{ _field_byte_flags, "flags", &cache_file_resource_page_instance_flags_enum },
 	{ _field_char_block_index, "compression_codec", &cache_file_resource_compression_codec_block },
 	{ _field_short_block_index, "physical_location", &cache_file_resource_physical_location_block },
-	{ _field_padding, "post_physical_location_padding", &cache_file_resource_page_post_physical_location_padding },
+	{ _field_pad, "post_physical_location_padding", &cache_file_resource_page_post_physical_location_padding },
 	{ _field_dword_integer, "block_offset" },
 	{ _field_dword_integer, "compressed_block_size" },
 	{ _field_dword_integer, "uncompressed_block_size" },

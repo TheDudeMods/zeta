@@ -76,6 +76,7 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 
 	file_set_position(&file, tags_section_offset, _file_error_mode_none);
 	file_read(&file, tags_section_size, _file_error_mode_none, m_memory_buffers[_cache_file_section_tags]);
+	auto pos = file_get_position(&file);
 
 	m_address_mask = ((ulonglong)m_memory_buffers[_cache_file_section_tags] - m_header.virtual_base_address);
 
@@ -179,6 +180,17 @@ s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
 	auto instances = get_tags_section_pointer<s_cache_file_tag_instance>((ulonglong)tags_header->instances.address);
 
 	return &instances[absolute_index];
+}
+
+char *c_cache_file_reach::get_section_buffer(e_cache_file_section section, long *out_offset, long *out_size)
+{
+	if (out_offset)
+		*out_offset = m_header.section_offsets[section] + m_header.section_bounds[section].offset;
+
+	if (out_size)
+		*out_size = m_header.section_bounds[section].size;
+
+	return m_memory_buffers[section];
 }
 
 ulonglong c_cache_file_reach::get_page_offset(ulong address)

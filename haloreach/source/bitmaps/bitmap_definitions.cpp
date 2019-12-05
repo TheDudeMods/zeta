@@ -393,7 +393,7 @@ TAG_BLOCK(
 	k_maximum_number_of_bitmap_sequence_sprites)
 {
 	{ _field_short_block_index, "bitmap_index", &bitmap_image_block },
-	{ _field_padding, "post_bitmap_index_padding", &bitmap_sequence_sprite_post_bitmap_index_padding },
+	{ _field_pad, "post_bitmap_index_padding", &bitmap_sequence_sprite_post_bitmap_index_padding },
 	{ _field_real, "left" },
 	{ _field_real, "right" },
 	{ _field_real, "top" },
@@ -415,7 +415,7 @@ TAG_BLOCK(
 	{ _field_short_string, "name" },
 	{ _field_short_integer, "first_bitmap_index" },
 	{ _field_short_integer, "bitmap_count" },
-	{ _field_padding, "post_bitmap_count_padding", &bitmap_sequence_post_bitmap_count_padding },
+	{ _field_pad, "post_bitmap_count_padding", &bitmap_sequence_post_bitmap_count_padding },
 	{ _field_block, "sprites", &bitmap_sequence_sprite_block },
 	{ _field_terminator }
 };
@@ -441,7 +441,7 @@ TAG_BLOCK(
 	k_maximum_number_of_bitmap_images)
 {
 	{ _field_datum_index, "resource_index" },
-	{ _field_padding, "post_resource_index_padding", &bitmap_resource_info_post_resource_index_padding },
+	{ _field_pad, "post_resource_index_padding", &bitmap_resource_info_post_resource_index_padding },
 	{ _field_terminator }
 };
 

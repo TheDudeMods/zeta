@@ -110,7 +110,7 @@ TAG_BLOCK(
 {
 	{ _field_short_enum, "type", &multiplayer_object_type_enum },
 	{ _field_byte_flags, "teleporter_passability", &multiplayer_object_teleporter_flags_enum },
-	{ _field_padding, "post_teleporter_padding", &multiplayer_object_post_teleporter_padding },
+	{ _field_pad, "post_teleporter_padding", &multiplayer_object_post_teleporter_padding },
 	{ _field_real, "boundary_width" },
 	{ _field_real, "boundary_length" },
 	{ _field_real, "boundary_top" },

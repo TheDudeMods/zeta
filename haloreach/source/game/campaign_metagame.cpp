@@ -87,8 +87,8 @@ TAG_BLOCK(
     { _field_byte_flags, "flags", &campaign_metagame_bucket_flags_enum },
     { _field_char_enum, "type", &campaign_metagame_bucket_type_enum },
     { _field_char_enum, "class", &campaign_metagame_bucket_class_enum },
-    { _field_padding, "post_class_padding", &campaign_metagame_bucket_post_class_padding },
+    { _field_pad, "post_class_padding", &campaign_metagame_bucket_post_class_padding },
     { _field_short_integer, "point_count" },
-    { _field_padding, "post_point_count_padding", &campaign_metagame_bucket_post_point_count_padding },
+    { _field_pad, "post_point_count_padding", &campaign_metagame_bucket_post_point_count_padding },
     { _field_terminator }
 };

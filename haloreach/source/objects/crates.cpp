@@ -39,7 +39,7 @@ TAG_GROUP(
     &object_group)
 {
 	{ _field_word_flags, "crate_flags", &crate_flags_enum },
-	{ _field_padding, "post_crate_flags_padding", &crate_post_crate_flags_padding },
+	{ _field_pad, "post_crate_flags_padding", &crate_post_crate_flags_padding },
 	{ _field_block, "campaign_metagame_bucket", &campaign_metagame_bucket_block },
 	{ _field_long_integer, "self_destruction_timer" },
     { _field_terminator }

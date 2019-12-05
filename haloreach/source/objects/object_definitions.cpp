@@ -370,7 +370,7 @@ TAG_GROUP(
 	sizeof(s_object_definition))
 {
 	{ _field_short_enum, "object_type", &object_type_enum },
-	{ _field_padding, "post_object_type_padding", &post_object_type_padding },
+	{ _field_pad, "post_object_type_padding", &post_object_type_padding },
 	{ _field_long_flags, "object_flags", &object_flags_enum },
 	{ _field_real, "bounding_radius" },
 	{ _field_real_point3d, "bounding_offset" },
@@ -399,7 +399,7 @@ TAG_GROUP(
 	{ _field_block, "functions", &object_function_block },
 	{ _field_block, "runtime_interpolator_functions", &object_runtime_interpolator_function_block },
 	{ _field_short_integer, "hud_text_message_index" },
-	{ _field_padding, "post_hud_text_message_padding", &object_post_hud_text_message_padding },
+	{ _field_pad, "post_hud_text_message_padding", &object_post_hud_text_message_padding },
 	{ _field_block, "attachments", &object_attachment_block },
 	{ _field_block, "hull_surfaces", &water_physics_hull_surface_definition_block },
 	{ _field_block, "jetwash", &jetwash_definition_block },

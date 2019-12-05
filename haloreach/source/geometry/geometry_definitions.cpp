@@ -222,7 +222,7 @@ TAG_BLOCK(
 	{ _field_char_enum, "specialized_render", &specialized_render_type_enum },
 	{ _field_word_flags, "part_flags", &part_flags_enum },
 	{ _field_word_integer, "budget_vertex_count" },
-	{ _field_padding, "post_budget_vertex_count_padding", &part_post_budget_vertex_count_padding },
+	{ _field_pad, "post_budget_vertex_count_padding", &part_post_budget_vertex_count_padding },
     { _field_terminator }
 };
 
@@ -321,12 +321,12 @@ TAG_BLOCK(
 	k_maximum_number_of_compressions_per_geometry)
 {
 	{ _field_word_flags, "flags", &compression_flags_enum },
-	{ _field_padding, "post_flags_padding", &compression_info_post_flags_padding },
+	{ _field_pad, "post_flags_padding", &compression_info_post_flags_padding },
 	{ _field_real_point3d, "position_lower" },
 	{ _field_real_point3d, "position_upper" },
 	{ _field_real_point2d, "texcoord_lower" },
 	{ _field_real_point2d, "texcoord_upper" },
-	{ _field_padding, "post_bounds_padding", &compression_info_post_bounds_padding },
+	{ _field_pad, "post_bounds_padding", &compression_info_post_bounds_padding },
 	{ _field_terminator }
 };
 
@@ -460,7 +460,7 @@ TAG_STRUCT(
 	{ _field_block, "unknown7C", &geometry_unknown4_block },
 	{ _field_block, "water_bounding_box", &water_bounding_box_block },
 	{ _field_datum_index, "resource_index" },
-	{ _field_padding, "post_resource_index_padding", &render_geometry_post_resource_index_padding },
+	{ _field_pad, "post_resource_index_padding", &render_geometry_post_resource_index_padding },
 	{ _field_block, "mesh_resource_groups", &mesh_resource_group_block },
 	{ _field_terminator }
 };

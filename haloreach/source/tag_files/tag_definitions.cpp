@@ -15,6 +15,7 @@
 #include <items/item_definitions.h>
 #include <items/projectile_definitions.h>
 #include <units/unit_definitions.h>
+#include <units/biped_definitions.h>
 #include <rasterizer/rasterizer_shader_definitions.h>
 #include <render_methods/render_method_definitions.h>
 
@@ -23,6 +24,7 @@
 
 /* ---------- globals */
 
+extern s_tag_group biped_group;
 extern s_tag_group bitmap_group;
 extern s_tag_group cache_file_resource_gestalt_group;
 extern s_tag_group cache_file_resource_layout_table_group;
@@ -48,6 +50,7 @@ static struct tag_definition
 	s_tag_group *definition;
 } g_tag_group_definitions[] =
 {
+	{ k_biped_group_tag, &biped_group },
 	{ k_bitmap_group_tag, &bitmap_group },
 	{ k_cache_file_resource_gestalt_group_tag, &cache_file_resource_gestalt_group },
 	{ k_cache_file_resource_layout_table_group_tag, &cache_file_resource_layout_table_group },
@@ -190,7 +193,7 @@ ulonglong field_get_size(
 		auto array = (s_array_definition *)definition;
 		return array->length * field_get_size(array->type, array->definition);
 	}
-	case _field_padding:
+	case _field_pad:
 	{
 		auto padding = (s_pad_definition *)definition;
 		return padding->length * field_get_size(padding->type, padding->definition);
@@ -831,7 +834,7 @@ bool field_parse_tag_reference(
 			auto group = file->get_tag_group(current_instance->group_index);
 			if (!group) continue;
 
-			if (//csstrcmp(group_name, file->get_string(group->name)) == 0 ||
+			if (csstrcmp(group_name, file->get_string(group->name)) == 0 ||
 				csstrcmp(group_name, tag_to_string(group->group_tags[0], tag_string)) == 0)
 			{
 				if (tag_name_is_wildcard || csstrcmp(tag_name, file->get_tag_name(i)) == 0)
@@ -906,13 +909,13 @@ bool field_parse(
 			if (!group || group->group_tags[0] == NONE)
 				continue;
 
-			/*auto group_name = file->get_string(group->name);
+			auto group_name = file->get_string(group->name);
 
 			if (group_name && csstrcmp(group_name, arg_values[0]) == 0)
 			{
 				*(tag *)address = group->group_tags[0];
 				return true;
-			}*/
+			}
 		}
 		*(tag *)address = string_to_tag(arg_values[0]);
 		return true;

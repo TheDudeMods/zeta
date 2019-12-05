@@ -3,13 +3,6 @@
 #include <cseries/cseries.h>
 #include <tag_files/string_ids_base.h>
 
-/* ---------- constants */
-
-enum
-{
-	k_number_of_string_ids = 0x173B
-};
-
 /* ---------- macros */
 
 #define STRING_ID_INDEX(id) ((id) & ((1 << 17) - 1))

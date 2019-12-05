@@ -65,7 +65,7 @@ TAG_GROUP(
 	{ _field_short_enum, "collision_response", &machine_collision_response_enum },
 	{ _field_short_integer, "elevator_node" },
 	{ _field_short_enum, "pathfinding_policy", &machine_pathfinding_policy_enum },
-	{ _field_padding, "post_pathfinding_policy_padding", &machine_post_pathfinding_policy_padding },
+	{ _field_pad, "post_pathfinding_policy_padding", &machine_post_pathfinding_policy_padding },
 	{ _field_string_id, "shield_name" },
 	{ _field_string_id, "shield_function" },
 	{ _field_terminator }

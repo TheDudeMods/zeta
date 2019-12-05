@@ -63,7 +63,7 @@ TAG_BLOCK(
 	k_maximum_number_of_water_physics_hull_surfaces)
 {
 	{ _field_word_flags, "flags", &water_physics_hull_surface_flags_enum },
-	{ _field_padding, "post_flags_padding", &water_physics_hull_surface_post_flags_padding  },
+	{ _field_pad, "post_flags_padding", &water_physics_hull_surface_post_flags_padding  },
 	{ _field_string_id, "marker_name" },
 	{ _field_real, "radius" },
 	{ _field_block, "material_overrides", &water_physics_material_override_struct },

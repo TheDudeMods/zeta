@@ -57,7 +57,7 @@ TAG_GROUP(
     { _field_real, "depowered_position_transition_time" },
     { _field_real, "depowered_position_acceleration_time" },
     { _field_word_flags, "lightmap_flags", &device_lightmap_flags_enum },
-    { _field_padding, "post_lightmap_flags_padding", &device_post_lightmap_flags_padding },
+    { _field_pad, "post_lightmap_flags_padding", &device_post_lightmap_flags_padding },
     { _field_tag_reference, "open", &device_effect_sound_reference },
     { _field_tag_reference, "close", &device_effect_sound_reference },
     { _field_tag_reference, "opened", &device_effect_sound_reference },
