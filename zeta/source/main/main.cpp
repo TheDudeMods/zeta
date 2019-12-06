@@ -18,8 +18,6 @@ int main()
 {
 	puts("Zeta v0.0.1");
 
-	printf("%zX\n", sizeof(s_biped_definition));
-
 	auto file = cache_file_load();
 	command_loop_execute(file);
 	delete file;
