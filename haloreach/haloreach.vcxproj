@@ -35,6 +35,7 @@
     <ClCompile Include="source\game\game_allegiance.cpp" />
     <ClCompile Include="source\geometry\geometry_definitions.cpp" />
     <ClCompile Include="source\geometry\vertex_definitions.cpp" />
+    <ClCompile Include="source\interface\chud\chud_definitions.cpp" />
     <ClCompile Include="source\items\item_definitions.cpp" />
     <ClCompile Include="source\items\projectile_definitions.cpp" />
     <ClCompile Include="source\math\function_definitions.cpp" />

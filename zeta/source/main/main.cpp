@@ -2,8 +2,6 @@
 #include <cache/cache_files.h>
 #include <commands/commands.h>
 
-#include <units/biped_definitions.h>
-
 #include <cstdio>
 #include <cstdlib>
 
