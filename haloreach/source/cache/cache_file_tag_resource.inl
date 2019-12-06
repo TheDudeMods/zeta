@@ -62,7 +62,7 @@ public:
 		case 4: // points to compressed data
 		{
 			long data_offset = (address & 0x0FFFFFFF);
-			return (char *)m_data + data_offset;
+			return m_data + data_offset;
 		}
 
 		default: // points to definition data

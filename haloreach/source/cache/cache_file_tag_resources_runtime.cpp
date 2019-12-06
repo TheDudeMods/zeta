@@ -140,12 +140,19 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 	if (page->shared_cache_file && !page->shared_cache_file.try_resolve(this, &definition->layout_table.physical_locations, &location))
 		return false;
 
-	auto data = get_resource_page_data(location, page);
-	if (!data)
+	auto page_data = (uchar *)get_resource_page_data(location, page);
+
+	if (!page_data)
 		return false;
 
-	if (out_length) *out_length = page->uncompressed_block_size;
-	if (out_address) *out_address = data;
+	auto segment_length = page->uncompressed_block_size - segment_offset;
+	auto segment_data = new uchar[segment_length];
+	csmemcpy(segment_data, page_data + segment_offset, segment_length);
+
+	delete[] page_data;
+
+	if (out_length) *out_length = segment_length;
+	if (out_address) *out_address = segment_data;
 
 	return true;
 }
