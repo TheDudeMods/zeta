@@ -66,6 +66,6 @@ TAG_GROUP(
 	{ _field_real, "covenant_holster_scale" },
 	{ _field_real, "boss_hold_scale" },
 	{ _field_real, "boss_holster_scale" },
-	{ _field_real, "grounded_friction_settings", &item_grounded_friction_settings_reference },
+	{ _field_tag_reference, "grounded_friction_settings", &item_grounded_friction_settings_reference },
 	{ _field_terminator }
 };

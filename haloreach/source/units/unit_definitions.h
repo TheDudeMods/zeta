@@ -441,7 +441,6 @@ struct s_unit_definition : s_object_definition
     c_enum<e_campaign_team, short> default_team;
     c_enum<e_ai_sound_volume, short> constant_sound_volume;
     s_tag_reference hologram_unit;
-	s_tag_block unknown_unit_block;
     c_tag_block<s_campaign_metagame_bucket> campaign_metagame_bucket;
     c_tag_block<s_unit_screen_effect_reference> screen_effects;
     real camera_stiffness;
@@ -529,4 +528,4 @@ struct s_unit_definition : s_object_definition
     s_tag_reference exit_and_detach_damage;
     s_tag_reference exit_and_detach_weapon;
 };
-static_assert(sizeof(s_unit_definition) == sizeof(s_object_definition) + 0x3AC);
+static_assert(sizeof(s_unit_definition) == sizeof(s_object_definition) + 0x3A0);

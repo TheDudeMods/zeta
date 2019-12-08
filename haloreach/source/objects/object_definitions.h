@@ -342,5 +342,6 @@ struct s_object_definition
 	c_tag_block<s_multiplayer_object_definition> multiplayer_object;
 	s_tag_reference simulation_interpolation;
 	c_tag_block<s_object_reviving_equipment> reviving_equipment;
+	s_tag_block unknown_object_block;
 };
-static_assert(sizeof(s_object_definition) == 0x178);
+static_assert(sizeof(s_object_definition) == 0x184);
