@@ -282,12 +282,16 @@ bool list_local_resource_tags_execute(
 	}
 
 	auto cache_file_header = file->get_header();
-	auto zone_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(file).next();
-	auto zone = file->get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
 
-	auto tag_resources = file->get_tags_section_pointer_from_page_offset<s_cache_file_tag_resource>(zone->tag_resources.address);
+	auto gestalt_definition_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(file).next();
+	auto gestalt = file->get_tag_definition<s_cache_file_resource_gestalt>(gestalt_definition_index);
 
-	for (auto i = 0; i < zone->tag_resources.count; i++)
+	auto layout_table_definition_index = c_tag_iterator<k_cache_file_resource_layout_table_group_tag>(file).next();
+	auto layout_table = file->get_tag_definition<s_cache_file_resource_layout_table>(layout_table_definition_index);
+
+	auto tag_resources = file->get_tags_section_pointer_from_page_offset<s_cache_file_tag_resource>(gestalt->tag_resources.address);
+
+	for (auto i = 0; i < gestalt->tag_resources.count; i++)
 	{
 		auto tag_resource = &tag_resources[i];
 
@@ -295,23 +299,23 @@ bool list_local_resource_tags_execute(
 			continue;
 
 		s_cache_file_resource_segment *segment = nullptr;
-		if (!tag_resource->segment_index.try_resolve(file, &zone->layout_table.segments, &segment))
+		if (!tag_resource->segment_index.try_resolve(file, &layout_table->segments, &segment))
 			continue;
 
 		s_cache_file_resource_page *primary_page = nullptr;
-		if (segment->primary_page.try_resolve(file, &zone->layout_table.pages, &primary_page))
+		if (segment->primary_page.try_resolve(file, &layout_table->pages, &primary_page))
 			if (primary_page->block_offset == NONE)
 				primary_page = nullptr;
 
 		s_cache_file_resource_page *secondary_page = nullptr;
-		if (segment->secondary_page.try_resolve(file, &zone->layout_table.pages, &secondary_page))
+		if (segment->secondary_page.try_resolve(file, &layout_table->pages, &secondary_page))
 			if (secondary_page->block_offset == NONE)
 				secondary_page = nullptr;
 
 		auto page = secondary_page ? secondary_page : primary_page;
 		if (!page || !page->shared_cache_file) continue;
 
-		auto location = page->shared_cache_file.resolve(file, &zone->layout_table.physical_locations);
+		auto location = page->shared_cache_file.resolve(file, &layout_table->physical_locations);
 
 		auto instance = file->get_tag_instance(tag_resource->parent_tag.index);
 

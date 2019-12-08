@@ -38,6 +38,7 @@
     <ClCompile Include="source\interface\chud\chud_definitions.cpp" />
     <ClCompile Include="source\items\item_definitions.cpp" />
     <ClCompile Include="source\items\projectile_definitions.cpp" />
+    <ClCompile Include="source\items\weapon_definitions.cpp" />
     <ClCompile Include="source\math\function_definitions.cpp" />
     <ClCompile Include="source\models\render_model_definitions.cpp" />
     <ClCompile Include="source\objects\crates.cpp" />
@@ -63,6 +64,7 @@
   <ItemGroup>
     <ClInclude Include="source\ai\ai.h" />
     <ClInclude Include="source\ai\character_definitions.h" />
+    <ClInclude Include="source\animations\animation_definitions.h" />
     <ClInclude Include="source\bitmaps\bitmaps.h" />
     <ClInclude Include="source\bitmaps\bitmap_definitions.h" />
     <ClInclude Include="source\bitmaps\dds.h" />

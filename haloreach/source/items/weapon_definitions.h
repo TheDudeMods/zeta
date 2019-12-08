@@ -13,7 +13,20 @@
 
 enum
 {
-    k_weapon_group_tag = 'weap'
+    k_weapon_group_tag = 'weap',
+	k_maximum_number_of_weapon_melee_damage_parameters = 2,
+	k_maximum_number_of_weapon_tracking_types = 16,
+	k_maximum_number_of_weapon_target_tracking_parameters = 1,
+	k_maximum_number_of_weapon_first_person_interfaces = 2,
+	k_maximum_number_of_weapon_predicted_resources = NONE,
+	k_maximum_number_of_weapon_magazine_objects = 8,
+	k_maximum_number_of_weapon_magazines = 2,
+	k_maximum_number_of_weapon_trigger_charging_fire_fractions = 16,
+	k_maximum_number_of_weapon_triggers = 2,
+	k_maximum_number_of_weapon_barrel_first_person_offsets = 3,
+	k_maximum_number_of_weapon_barrel_firing_effects = 5,
+	k_maximum_number_of_weapon_barrels = 2,
+	k_maximum_number_of_weapon_screen_effects = 4
 };
 
 /* ---------- types */
@@ -365,7 +378,7 @@ struct s_weapon_barrel_definition;
 
 struct s_weapon_trigger_definition
 {
-	c_flags<e_weapon_trigger_definition_flags, long> flags;
+	c_flags<e_weapon_trigger_definition_flags, ulong> flags;
 	c_enum<e_weapon_trigger_input, short> input;
 	c_enum<e_weapon_trigger_behavior, short> behavior;
 	c_tag_block_index<s_weapon_barrel_definition, short> primary_barrel;

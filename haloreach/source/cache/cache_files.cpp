@@ -44,41 +44,28 @@ c_cache_file_reach::c_cache_file_reach(char const *filename) :
 	file_read(&file, sizeof(s_cache_file_header), _file_error_mode_none, &m_header);
 
 	//
-	// Allocate and read the debug section
+	// Allocate and read the cache file sections
 	//
 
-	m_memory_buffers[_cache_file_section_debug] =
-		new char[m_header.section_bounds[_cache_file_section_debug].size];
+	for (auto i = 0; i < k_number_of_cache_file_sections; i++)
+	{
+		auto section_offset = m_header.section_offsets[i] + m_header.section_bounds[i].offset;
+		auto section_size = m_header.section_bounds[i].size;
 
-	auto debug_section_offset =
-		m_header.section_offsets[_cache_file_section_debug] +
-		m_header.section_bounds[_cache_file_section_debug].offset;
+		m_memory_buffers[i] = new char[section_size];
 
-	auto debug_section_size =
-		m_header.section_bounds[_cache_file_section_debug].size;
-
-	file_set_position(&file, debug_section_offset, _file_error_mode_none);
-	file_read(&file, debug_section_size, _file_error_mode_none, m_memory_buffers[_cache_file_section_debug]);
-
-	//
-	// Allocate and read the tags section
-	//
-
-	m_memory_buffers[_cache_file_section_tags] =
-		new char[m_header.section_bounds[_cache_file_section_tags].size];
-
-	auto tags_section_offset =
-		m_header.section_offsets[_cache_file_section_tags] +
-		m_header.section_bounds[_cache_file_section_tags].offset;
-
-	auto tags_section_size =
-		m_header.section_bounds[_cache_file_section_tags].size;
-
-	file_set_position(&file, tags_section_offset, _file_error_mode_none);
-	file_read(&file, tags_section_size, _file_error_mode_none, m_memory_buffers[_cache_file_section_tags]);
-	auto pos = file_get_position(&file);
+		file_set_position(&file, section_offset, _file_error_mode_none);
+		file_read(&file, section_size, _file_error_mode_none, m_memory_buffers[i]);
+	}
 
 	m_address_mask = ((ulonglong)m_memory_buffers[_cache_file_section_tags] - m_header.virtual_base_address);
+
+	assert(m_header.tag_post_link_buffer.empty()
+		|| m_header.tag_post_link_buffer.end() == m_header.tag_language_dependent_read_only_buffer.begin());
+	assert(m_header.tag_language_dependent_read_only_buffer.end() == m_header.tag_language_dependent_read_write_buffer.begin());
+	assert(m_header.tag_language_dependent_read_write_buffer.end() == m_header.tag_language_neutral_read_write_buffer.begin());
+	assert(m_header.tag_language_neutral_read_write_buffer.end() == m_header.tag_language_neutral_write_combined_buffer.begin());
+	assert(m_header.tag_language_neutral_write_combined_buffer.end() == m_header.tag_language_neutral_read_only_buffer.begin());
 
 	//
 	// Close the file stream

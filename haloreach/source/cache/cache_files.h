@@ -20,29 +20,7 @@ enum
 	k_cache_file_tags_section_signature = '343i',
 };
 
-/* ---------- enumerators */
-
-enum e_cache_file_partition
-{
-	_cache_file_partition_resources,
-	_cache_file_partition_gestalt_resources,
-	_cache_file_partition_tags,
-	_cache_file_partition_shared,
-	_cache_file_partition_base,
-	_cache_file_partition_multiplayer,
-	k_number_of_cache_file_partitions
-};
-
-enum e_cache_file_section
-{
-	_cache_file_section_debug,
-	_cache_file_section_resource,
-	_cache_file_section_tags,
-	_cache_file_section_localization,
-	k_number_of_cache_file_sections
-};
-
-/* ---------- structures */
+/* ---------- types */
 
 struct s_cache_file_section_file_bounds
 {
@@ -105,6 +83,15 @@ struct s_cache_file_tags_header
 	long unknown4C; // datum index?
 };
 static_assert(sizeof(s_cache_file_tags_header) == 0x50);
+
+enum e_cache_file_section
+{
+	_cache_file_section_debug,
+	_cache_file_section_resource,
+	_cache_file_section_tags,
+	_cache_file_section_localization,
+	k_number_of_cache_file_sections
+};
 
 struct s_cache_file_header
 {

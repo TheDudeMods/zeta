@@ -28,9 +28,19 @@ public:
 		return m_elements;
 	}
 
+	long long get_size()
+	{
+		return m_size;
+	}
+
 	t_element const *get_elements() const
 	{
 		return m_elements;
+	}
+
+	bool empty() const
+	{
+		return m_elements == nullptr || m_size == 0;
 	}
 
 	t_element *begin()

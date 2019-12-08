@@ -14,6 +14,7 @@
 #include <devices/device_machines.h>
 #include <items/item_definitions.h>
 #include <items/projectile_definitions.h>
+#include <items/weapon_definitions.h>
 #include <units/unit_definitions.h>
 #include <units/biped_definitions.h>
 #include <rasterizer/rasterizer_shader_definitions.h>
@@ -43,6 +44,7 @@ extern s_tag_group render_model_group;
 extern s_tag_group scenery_group;
 extern s_tag_group unit_group;
 extern s_tag_group vertex_shader_group;
+extern s_tag_group weapon_group;
 
 static struct tag_definition
 {
@@ -69,6 +71,7 @@ static struct tag_definition
 	{ k_scenery_group_tag, &scenery_group },
 	{ k_unit_group_tag, &unit_group },
 	{ k_vertex_shader_group_tag, &vertex_shader_group },
+	{ k_weapon_group_tag, &weapon_group },
 	{ static_cast<tag>(NONE) }
 };
 
