@@ -577,13 +577,12 @@ void field_print(
 		{
 			auto tag_name = file->get_tag_name(reference->index & k_uint16_max);
 			auto group = file->get_tag_group(instance->group_index);
-			char group_string[5];
 
 			printf("%s: tag_reference = (0x%04lX) %s.%s\n",
 				name,
 				reference->index & k_uint16_max,
 				tag_name,
-				tag_to_string(group->group_tags[0], group_string));
+				file->get_string(group->name));
 		}
 		break;
 	}
