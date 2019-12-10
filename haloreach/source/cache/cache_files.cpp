@@ -98,8 +98,7 @@ char const *c_cache_file_reach::get_string(string_id id)
 	auto set = (id >> k_number_of_string_id_sets) & k_uint8_max;
 	auto index = id & set_max;
 
-	if (set < 0 || set >= k_number_of_string_id_sets)
-		return nullptr;
+	assert(VALID_INDEX(set, k_number_of_string_id_sets));
 
 	auto string_id_indices = get_debug_section_pointer<long>(
 		m_header.string_id_indices_offset);
@@ -111,11 +110,15 @@ char const *c_cache_file_reach::get_string(string_id id)
 		return string_ids_buffer + string_id_indices[index];
 
 	auto set_base_index = k_string_id_set_offsets[set];
+	assert(VALID_INDEX(set_base_index, m_header.string_id_count));
 
-	if (set_base_index == NONE)
-		return nullptr;
+	auto absolute_index = set_base_index + index;
+	assert(VALID_INDEX(absolute_index, m_header.string_id_count));
 
-	return string_ids_buffer + string_id_indices[set_base_index + index];
+	auto string_offset = string_id_indices[set_base_index + index];
+	assert(VALID_INDEX(string_offset, m_header.string_ids_buffer_size));
+
+	return offset_pointer(string_ids_buffer, string_id_indices[set_base_index + index]);
 }
 
 char const *c_cache_file_reach::get_tag_name(long index)
