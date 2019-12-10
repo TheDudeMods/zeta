@@ -4,7 +4,7 @@
 #include <tag_files/string_ids.h>
 #include <tag_files/tag_definitions.h>
 
-/* ---------- structures */
+/* ---------- types */
 
 struct s_tag_reference
 {
@@ -32,6 +32,12 @@ struct s_tag_data
 	ulong definition_address;
 };
 static_assert(sizeof(s_tag_data) == 0x14);
+
+struct s_tag_function
+{
+	s_tag_data data;
+};
+static_assert(sizeof(s_tag_function) == 0x14);
 
 /* ---------- inline headers */
 

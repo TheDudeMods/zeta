@@ -24,9 +24,6 @@ bool c_cache_file_reach::tag_resource_definition_try_and_get(
 	auto resource_absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(resource_index);
 	auto resource_identifier = DATUM_INDEX_TO_IDENTIFIER(resource_index);
 
-	if (resource_absolute_index < 0 || resource_absolute_index >= resource_gestalt->tag_resources.count)
-		return false;
-
 	s_cache_file_tag_resource *tag_resource = nullptr;
 	if (!resource_gestalt->tag_resources.try_get_element(this, resource_absolute_index, &tag_resource))
 		return false;
@@ -34,7 +31,7 @@ bool c_cache_file_reach::tag_resource_definition_try_and_get(
 	if ((tag_resource->identifier != (ushort)NONE) && resource_identifier != tag_resource->identifier)
 		return false;
 
-	auto gestalt_definition_data = get_tags_section_pointer_from_page_offset<char>(
+	auto gestalt_definition_data = get_tags_section_pointer_from_page_offset<uchar>(
 		resource_gestalt->definition_data.address);
 
 	auto definition_data = &gestalt_definition_data[tag_resource->definition_data_offset];
@@ -88,47 +85,46 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 	auto resource_identifier = DATUM_INDEX_TO_IDENTIFIER(resource_index);
 	auto resource_absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(resource_index);
 
-	auto zone_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(this).next();
-	if (zone_index == NONE)
+	auto resource_gestalt_index = c_tag_iterator<k_cache_file_resource_gestalt_group_tag>(this).next();
+	if (resource_gestalt_index == NONE)
 		return false;
 
-	auto definition = get_tag_definition<s_cache_file_resource_gestalt>(zone_index);
+	auto resource_gestalt = get_tag_definition<s_cache_file_resource_gestalt>(resource_gestalt_index);
 
-	auto play_index = c_tag_iterator<k_cache_file_resource_layout_table_group_tag>(this).next();
-	if (play_index != NONE)
-	{
-		auto play_definition = get_tag_definition<s_cache_file_resource_layout_table>(play_index);
-		csmemcpy(&definition->layout_table, play_definition, sizeof(s_cache_file_resource_layout_table));
-	}
+	auto layout_table_index = c_tag_iterator<k_cache_file_resource_layout_table_group_tag>(this).next();
+	if (layout_table_index == NONE)
+		return false;
+
+	auto layout_table = get_tag_definition<s_cache_file_resource_layout_table>(layout_table_index);
 
 	s_cache_file_tag_resource *resource = nullptr;
-	if (!definition->tag_resources.try_get_element(this, resource_absolute_index, &resource))
+	if (!resource_gestalt->tag_resources.try_get_element(this, resource_absolute_index, &resource))
 		return false;
 
-	if (!resource->segment_index)
+	if (!resource->section)
 		return false;
 
-	s_cache_file_resource_segment *segment = nullptr;
-	if (!resource->segment_index.try_resolve(this, &definition->layout_table.segments, &segment))
+	s_cache_file_resource_section *segment = nullptr;
+	if (!resource->section.try_resolve(this, &layout_table->sections, &segment))
 		return false;
 
-	if (!segment->primary_page || segment->primary_segment_offset == NONE)
+	if (!segment->primary_page || segment->primary_section_offset == NONE)
 		return false;
 
-	auto segment_offset = (segment->secondary_segment_offset != NONE) ?
-		segment->secondary_segment_offset :
-		segment->primary_segment_offset;
+	auto segment_offset = (segment->secondary_section_offset != NONE) ?
+		segment->secondary_section_offset :
+		segment->primary_section_offset;
 
 	if (segment_offset == NONE)
 		return false;
 
 	s_cache_file_resource_page *primary_page = nullptr;
-	if (segment->primary_page.try_resolve(this, &definition->layout_table.pages, &primary_page))
+	if (segment->primary_page.try_resolve(this, &layout_table->pages, &primary_page))
 		if (primary_page->block_offset == NONE)
 			primary_page = nullptr;
 
 	s_cache_file_resource_page *secondary_page = nullptr;
-	if (segment->secondary_page.try_resolve(this, &definition->layout_table.pages, &secondary_page))
+	if (segment->secondary_page.try_resolve(this, &layout_table->pages, &secondary_page))
 		if (secondary_page->block_offset == NONE)
 			secondary_page = nullptr;
 
@@ -136,11 +132,11 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 	if (!page)
 		return false;
 
-	s_cache_file_resource_physical_location *location = nullptr;
-	if (page->shared_cache_file && !page->shared_cache_file.try_resolve(this, &definition->layout_table.physical_locations, &location))
+	s_cache_file_resource_shared_file *shared_file = nullptr;
+	if (page->shared_file && !page->shared_file.try_resolve(this, &layout_table->shared_files, &shared_file))
 		return false;
 
-	auto page_data = (uchar *)get_resource_page_data(location, page);
+	auto page_data = (uchar *)get_resource_page_data(shared_file, page);
 
 	if (!page_data)
 		return false;
@@ -158,7 +154,7 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 }
 
 void *c_cache_file_reach::get_resource_page_data(
-	s_cache_file_resource_physical_location *location,
+	s_cache_file_resource_shared_file *shared_file,
 	s_cache_file_resource_page *page)
 {
 	static s_cache_file_header resource_cache_header;
@@ -166,11 +162,11 @@ void *c_cache_file_reach::get_resource_page_data(
 
 	csmemset(resource_cache_file_path, 0, 1024);
 
-	if (location)
+	if (shared_file)
 	{
 		csmemcpy(resource_cache_file_path, m_filename, csstrrchr((char *)m_filename, '\\') - m_filename);
 
-		auto file_path = csstrrchr(location->path.get_buffer(), '\\');
+		auto file_path = csstrrchr(shared_file->path.get_buffer(), '\\');
 		csmemcpy(resource_cache_file_path + csstrlen(resource_cache_file_path), file_path, csstrlen(file_path));
 	}
 	else
@@ -186,7 +182,7 @@ void *c_cache_file_reach::get_resource_page_data(
 	s_file_accessor file;
 	file_open(&path, FLAG(_file_open_read_bit), _file_error_mode_none, &file);
 
-	if (location)
+	if (shared_file)
 	{
 		cache_header = &resource_cache_header;
 		file_set_position(&file, 0, _file_error_mode_none);
@@ -203,8 +199,8 @@ void *c_cache_file_reach::get_resource_page_data(
 
 	file_set_position(&file, resource_buffer_offset + page->block_offset, _file_error_mode_none);
 
-	if (location)
-		file_set_position_relative(&file, location->block_offset, _file_error_mode_none);
+	if (shared_file)
+		file_set_position_relative(&file, shared_file->block_offset, _file_error_mode_none);
 
 	auto uncompressed_data = new uchar[page->uncompressed_block_size];
 	csmemset(uncompressed_data, 0, page->uncompressed_block_size);

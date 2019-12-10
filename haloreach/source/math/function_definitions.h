@@ -59,14 +59,6 @@ enum e_function_runtime_m_flags
 	k_number_of_function_runtime_m_flags
 };
 
-/* ---------- structures */
-
-struct s_tag_function
-{
-	s_tag_data data;
-};
-static_assert(sizeof(s_tag_function) == 0x14);
-
 /* ---------- classes */
 
 class c_function_definition

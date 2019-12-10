@@ -1,5 +1,7 @@
 #include <math/function_definitions.h>
 
+/* ---------- definitions */
+
 TAG_STRUCT(
 	tag_function_struct,
 	sizeof(s_tag_function))

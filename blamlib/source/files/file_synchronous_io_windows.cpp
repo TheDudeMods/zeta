@@ -43,7 +43,7 @@ void file_open(
 	auto sequential_flags = flags.test(_file_open_sequential_scan_bit) ? FILE_FLAG_SEQUENTIAL_SCAN : 0;
 
 	auto file = CreateFile(
-		file_path,
+		file_path.get_string(),
 		read_flags | write_flags,
 		share_mode,
 		nullptr,
@@ -56,7 +56,7 @@ void file_open(
 		out_file->handle = file;
 		out_file->location = path->get_location();
 		out_file->position = 0;
-		out_file->path.set(file_path);
+		out_file->path.set(file_path.get_string());
 	}
 	else
 	{

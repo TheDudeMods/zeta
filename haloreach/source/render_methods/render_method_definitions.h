@@ -1,8 +1,9 @@
 #pragma once
 
 #include <cseries/cseries.h>
-#include <tag_files/tag_groups.h>
+#include <math/real_math.h>
 #include <math/function_definitions.h>
+#include <tag_files/tag_groups.h>
 
 /* ---------- constants */
 

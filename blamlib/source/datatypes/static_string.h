@@ -40,6 +40,16 @@ public:
 		return m_string;
 	}
 
+	decltype(m_string) &get_reference()
+	{
+		return m_string;
+	}
+
+	decltype(m_string) const &get_reference_const() const
+	{
+		return m_string;
+	}
+
 	static long max_length()
 	{
 		return k_maximum_count;
@@ -155,15 +165,5 @@ public:
 			m_string[i] = ascii_toupper(m_string[i]);
 
 		return *this;
-	}
-
-	operator char *()
-	{
-		return m_string;
-	}
-
-	operator char const *() const
-	{
-		return m_string;
 	}
 };

@@ -6,6 +6,7 @@
 #include <datatypes/static_array.h>
 #include <datatypes/static_string.h>
 #include <datatypes/tag.h>
+#include <memory/allocation_interface.h>
 #include <memory/memory_interface.h>
 #include <tag_files/string_ids.h>
 #include <scenario/scenario.h>
@@ -67,7 +68,7 @@ struct s_cache_file_tags_header
 	{
 		long count = 0;
 		tag post_count_signature = k_cache_file_tags_section_signature;
-		t_type *address = nullptr;
+		ulonglong address = 0;
 	};
 
 	s_section<s_cache_file_tag_group> groups;
@@ -147,6 +148,7 @@ struct s_cache_file_header
 	long tag_names_buffer_offset;
 	long tag_names_buffer_size;
 	long tag_name_indices_offset;
+
 	ulong checksum;
 
 	long unknown17;
@@ -180,12 +182,10 @@ struct s_cache_file_header
 
 	long rsa[64];
 
-	c_static_array<
-		long,
+	c_static_array<long,
 		k_number_of_cache_file_sections> section_offsets;
 
-	c_static_array<
-		s_cache_file_section_file_bounds,
+	c_static_array<s_cache_file_section_file_bounds,
 		k_number_of_cache_file_sections> section_bounds;
 
 	long guid[4];
@@ -198,24 +198,24 @@ static_assert(sizeof(s_cache_file_header) == 0xA000);
 
 struct s_cache_file_loaded_state
 {
-	// TODO
-};
-
-struct s_cache_file_combined_state
-{
-	// TODO
-};
-
-struct s_cached_map_file
-{
 	s_cache_file_header header;
-	// TODO: c_cache_file_reader *reader;
-	// TODO: c_reference_count<ulong> reference_count;
+	ulonglong tags_address_mask;
+	c_static_array<c_basic_buffer<void>,
+		k_number_of_cache_file_sections> sections;
 };
+
+/* ---------- prototypes/CACHE_FILES.cpp */
+
+bool cache_file_allocate_and_load(
+	char const *filename,
+	s_cache_file_loaded_state *loaded_state,
+	c_allocation_interface *allocation);
+
+void cache_file_unload_and_deallocate(
+	s_cache_file_loaded_state *loaded_state,
+	c_allocation_interface *allocation);
 
 /* ---------- classes */
-
-struct s_cache_file_tag_group;
 
 class c_cache_file_reach : public c_cache_file
 {
@@ -262,7 +262,7 @@ public:
 		void **out_address);
 	
 	void *get_resource_page_data(
-		struct s_cache_file_resource_physical_location *location,
+		struct s_cache_file_resource_shared_file *shared_file,
 		struct s_cache_file_resource_page *page);
 
 	char *get_section_buffer(e_cache_file_section section, long *out_offset, long *out_size);

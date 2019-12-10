@@ -4,7 +4,6 @@
 #include <datatypes/enum.h>
 #include <datatypes/flags.h>
 #include <math/real_math.h>
-#include <math/function_definitions.h>
 #include <tag_files/tag_groups.h>
 #include <items/item_definitions.h>
 

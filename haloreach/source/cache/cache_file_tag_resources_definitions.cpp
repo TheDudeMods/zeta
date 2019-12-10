@@ -8,8 +8,8 @@ TAG_ARRAY(
 	4);
 
 TAG_BLOCK(
-	cache_file_resource_compression_codec_block,
-	sizeof(s_cache_file_resource_compression_codec),
+	cache_file_codec_definition_block,
+	sizeof(s_cache_file_codec_definition),
 	NONE)
 {
 	{ _field_array, "guid", &cache_file_resource_guid_array },
@@ -22,8 +22,8 @@ TAG_PAD(
 	58);
 
 TAG_BLOCK(
-	cache_file_resource_physical_location_block,
-	sizeof(s_cache_file_resource_physical_location),
+	cache_file_resource_shared_file_block,
+	sizeof(s_cache_file_resource_shared_file),
 	NONE)
 {
 	{ _field_short_string, "path" },
@@ -62,8 +62,8 @@ TAG_BLOCK(
 {
 	{ _field_word_integer, "identifier" },
 	{ _field_byte_flags, "flags", &cache_file_resource_page_instance_flags_enum },
-	{ _field_char_block_index, "compression_codec", &cache_file_resource_compression_codec_block },
-	{ _field_short_block_index, "physical_location", &cache_file_resource_physical_location_block },
+	{ _field_char_block_index, "compression_codec", &cache_file_codec_definition_block },
+	{ _field_short_block_index, "physical_location", &cache_file_resource_shared_file_block },
 	{ _field_pad, "post_physical_location_padding", &cache_file_resource_page_post_physical_location_padding },
 	{ _field_dword_integer, "block_offset" },
 	{ _field_dword_integer, "compressed_block_size" },
@@ -78,36 +78,36 @@ TAG_BLOCK(
 };
 
 TAG_BLOCK(
-	cache_file_resource_segment_sizes_block,
-	sizeof(s_cache_file_resource_segment_sizes),
+	cache_file_resource_subpage_block,
+	sizeof(s_cache_file_resource_subpage),
 	NONE)
 {
-	{ _field_long_integer, "size1" },
-	{ _field_long_integer, "size2" },
+	{ _field_long_integer, "offset" },
+	{ _field_long_integer, "size" },
 	{ _field_terminator }
 };
 
 TAG_BLOCK(
-	cache_file_resource_page_sizes_block,
-	sizeof(s_cache_file_resource_page_sizes),
+	cache_file_resource_subpage_table_block,
+	sizeof(s_cache_file_resource_subpage_table),
 	NONE)
 {
 	{ _field_long_integer, "total_size" },
-	{ _field_block, "segments", &cache_file_resource_segment_sizes_block },
+	{ _field_block, "subpages", &cache_file_resource_subpage_block },
 	{ _field_terminator }
 };
 
 TAG_BLOCK(
-	cache_file_resource_segment_block,
-	sizeof(s_cache_file_resource_segment),
+	cache_file_resource_section_block,
+	sizeof(s_cache_file_resource_section),
 	NONE)
 {
 	{ _field_short_block_index, "primary_page", &cache_file_resource_page_block },
 	{ _field_short_block_index, "secondary_page", &cache_file_resource_page_block },
-	{ _field_long_integer, "primary_segment_offset" },
-	{ _field_long_integer, "secondary_segment_offset" },
-	{ _field_short_block_index, "primary_size", &cache_file_resource_page_sizes_block },
-	{ _field_short_block_index, "secondary_size", &cache_file_resource_page_sizes_block },
+	{ _field_long_integer, "primary_section_offset" },
+	{ _field_long_integer, "secondary_section_offset" },
+	{ _field_short_block_index, "primary_subpage_table", &cache_file_resource_subpage_table_block },
+	{ _field_short_block_index, "secondary_subpage_table", &cache_file_resource_subpage_table_block },
 	{ _field_terminator }
 };
 
@@ -116,14 +116,14 @@ TAG_GROUP(
 	k_cache_file_resource_layout_table_group_tag,
 	sizeof(s_cache_file_resource_layout_table))
 {
-	{ _field_block, "compression_codecs", &cache_file_resource_compression_codec_block },
-	{ _field_block, "physical_locations", &cache_file_resource_physical_location_block },
+	{ _field_block, "compression_codecs", &cache_file_codec_definition_block },
+	{ _field_block, "shared_files", &cache_file_resource_shared_file_block },
 	{ _field_block, "pages", &cache_file_resource_page_block },
 	{ _field_long_integer, "unknown1" },
 	{ _field_long_integer, "unknown2" },
 	{ _field_long_integer, "unknown3" },
-	{ _field_block, "sizes", &cache_file_resource_page_sizes_block },
-	{ _field_block, "segments", &cache_file_resource_segment_block },
+	{ _field_block, "subpage_tables", &cache_file_resource_subpage_table_block },
+	{ _field_block, "sections", &cache_file_resource_section_block },
 	{ _field_terminator }
 };
 
@@ -227,7 +227,7 @@ TAG_BLOCK(
 	{ _field_long_integer, "fixup_information_length" },
 	{ _field_long_integer, "secondary_fixup_information_offset" },
 	{ _field_short_integer, "unknown20" },
-	{ _field_short_block_index, "segment_index", &cache_file_resource_segment_block },
+	{ _field_short_block_index, "section", &cache_file_resource_section_block },
 	{ _field_dword_integer, "unknown24" },
 	{ _field_block, "resource_fixups", &cache_file_tag_resource_fixup_block },
 	{ _field_block, "resource_definition_fixups", &cache_file_tag_resource_fixup_block },

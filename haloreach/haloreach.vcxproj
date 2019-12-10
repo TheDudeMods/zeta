@@ -50,6 +50,7 @@
     <ClCompile Include="source\objects\widgets\antenna.cpp" />
     <ClCompile Include="source\objects\widgets\cloth.cpp" />
     <ClCompile Include="source\physics\character_physics_definitions.cpp" />
+    <ClCompile Include="source\physics\spring_acceleration.cpp" />
     <ClCompile Include="source\physics\water_physics.cpp" />
     <ClCompile Include="source\rasterizer\rasterizer_shader_definitions.cpp" />
     <ClCompile Include="source\render_methods\render_method_definitions.cpp" />

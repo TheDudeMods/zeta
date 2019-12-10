@@ -5,7 +5,6 @@
 #include <datatypes/flags.h>
 #include <effects/jetwash.h>
 #include <math/real_math.h>
-#include <math/function_definitions.h>
 #include <objects/multiplayer_game_objects.h>
 #include <objects/object_types.h>
 #include <physics/water_physics.h>

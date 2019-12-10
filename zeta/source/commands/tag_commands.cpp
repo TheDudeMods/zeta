@@ -298,24 +298,24 @@ bool list_local_resource_tags_execute(
 		if (group && !group->is_in_group(tag_resource->parent_tag.group_tag))
 			continue;
 
-		s_cache_file_resource_segment *segment = nullptr;
-		if (!tag_resource->segment_index.try_resolve(file, &layout_table->segments, &segment))
+		s_cache_file_resource_section *section = nullptr;
+		if (!tag_resource->section.try_resolve(file, &layout_table->sections, &section))
 			continue;
 
 		s_cache_file_resource_page *primary_page = nullptr;
-		if (segment->primary_page.try_resolve(file, &layout_table->pages, &primary_page))
+		if (section->primary_page.try_resolve(file, &layout_table->pages, &primary_page))
 			if (primary_page->block_offset == NONE)
 				primary_page = nullptr;
 
 		s_cache_file_resource_page *secondary_page = nullptr;
-		if (segment->secondary_page.try_resolve(file, &layout_table->pages, &secondary_page))
+		if (section->secondary_page.try_resolve(file, &layout_table->pages, &secondary_page))
 			if (secondary_page->block_offset == NONE)
 				secondary_page = nullptr;
 
 		auto page = secondary_page ? secondary_page : primary_page;
-		if (!page || !page->shared_cache_file) continue;
+		if (!page || !page->shared_file) continue;
 
-		auto location = page->shared_cache_file.resolve(file, &layout_table->physical_locations);
+		auto location = page->shared_file.resolve(file, &layout_table->shared_files);
 
 		auto instance = file->get_tag_instance(tag_resource->parent_tag.index);
 
@@ -370,34 +370,34 @@ bool list_resource_tag_metrics_execute(
 	{
 		auto tag_resource = zone->tag_resources.get_element(file, i);
 
-		auto segment = tag_resource->segment_index.resolve(file, &play->segments);
+		auto section = tag_resource->section.resolve(file, &play->sections);
 
-		if (!segment)
+		if (!section)
 			continue;
 
-		auto primary_page = segment->primary_page.resolve(file, &play->pages);
-		auto secondary_page = segment->secondary_page.resolve(file, &play->pages);
+		auto primary_page = section->primary_page.resolve(file, &play->pages);
+		auto secondary_page = section->secondary_page.resolve(file, &play->pages);
 
 		auto should_print = false;
 
 		if (primary_page)
 		{
-			if (primary_page->shared_cache_file != (short)NONE)
+			if (primary_page->shared_file != (short)NONE)
 			{
-				auto shared_cache_file = primary_page->shared_cache_file.resolve(file, &play->physical_locations);
+				auto shared_cache_file = primary_page->shared_file.resolve(file, &play->shared_files);
 				
-				if (shared_cache_file && csstrstr(shared_cache_file->path, "campaign.map"))
+				if (shared_cache_file && csstrstr(shared_cache_file->path.get_buffer(), "campaign.map"))
 					should_print = true;
 			}
 		}
 		
 		if (!should_print && secondary_page)
 		{
-			if (secondary_page->shared_cache_file != (short)NONE)
+			if (secondary_page->shared_file != (short)NONE)
 			{
-				auto shared_cache_file = secondary_page->shared_cache_file.resolve(file, &play->physical_locations);
+				auto shared_cache_file = secondary_page->shared_file.resolve(file, &play->shared_files);
 
-				if (shared_cache_file && csstrstr(shared_cache_file->path, "campaign.map"))
+				if (shared_cache_file && csstrstr(shared_cache_file->path.get_buffer(), "campaign.map"))
 					should_print = true;
 			}
 		}

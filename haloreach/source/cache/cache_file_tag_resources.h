@@ -74,26 +74,26 @@ enum e_cache_file_tag_resource_flags
 
 /* ---------- structures */
 
-struct s_cache_file_resource_compression_codec
+struct s_cache_file_codec_definition
 {
 	long guid[4];
 };
-static_assert(sizeof(s_cache_file_resource_compression_codec) == 0x10);
+static_assert(sizeof(s_cache_file_codec_definition) == 0x10);
 
-struct s_cache_file_resource_physical_location
+struct s_cache_file_resource_shared_file
 {
 	c_static_string<32> path;
 	long unknown[57];
 	ulong block_offset;
 };
-static_assert(sizeof(s_cache_file_resource_physical_location) == 0x108);
+static_assert(sizeof(s_cache_file_resource_shared_file) == 0x108);
 
 struct s_cache_file_resource_page
 {
 	ushort identifier;
 	c_flags<e_cache_file_resource_page_flags, uchar> flags;
-	c_tag_block_index<s_cache_file_resource_compression_codec, char> compression_codec;
-	c_tag_block_index<s_cache_file_resource_physical_location, short> shared_cache_file;
+	c_tag_block_index<s_cache_file_codec_definition, char> compression_codec;
+	c_tag_block_index<s_cache_file_resource_shared_file, short> shared_file;
 	short : 16;
 	long block_offset;
 	long compressed_block_size;
@@ -107,41 +107,41 @@ struct s_cache_file_resource_page
 };
 static_assert(sizeof(s_cache_file_resource_page) == 0x58);
 
-struct s_cache_file_resource_segment_sizes
+struct s_cache_file_resource_subpage
 {
-	long size1;
-	long size2;
+	long offset;
+	long size;
 };
-static_assert(sizeof(s_cache_file_resource_segment_sizes) == 0x8);
+static_assert(sizeof(s_cache_file_resource_subpage) == 0x8);
 
-struct s_cache_file_resource_page_sizes
+struct s_cache_file_resource_subpage_table
 {
 	long total_size;
-	c_tag_block<s_cache_file_resource_segment_sizes> segments;
+	c_tag_block<s_cache_file_resource_subpage> subpages;
 };
-static_assert(sizeof(s_cache_file_resource_page_sizes) == 0x10);
+static_assert(sizeof(s_cache_file_resource_subpage_table) == 0x10);
 
-struct s_cache_file_resource_segment
+struct s_cache_file_resource_section
 {
 	c_tag_block_index<s_cache_file_resource_page, short> primary_page;
 	c_tag_block_index<s_cache_file_resource_page, short> secondary_page;
-	long primary_segment_offset;
-	long secondary_segment_offset;
-	c_tag_block_index<s_cache_file_resource_page_sizes, short> primary_size;
-	c_tag_block_index<s_cache_file_resource_page_sizes, short> secondary_size;
+	long primary_section_offset;
+	long secondary_section_offset;
+	c_tag_block_index<s_cache_file_resource_subpage_table, short> primary_subpage_table;
+	c_tag_block_index<s_cache_file_resource_subpage_table, short> secondary_subpage_table;
 };
-static_assert(sizeof(s_cache_file_resource_segment) == 0x10);
+static_assert(sizeof(s_cache_file_resource_section) == 0x10);
 
 struct s_cache_file_resource_layout_table
 {
-	c_tag_block<s_cache_file_resource_compression_codec> compression_codecs;
-	c_tag_block<s_cache_file_resource_physical_location> physical_locations;
+	c_tag_block<s_cache_file_codec_definition> compression_codecs;
+	c_tag_block<s_cache_file_resource_shared_file> shared_files;
 	c_tag_block<s_cache_file_resource_page> pages;
 	long unknown1;
 	long unknown2;
 	long unknown3;
-	c_tag_block<s_cache_file_resource_page_sizes> sizes;
-	c_tag_block<s_cache_file_resource_segment> segments;
+	c_tag_block<s_cache_file_resource_subpage_table> subpage_tables;
+	c_tag_block<s_cache_file_resource_section> sections;
 };
 static_assert(sizeof(s_cache_file_resource_layout_table) == 0x48);
 
@@ -180,7 +180,7 @@ struct s_cache_file_tag_resource
 	long definition_data_length;
 	long secondary_fixup_information_offset;
 	short unknown20;
-	c_tag_block_index<s_cache_file_resource_segment, short> segment_index;
+	c_tag_block_index<s_cache_file_resource_section, short> section;
 	ulong definition_address;
 	c_tag_block<s_cache_file_tag_resource_fixup> resource_fixups;
 	c_tag_block<s_cache_file_tag_resource_fixup> resource_definition_fixups;

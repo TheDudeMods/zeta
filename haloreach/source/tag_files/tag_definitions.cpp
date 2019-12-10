@@ -19,6 +19,7 @@
 #include <units/biped_definitions.h>
 #include <rasterizer/rasterizer_shader_definitions.h>
 #include <render_methods/render_method_definitions.h>
+#include <physics/spring_acceleration.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -42,6 +43,7 @@ extern s_tag_group render_method_group;
 extern s_tag_group render_method_shader_group;
 extern s_tag_group render_model_group;
 extern s_tag_group scenery_group;
+extern s_tag_group spring_acceleration_group;
 extern s_tag_group unit_group;
 extern s_tag_group vertex_shader_group;
 extern s_tag_group weapon_group;
@@ -69,6 +71,7 @@ static struct tag_definition
 	{ k_render_method_shader_group_tag, &render_method_shader_group },
 	{ k_render_model_group_tag, &render_model_group },
 	{ k_scenery_group_tag, &scenery_group },
+	{ k_spring_acceleration_group_tag, &spring_acceleration_group },
 	{ k_unit_group_tag, &unit_group },
 	{ k_vertex_shader_group_tag, &vertex_shader_group },
 	{ k_weapon_group_tag, &weapon_group },
@@ -257,6 +260,48 @@ void field_print_integer(
 	}
 
 	printf("%s: %s = %lli\n", name, type_name, value);
+}
+
+void field_print_block_index(
+	e_field_type type,
+	char const *name,
+	void *address,
+	s_tag_block_definition *definition)
+{
+	assert(type >= _field_char_block_index && type <= _field_long_block_index);
+	assert(name);
+	assert(address);
+	assert(definition);
+
+	char const *type_name = "block_index";
+	long long value = NONE;
+
+	switch (type)
+	{
+	case _field_char_block_index:
+		type_name = "char_index";
+		value = *(char *)address;
+		break;
+
+	case _field_short_block_index:
+		type_name = "short_index";
+		value = *(short *)address;
+		break;
+
+	case _field_long_block_index:
+		type_name = "long_index";
+		value = *(long *)address;
+		break;
+	}
+
+	c_static_string<256> value_string;
+
+	if (value == NONE)
+		sprintf_s(value_string.get_reference(), "%s", "none");
+	else
+		sprintf_s(value_string.get_reference(), "%lli", value);
+
+	printf("%s: %s of %s = %s\n", name, type_name, definition->name, value_string.get_string());
 }
 
 void field_print_enum(
@@ -595,16 +640,13 @@ void field_print(
 		break;
 	}
 
-	/* ---------- TODO: implement */
 	case _field_char_block_index:
-		field_print_integer(_field_char_integer, name, address);
-		break;
 	case _field_short_block_index:
-		field_print_integer(_field_short_integer, name, address);
-		break;
 	case _field_long_block_index:
-		field_print_integer(_field_long_integer, name, address);
+		field_print_block_index(type, name, address, (s_tag_block_definition *)definition);
 		break;
+
+	/* ---------- TODO: implement */
 	case _field_byte_block_flags:
 		field_print_integer(_field_byte_integer, name, address);
 		break;

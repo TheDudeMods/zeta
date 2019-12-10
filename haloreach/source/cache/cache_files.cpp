@@ -7,7 +7,8 @@
 
 /* ---------- code */
 
-bool s_cache_file_tag_group::is_in_group(tag group_tag) const
+bool s_cache_file_tag_group::is_in_group(
+	tag group_tag) const
 {
 	if (group_tag == NONE)
 		return true;
@@ -17,14 +18,101 @@ bool s_cache_file_tag_group::is_in_group(tag group_tag) const
 		|| group_tags[2] == group_tag;
 }
 
-bool s_cache_file_tag_group::is_in_group(s_cache_file_tag_group &group) const
+bool s_cache_file_tag_group::is_in_group(
+	s_cache_file_tag_group &group) const
 {
 	return group_tags[0] == group.group_tags[0]
 		|| group_tags[1] == group.group_tags[0]
 		|| group_tags[2] == group.group_tags[0];
 }
 
-c_cache_file_reach::c_cache_file_reach(char const *filename) :
+
+bool cache_file_allocate_and_load(
+	char const *filename,
+	s_cache_file_loaded_state *loaded_state,
+	c_allocation_interface *allocation)
+{
+	assert(filename);
+	assert(loaded_state);
+	assert(allocation);
+
+	c_file_path path;
+	path.set_filename(filename);
+
+	//
+	// Open the cache file
+	//
+
+	s_file_accessor file;
+	file_open(&path, FLAG(_file_open_read_bit), _file_error_mode_none, &file);
+
+	//
+	// Read the cache file header
+	//
+
+	file_set_position(&file, 0, _file_error_mode_none);
+	
+	if (!file_read(&file, sizeof(s_cache_file_header), _file_error_mode_none, &loaded_state->header))
+	{
+		file_close(&file);
+		return false;
+	}
+
+	//
+	// Allocate and read the cache file sections
+	//
+
+	for (auto i = 0; i < k_number_of_cache_file_sections; i++)
+	{
+		auto section_offset =
+			loaded_state->header.section_offsets[i] +
+			loaded_state->header.section_bounds[i].offset;
+
+		auto section_size =
+			loaded_state->header.section_bounds[i].size;
+
+		loaded_state->sections[i] = c_basic_buffer(
+			allocation->allocate(section_size, __FILE__, __LINE__),
+			section_size);
+
+		file_set_position(&file, section_offset, _file_error_mode_none);
+		
+		if (!file_read(&file, section_size, _file_error_mode_none, loaded_state->sections[i]))
+		{
+			file_close(&file);
+			return false;
+		}
+	}
+
+	//
+	// Close the file accessor
+	//
+
+	file_close(&file);
+
+	return true;
+}
+
+void cache_file_unload_and_deallocate(
+	s_cache_file_loaded_state *loaded_state,
+	c_allocation_interface *allocation)
+{
+	assert(loaded_state);
+	assert(allocation);
+
+	for (auto i = 0; i < k_number_of_cache_file_sections; i++)
+	{
+		auto address = loaded_state->sections[i].get_elements();
+
+		if (address)
+			allocation->deallocate(address, __FILE__, __LINE__);
+	}
+
+	csmemset(loaded_state, 0, sizeof(s_cache_file_loaded_state));
+}
+
+c_cache_file_reach::c_cache_file_reach(
+	char const *filename) :
 	c_cache_file(filename),
 	m_header(),
 	m_address_mask(0),
@@ -88,10 +176,12 @@ s_cache_file_header *c_cache_file_reach::get_header()
 
 s_cache_file_tags_header *c_cache_file_reach::get_tags_header()
 {
-	return get_tags_section_pointer<s_cache_file_tags_header>(m_header.tags_header_address);
+	return get_tags_section_pointer<s_cache_file_tags_header>(
+		m_header.tags_header_address);
 }
 
-char const *c_cache_file_reach::get_string(string_id id)
+char const *c_cache_file_reach::get_string(
+	string_id id)
 {
 	auto set_min = 0x4C9;
 	auto set_max = (1 << k_number_of_string_id_sets) - 1;
@@ -121,10 +211,13 @@ char const *c_cache_file_reach::get_string(string_id id)
 	return offset_pointer(string_ids_buffer, string_id_indices[set_base_index + index]);
 }
 
-char const *c_cache_file_reach::get_tag_name(long index)
+char const *c_cache_file_reach::get_tag_name(
+	long index)
 {
 	auto tags_header = get_tags_header();
+	
 	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+	assert(VALID_INDEX(absolute_index, m_header.tag_name_count));
 
 	auto tag_name_indices = get_debug_section_pointer<long>(
 		m_header.tag_name_indices_offset);
@@ -132,13 +225,16 @@ char const *c_cache_file_reach::get_tag_name(long index)
 	auto tag_names_buffer = get_debug_section_pointer<char>(
 		m_header.tag_names_buffer_offset);
 
-	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
+	auto string_offset = tag_name_indices[absolute_index];
+	
+	if (string_offset < 0 || string_offset > m_header.tag_names_buffer_size)
 		return nullptr;
 
 	return tag_names_buffer + tag_name_indices[absolute_index];
 }
 
-long c_cache_file_reach::find_tag_group(tag group_tag)
+long c_cache_file_reach::find_tag_group(
+	tag group_tag)
 {
 	auto tags_header = get_tags_header();
 
@@ -153,31 +249,41 @@ long c_cache_file_reach::find_tag_group(tag group_tag)
 	return NONE;
 }
 
-s_cache_file_tag_group *c_cache_file_reach::get_tag_group(long index)
+s_cache_file_tag_group *c_cache_file_reach::get_tag_group(
+	long index)
 {
 	auto tags_header = get_tags_header();
 
 	if (index < 0 || index >= tags_header->groups.count)
 		return nullptr;
 
-	return &get_tags_section_pointer<s_cache_file_tag_group>((ulonglong)tags_header->groups.address)[index];
+	auto tag_groups = get_tags_section_pointer<s_cache_file_tag_group>(
+		tags_header->groups.address);
+
+	return &tag_groups[index];
 }
 
-s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(long index)
+s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(
+	long index)
 {
 	auto tags_header = get_tags_header();
-	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
-	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
 
-	if (absolute_index < 0 || absolute_index >= tags_header->instances.count)
+	auto identifier = DATUM_INDEX_TO_IDENTIFIER(index);
+	auto absolute_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(index);
+
+	if (!VALID_INDEX(absolute_index, tags_header->instances.count))
 		return nullptr;
 
-	auto instances = get_tags_section_pointer<s_cache_file_tag_instance>((ulonglong)tags_header->instances.address);
+	auto instances = get_tags_section_pointer<s_cache_file_tag_instance>(
+		tags_header->instances.address);
 
 	return &instances[absolute_index];
 }
 
-char *c_cache_file_reach::get_section_buffer(e_cache_file_section section, long *out_offset, long *out_size)
+char *c_cache_file_reach::get_section_buffer(
+	e_cache_file_section section,
+	long *out_offset,
+	long *out_size)
 {
 	if (out_offset)
 		*out_offset = m_header.section_offsets[section] + m_header.section_bounds[section].offset;
@@ -188,12 +294,14 @@ char *c_cache_file_reach::get_section_buffer(e_cache_file_section section, long 
 	return m_memory_buffers[section];
 }
 
-ulonglong c_cache_file_reach::get_page_offset(ulong address)
+ulonglong c_cache_file_reach::get_page_offset(
+	ulong address)
 {
 	return ((ulonglong)address * 4) - (m_header.virtual_base_address - 0x50000000);
 }
 
-ulong c_cache_file_reach::make_page_offset(ulonglong address)
+ulong c_cache_file_reach::make_page_offset(
+	ulonglong address)
 {
 	return (ulong)((address + (m_header.virtual_base_address - 0x50000000)) / 4);
 }

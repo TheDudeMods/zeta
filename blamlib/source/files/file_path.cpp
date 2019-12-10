@@ -74,7 +74,7 @@ bool c_file_path::is_equal(
 	if (m_location != path->m_location)
 		return false;
 
-	return csstrncmp(m_filename, path->get_filename_direct(), k_maximum_filename_length) == 0;
+	return csstrncmp(m_filename.get_string(), path->get_filename_direct(), k_maximum_filename_length) == 0;
 }
 
 e_file_location c_file_path::get_location()
@@ -131,7 +131,7 @@ char *c_file_path::get_full_path(
 
 	char *root_absolute_path = file_location_get_root_absolute_path(m_location);
 	csstrnzcpy(out_name, root_absolute_path, name_length);
-	csstrnzcat(out_name, m_filename, name_length);
+	csstrnzcat(out_name, m_filename.get_buffer(), name_length);
 
 	return out_name;
 }
