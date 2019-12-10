@@ -69,7 +69,7 @@ struct s_unit_camera_acceleration_function
     c_enum<e_unit_camera_acceleration_input_variable, char> input_variable;
     char : 8;
     short : 16;
-    s_tag_data data;
+    s_tag_function function;
     real maximum_value;
     real camera_scale_axial;
     real camera_scale_perpendicular;
@@ -87,7 +87,7 @@ static_assert(sizeof(s_unit_camera_acceleration_displacement) == 0x70);
 
 struct s_unit_camera_gamepad_stick_function
 {
-    s_tag_data data;
+    s_tag_function function;
 };
 static_assert(sizeof(s_unit_camera_gamepad_stick_function) == 0x14);
 

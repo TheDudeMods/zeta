@@ -223,6 +223,8 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
+extern s_struct_definition tag_function_struct;
+
 TAG_BLOCK(
 	object_function_block,
 	sizeof(s_object_function),
@@ -234,7 +236,7 @@ TAG_BLOCK(
 	{ _field_string_id, "turn_off_with" },
 	{ _field_string_id, "ranged_interpolation_name" },
 	{ _field_real, "minimum_value" },
-	{ _field_data, "default_function" },
+	{ _field_struct, "default_function", &tag_function_struct },
 	{ _field_string_id, "scale_by" },
 	{ _field_block, "interpolation", &object_function_interpolation_block },
 	{ _field_long_block_index, "runtime_interpolator_index", &object_runtime_interpolator_function_block },

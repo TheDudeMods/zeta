@@ -27,11 +27,13 @@ TAG_PAD(
 	water_physics_hull_surface_post_flags_padding,
 	1);
 
+extern s_struct_definition tag_function_struct;
+
 TAG_STRUCT(
 	water_physics_velocity_mapping_struct,
 	sizeof(s_water_physics_velocity_mapping))
 {
-	{ _field_data, "data" },
+	{ _field_struct, "function", &tag_function_struct },
 	{ _field_real, "max_velocity" },
 	{ _field_terminator }
 };

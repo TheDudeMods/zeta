@@ -141,13 +141,15 @@ TAG_PAD(
     unit_camera_acceleration_function_post_input_variable_padding,
     3);
 
+extern s_struct_definition tag_function_struct;
+
 TAG_STRUCT(
     unit_camera_acceleration_function_struct,
     sizeof(s_unit_camera_acceleration_function))
 {
     { _field_char_enum, "input_variable", &unit_camera_acceleration_input_variable_enum },
     { _field_pad, "post_input_variable_padding", &unit_camera_acceleration_function_post_input_variable_padding },
-    { _field_data, "data" },
+    { _field_struct, "function", &tag_function_struct },
     { _field_real, "maximum_value" },
     { _field_real, "camera_scale_axial" },
     { _field_real, "camera_scale_perpendicular" },
@@ -185,7 +187,7 @@ TAG_BLOCK(
     sizeof(s_unit_camera_gamepad_stick_function),
     k_maximum_number_of_unit_camera_gamepad_stick_functions)
 {
-    { _field_data, "data" },
+    { _field_struct, "function", &tag_function_struct },
     { _field_terminator }
 };
 

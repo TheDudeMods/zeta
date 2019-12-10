@@ -61,6 +61,14 @@ enum e_function_runtime_m_flags
 
 /* ---------- structures */
 
+struct s_tag_function
+{
+	s_tag_data data;
+};
+static_assert(sizeof(s_tag_function) == 0x14);
+
+/* ---------- classes */
+
 class c_function_definition
 {
 public:
@@ -68,7 +76,7 @@ public:
 	c_enum<e_function_variable_type, char> range_variable;
 	c_enum<e_function_output_modifier, char> output_modifier;
 	c_enum<e_function_variable_type, char> output_modifier_input;
-	s_tag_data data;
+	s_tag_function function;
 	real runtime_m_constant_value;
 	c_flags<e_function_runtime_m_flags, uchar> runtime_m_flags;
 	char : 8;

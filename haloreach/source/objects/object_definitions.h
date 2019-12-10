@@ -5,6 +5,7 @@
 #include <datatypes/flags.h>
 #include <effects/jetwash.h>
 #include <math/real_math.h>
+#include <math/function_definitions.h>
 #include <objects/multiplayer_game_objects.h>
 #include <objects/object_types.h>
 #include <physics/water_physics.h>
@@ -236,7 +237,7 @@ struct s_object_function
 	string_id turn_off_with;
 	string_id ranged_interpolation_name;
 	real minimum_value;
-	s_tag_data default_function;
+	s_tag_function default_function;
 	string_id scale_by;
 	c_tag_block<s_object_function_interpolation> interpolation;
 	c_tag_block_index<s_object_runtime_interpolator_function, long> runtime_interpolator_index;

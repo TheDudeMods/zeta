@@ -16,6 +16,7 @@ long const k_string_id_set_offsets[k_number_of_string_id_sets] =
 	0x15A4,
 	0x15B8,
 	0x161A,
+	NONE,
 	0x1632,
 	0x163F,
 	0x1668,

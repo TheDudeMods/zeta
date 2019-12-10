@@ -37,6 +37,8 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
+extern s_struct_definition tag_function_struct;
+
 TAG_BLOCK(
 	biped_movement_gate_block,
 	sizeof(s_biped_movement_gate),
@@ -47,7 +49,7 @@ TAG_BLOCK(
 	{ _field_real, "constant_z_offset" },
 	{ _field_real, "y_offset" },
 	{ _field_real, "speed_threshold" },
-	{ _field_data, "default_function" },
+	{ _field_struct, "default_function", &tag_function_struct },
 	{ _field_terminator }
 };
 
@@ -174,7 +176,7 @@ TAG_GROUP(
 	{ _field_real, "crouching_camera_height" },
 	{ _field_real, "crouch_walking_camera_height" },
 	{ _field_real, "crouch_transition_time" },
-	{ _field_data, "camera_height_velocity_function" },
+	{ _field_struct, "camera_height_velocity_function", &tag_function_struct },
 	{ _field_block, "camera_heights", &biped_camera_height_block },
 	{ _field_angle, "camera_interpolation_start" },
 	{ _field_angle, "camera_interpolation_end" },

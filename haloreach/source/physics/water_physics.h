@@ -3,6 +3,7 @@
 #include <cseries/cseries.h>
 #include <datatypes/enum.h>
 #include <math/real_math.h>
+#include <math/function_definitions.h>
 #include <tag_files/tag_groups.h>
 
 /* ---------- constants */
@@ -37,7 +38,7 @@ enum e_water_physics_hull_surface_flags
 
 struct s_water_physics_velocity_mapping
 {
-	s_tag_data data;
+	s_tag_function function;
 	real max_velocity;
 };
 static_assert(sizeof(s_water_physics_velocity_mapping) == 0x18);

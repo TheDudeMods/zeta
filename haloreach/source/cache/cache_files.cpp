@@ -94,11 +94,11 @@ s_cache_file_tags_header *c_cache_file_reach::get_tags_header()
 char const *c_cache_file_reach::get_string(string_id id)
 {
 	auto set_min = 0x4C9;
-	auto set_max = 0x1FFFF;
-	auto set = STRING_ID_SET(id);
-	auto index = STRING_ID_INDEX(id);
+	auto set_max = (1 << k_number_of_string_id_sets) - 1;
+	auto set = (id >> k_number_of_string_id_sets) & k_uint8_max;
+	auto index = id & set_max;
 
-	if (set < 0 || set >= k_number_of_string_id_sets)
+	if (set < 0 || set >= _string_id_set_hud_message)
 		return nullptr;
 
 	auto string_id_indices = get_debug_section_pointer<long>(
@@ -107,10 +107,15 @@ char const *c_cache_file_reach::get_string(string_id id)
 	auto string_ids_buffer = get_debug_section_pointer<char>(
 		m_header.string_ids_buffer_offset);
 
-	if (set == 0 && (index < set_min || index > set_max))
+	if (set == 0 && index < set_min)
 		return string_ids_buffer + string_id_indices[index];
 
-	return string_ids_buffer + string_id_indices[index + k_string_id_set_offsets[set]];
+	auto set_base_index = k_string_id_set_offsets[set];
+
+	if (set_base_index == NONE)
+		return nullptr;
+
+	return string_ids_buffer + string_id_indices[set_base_index + index];
 }
 
 char const *c_cache_file_reach::get_tag_name(long index)

@@ -1,5 +1,13 @@
 #include <math/function_definitions.h>
 
+TAG_STRUCT(
+	tag_function_struct,
+	sizeof(s_tag_function))
+{
+	{ _field_data, "data" },
+	{ _field_terminator }
+};
+
 TAG_ENUM(
 	function_output_modifier_enum,
 	k_number_of_function_output_modifiers)

@@ -2,6 +2,7 @@
 
 #include <cseries/cseries.h>
 #include <math/real_math.h>
+#include <math/function_definitions.h>
 #include <tag_files/tag_groups.h>
 #include <units/unit_definitions.h>
 #include <physics/character_physics_definitions.h>
@@ -49,7 +50,7 @@ struct s_biped_movement_gate
 	real constant_z_offset;
 	real y_offset;
 	real speed_threshold;
-	s_tag_data default_function;
+	s_tag_function default_function;
 };
 static_assert(sizeof(s_biped_movement_gate) == 0x28);
 
@@ -159,7 +160,7 @@ struct s_biped_definition : s_unit_definition
 	real crouching_camera_height;
 	real crouch_walking_camera_height;
 	real crouch_transition_time;
-	s_tag_data camera_height_velocity_function;
+	s_tag_function camera_height_velocity_function;
 	c_tag_block<s_biped_camera_height> camera_heights;
 	angle camera_interpolation_start;
 	angle camera_interpolation_end;

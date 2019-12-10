@@ -587,12 +587,14 @@ TAG_STRUCT(
 	{ _field_terminator }
 };
 
+extern s_struct_definition tag_function_struct;
+
 TAG_BLOCK(
 	weapon_barrel_accuracy_penalty_function_block,
-	sizeof(s_tag_data),
+	sizeof(s_tag_function),
 	NONE)
 {
-	{ _field_data, "function" },
+	{ _field_struct, "function", &tag_function_struct },
 	{ _field_terminator }
 };
 
