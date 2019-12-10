@@ -98,7 +98,7 @@ char const *c_cache_file_reach::get_string(string_id id)
 	auto set = (id >> k_number_of_string_id_sets) & k_uint8_max;
 	auto index = id & set_max;
 
-	if (set < 0 || set >= _string_id_set_hud_message)
+	if (set < 0 || set >= k_number_of_string_id_sets)
 		return nullptr;
 
 	auto string_id_indices = get_debug_section_pointer<long>(
