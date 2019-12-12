@@ -183,10 +183,8 @@ s_cache_file_tags_header *c_cache_file_reach::get_tags_header()
 char const *c_cache_file_reach::get_string(
 	string_id id)
 {
-	auto set_min = 0x4C9;
-	auto set_max = (1 << k_number_of_string_id_sets) - 1;
 	auto set = (id >> k_number_of_string_id_sets) & k_uint8_max;
-	auto index = id & set_max;
+	auto index = id & ((1 << k_number_of_string_id_sets) - 1);
 
 	assert(VALID_INDEX(set, k_number_of_string_id_sets));
 
@@ -196,11 +194,22 @@ char const *c_cache_file_reach::get_string(
 	auto string_ids_buffer = get_debug_section_pointer<char>(
 		m_header.string_ids_buffer_offset);
 
-	if (set == 0 && index < set_min)
-		return string_ids_buffer + string_id_indices[index];
+	auto set_base_index = 0;
 
-	auto set_base_index = k_string_id_set_offsets[set];
-	assert(VALID_INDEX(set_base_index, m_header.string_id_count));
+	if (set == 0 && index >= k_string_id_set_string_counts[set])
+	{
+		for (auto i = 0; i < k_number_of_string_id_sets; i++)
+			set_base_index += k_string_id_set_string_counts[i];
+
+		index -= k_string_id_set_string_counts[set];
+	}
+	else
+	{
+		assert(VALID_INDEX(index, k_string_id_set_string_counts[set]));
+
+		for (auto i = 0; i < set; i++)
+			set_base_index += k_string_id_set_string_counts[i];
+	}
 
 	auto absolute_index = set_base_index + index;
 	assert(VALID_INDEX(absolute_index, m_header.string_id_count));
@@ -208,7 +217,7 @@ char const *c_cache_file_reach::get_string(
 	auto string_offset = string_id_indices[set_base_index + index];
 	assert(VALID_INDEX(string_offset, m_header.string_ids_buffer_size));
 
-	return offset_pointer(string_ids_buffer, string_id_indices[set_base_index + index]);
+	return offset_pointer(string_ids_buffer, string_offset);
 }
 
 char const *c_cache_file_reach::get_tag_name(

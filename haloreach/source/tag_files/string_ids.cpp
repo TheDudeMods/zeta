@@ -2,23 +2,24 @@
 
 /* ---------- globals */
 
-long const k_string_id_set_offsets[k_number_of_string_id_sets] =
+long const k_string_id_set_string_counts[] =
 {
-	0x1273,
-	0x4C9,
-	0xB2E,
-	0xC07,
-	0xC71,
-	0xD4A,
-	0xD70,
-	0xD75,
-	0x1434,
-	0x15A4,
-	0x15B8,
-	0x161A,
-	NONE,
-	0x1632,
-	0x163F,
-	0x1668,
-	0x16C9
+	1225,
+	1637,
+	217,
+	106,
+	217,
+	38,
+	5,
+	1727,
+	368,
+	20,
+	98,
+	24,
+	0,
+	13,
+	41,
+	97,
+	115
 };
+static_assert(NUMBEROF(k_string_id_set_string_counts) == k_number_of_string_id_sets);

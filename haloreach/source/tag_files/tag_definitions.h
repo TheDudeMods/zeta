@@ -15,4 +15,4 @@ bool field_parse(c_cache_file_reach *file, e_field_type type, char const *name, 
 void *struct_print(c_cache_file_reach *file, s_struct_definition *definition, void *address, char const *filter);
 s_field_definition *struct_get_field(s_struct_definition *definition, char const *name, void **out_address);
 
-s_tag_group *tag_group_definition_get(tag group_tag);
+s_tag_group *tag_group_get(tag group_tag);

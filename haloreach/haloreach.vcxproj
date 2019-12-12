@@ -33,6 +33,8 @@
     <ClCompile Include="source\effects\jetwash.cpp" />
     <ClCompile Include="source\game\campaign_metagame.cpp" />
     <ClCompile Include="source\game\game_allegiance.cpp" />
+    <ClCompile Include="source\game\game_powerups.cpp" />
+    <ClCompile Include="source\game\multiplayer_definitions.cpp" />
     <ClCompile Include="source\geometry\geometry_definitions.cpp" />
     <ClCompile Include="source\geometry\vertex_definitions.cpp" />
     <ClCompile Include="source\interface\chud\chud_definitions.cpp" />
@@ -64,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ai\ai.h" />
+    <ClInclude Include="source\ai\ai_traits.h" />
     <ClInclude Include="source\ai\character_definitions.h" />
     <ClInclude Include="source\animations\animation_definitions.h" />
     <ClInclude Include="source\bitmaps\bitmaps.h" />
@@ -81,7 +84,10 @@
     <ClInclude Include="source\effects\screen_effect.h" />
     <ClInclude Include="source\game\campaign_metagame.h" />
     <ClInclude Include="source\game\game_allegiance.h" />
+    <ClInclude Include="source\game\game_engine_player_traits.h" />
     <ClInclude Include="source\game\game_globals.h" />
+    <ClInclude Include="source\game\game_powerups.h" />
+    <ClInclude Include="source\game\multiplayer_definitions.h" />
     <ClInclude Include="source\geometry\geometry_definitions.h" />
     <ClInclude Include="source\geometry\vertex_definitions.h" />
     <ClInclude Include="source\interface\chud\chud_definitions.h" />

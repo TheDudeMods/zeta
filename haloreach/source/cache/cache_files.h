@@ -284,7 +284,9 @@ public:
 		if (address == 0)
 			return nullptr;
 
-		return (t_type *)(address + m_address_mask);
+		auto actual_address = address + m_address_mask;
+
+		return (t_type *)actual_address;
 	}
 
 	ulonglong get_page_offset(ulong address);

@@ -1244,7 +1244,7 @@ s_field_definition *struct_get_field(
 	return nullptr;
 }
 
-s_tag_group *tag_group_definition_get(
+s_tag_group *tag_group_get(
 	tag group_tag)
 {
 	auto definition = g_tag_group_definitions;

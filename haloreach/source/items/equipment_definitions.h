@@ -6,6 +6,10 @@
 #include <math/real_math.h>
 #include <tag_files/tag_groups.h>
 #include <items/item_definitions.h>
+#include <units/unit_definitions.h>
+#include <ai/ai_traits.h>
+#include <game/game_engine_player_traits.h>
+#include <game/game_powerups.h>
 
 /* ---------- constants */
 
@@ -73,6 +77,163 @@ enum e_equipment_activation_source
 	k_number_of_equipment_activation_sources
 };
 
+struct s_equipment_ability_type_multiplayer_powerup
+{
+	c_enum<e_multiplayer_powerup_flavor, long> flavor;
+};
+static_assert(sizeof(s_equipment_ability_type_multiplayer_powerup) == 0x4);
+
+enum e_equipment_spawner_type
+{
+	_equipment_spawner_type_along_aiming_vector,
+	_equipment_spawner_type_camera_pos_z_plane,
+	_equipment_spawner_type_foot_pos_z_plane,
+	k_number_of_equipment_spawner_types
+};
+
+struct s_equipment_ability_type_spawner
+{
+	s_tag_reference spawned_object;
+	s_tag_reference spawned_effect;
+	real spawn_radius; // distance from players eyeball on the z-plane that this effect spawns
+	real spawn_z_offset; // z-offset of effect spawn
+	real spawn_area_radius; // need a sphere of radius r's free space in order to spawn, otherwise we pick a new spawn location
+	real spawn_velocity;
+	c_enum<e_equipment_spawner_type, short> type;
+	short : 16;
+};
+static_assert(sizeof(s_equipment_ability_type_spawner) == 0x34);
+
+struct s_equipment_ability_type_proximity_mine
+{
+	s_tag_reference explosion_effect;
+	s_tag_reference explosion_damage_effect;
+	real arm_time; // time before it becomes a proximity mine
+	real self_destruct_time; // seconds after it is created that it must self destruct. 0 means never destroy
+	real trigger_time; // seconds object moving at trigger velocity takes to trigger explosion. This will smooth out sensitivity to velocity noise
+	real trigger_velocity; // world units per second at which we trigger explosion
+};
+static_assert(sizeof(s_equipment_ability_type_proximity_mine) == 0x30);
+
+struct s_equipment_ability_type_motion_tracker_noise
+{
+	real arm_time; // time before it starts making noise
+	real noise_radius; // radius in WU that the noise extends to
+	long noise_count; // number of noise points that are generated
+	real flash_radius; // radius in WU that the damage flash noise extends to
+};
+static_assert(sizeof(s_equipment_ability_type_motion_tracker_noise) == 0x10);
+
+struct s_equipment_effect_with_threshold
+{
+	real threshold_energy_burned; // how much energy you have to burn to play this effect
+	real energy_adjustment; // how much energy to add when playing this effect
+	s_tag_reference effect;
+};
+static_assert(sizeof(s_equipment_effect_with_threshold) == 0x18);
+
+struct s_equipment_ability_type_invincibility
+{
+	string_id invincibility_material;
+	short invincibility_material_type;
+	short : 16;
+	real shield_recharge_rate; // while active, shields recharge at this fraction per second
+	real shield_max_recharge_level; // highest level shield can recharge to (can be up to 4)
+	s_tag_reference override_collision_damage;
+	s_tag_reference ai_melee_reflect_damage;
+	s_tag_reference player_melee_reflect_damage;
+	string_id loop_invincibility_shield_name; // active while the equipment is in use (used for shield rendering effects)
+	string_id post_invincibility_shield_name; // active once the equipment is no longer in use
+	s_tag_function post_invincibility_time_to_shield_level_function;
+	real maximum_vertical_velocity; // we use this to specify the domain of the active vertical velocity funtion
+	s_tag_function active_vertical_velocity_damping;
+	c_tag_block<s_equipment_effect_with_threshold> threshold_effects;
+};
+static_assert(sizeof(s_equipment_ability_type_invincibility) == 0x80);
+
+enum e_equipment_tree_of_life_flags
+{
+	_equipment_tree_of_life_unstuns_shields_bit,
+	_equipment_tree_of_life_unstuns_body_bit,
+	k_number_of_equipment_tree_of_life_flags
+};
+
+struct s_equipment_ability_type_tree_of_life
+{
+	c_flags<e_equipment_tree_of_life_flags, ulong> flags;
+	string_id origin_marker;
+	real radius;
+};
+static_assert(sizeof(s_equipment_ability_type_tree_of_life) == 0xC);
+
+struct s_equipment_ability_type_shapeshifter
+{
+	string_id region_name;
+	string_id inactive_permutation_name;
+	string_id active_permutation_name;
+};
+static_assert(sizeof(s_equipment_ability_type_shapeshifter) == 0xC);
+
+struct s_equipment_ability_type_player_trait_field
+{
+	real radius; // unused
+	c_tag_block<s_game_engine_player_traits> active_player_traits;
+	c_tag_block<s_game_engine_player_traits> inactive_player_traits;
+};
+static_assert(sizeof(s_equipment_ability_type_player_trait_field) == 0x1C);
+
+struct s_equipment_ability_type_ai_trait_field
+{
+	c_tag_block<s_ai_equipment_traits> active_ai_equipment_traits;
+	c_tag_block<s_ai_equipment_traits> inactive_ai_equipment_traits;
+};
+static_assert(sizeof(s_equipment_ability_type_ai_trait_field) == 0x18);
+
+enum e_equipment_repulsor_field_flags
+{
+	_equipment_repulsor_field_affects_projectiles_bit,
+	_equipment_repulsor_field_affects_vehicles_bit,
+	_equipment_repulsor_field_affects_bipeds_bit,
+	k_number_of_equipment_repulsor_field_flags
+};
+
+struct s_equipment_ability_type_repulsor_field
+{
+	c_flags<e_equipment_repulsor_field_flags, ulong> flags;
+	real radius;
+	real power;
+};
+static_assert(sizeof(s_equipment_ability_type_repulsor_field) == 0xC);
+
+enum e_equipment_stasis_field_flags
+{
+	_equipment_stasis_field_affects_projectiles_bit,
+	_equipment_stasis_field_affects_vehicles_bit,
+	_equipment_stasis_field_affects_bipeds_bit,
+	k_number_of_equipment_stasis_field_flags
+};
+
+struct s_equipment_ability_type_stasis_field
+{
+	c_flags<e_equipment_stasis_field_flags, ulong> flags;
+	real radius;
+	
+	/* ------ time dilation:
+		the effective rate at which time passes for objects in the field
+		values below 0.45 screw up jumping
+	*/
+
+	real time_dilation_player_characters;
+	real time_dilation_projectiles;
+	real time_dilation_vehicles;
+	real time_dilation_other;
+
+	real max_biped_turning_rate;
+
+	real gravity_multiplier; // negative values will invert gravity
+};
+static_assert(sizeof(s_equipment_ability_type_stasis_field) == 0x20);
+
 struct s_equipment_definition : s_item_definition
 {
 	/* ------ timers */
@@ -101,14 +262,34 @@ struct s_equipment_definition : s_item_definition
 	real_argb_color forced_primary_change_color; // sets the primary change color on the unit to this if the flag above is checked
 	real_argb_color forced_secondary_change_color; // sets the secondary change color on the unit to this if the flag above is checked
 
-	/* ------ AI:
-		settings which the AI use to know how they should react to this equipment
-	*/
+	/* ------ ai */
 
 	real danger_radius; // how large a danger zone we should create around this equipment (0 means no danger zone)
 	real min_deployment_distance; // how far does my target have to be for me to throw this at them
 	real awareness_time; // how long I should go unnoticed by nearby enemies
 	string_id ai_dialogue_equipment_type; // the equipment ability type name used by the ai dialog system used to filter equipment activation dialogue events
+	c_tag_block<s_unit_camera> override_camera;
 
+	/* ------ abilities */
+
+	c_tag_block<s_equipment_ability_type_multiplayer_powerup> multiplayer_powerup;
+	c_tag_block<s_equipment_ability_type_spawner> spawner;
+	c_tag_block<s_equipment_ability_type_proximity_mine> proximity_mine;
+	c_tag_block<s_equipment_ability_type_motion_tracker_noise> motion_tracker_noise;
+	s_tag_block unknown_ability_block; // TODO
+	c_tag_block<s_equipment_ability_type_invincibility> invincibility_mode;
+	c_tag_block<s_equipment_ability_type_tree_of_life> tree_of_life;
+	c_tag_block<s_equipment_ability_type_shapeshifter> shapeshifter;
+	c_tag_block<s_equipment_ability_type_player_trait_field> player_trait_field;
+	c_tag_block<s_equipment_ability_type_ai_trait_field> ai_trait_field;
+	c_tag_block<s_equipment_ability_type_repulsor_field> repulsor_field;
+	c_tag_block<s_equipment_ability_type_stasis_field> stasis_field;
+	s_tag_block iwhbydaddy; // TODO
+	s_tag_block super_jump; // TODO
+	s_tag_block ammo_pack; // TODO
+	s_tag_block power_fist; // TODO
+
+	//
 	// TODO: finish
+	//
 };

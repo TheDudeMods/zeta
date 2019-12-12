@@ -29,5 +29,5 @@ enum e_string_id_set
 
 /* ---------- globals */
 
-extern long const k_string_id_set_offsets[
+extern long const k_string_id_set_string_counts[
 	k_number_of_string_id_sets];

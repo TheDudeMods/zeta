@@ -170,7 +170,7 @@ bool edit_tag_execute(
 		return true;
 	}
 
-	auto group_definition = tag_group_definition_get(group->group_tags[0]);
+	auto group_definition = tag_group_get(group->group_tags[0]);
 	if (!group_definition)
 	{
 		char tag_string[5];
