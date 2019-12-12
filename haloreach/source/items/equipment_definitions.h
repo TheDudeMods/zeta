@@ -10,6 +10,7 @@
 #include <ai/ai_traits.h>
 #include <game/game_engine_player_traits.h>
 #include <game/game_powerups.h>
+#include <objects/damage_new.h>
 
 /* ---------- constants */
 
@@ -124,6 +125,11 @@ struct s_equipment_ability_type_motion_tracker_noise
 };
 static_assert(sizeof(s_equipment_ability_type_motion_tracker_noise) == 0x10);
 
+struct s_equipment_ability_type_unknown
+{
+	// TODO
+};
+
 struct s_equipment_effect_with_threshold
 {
 	real threshold_energy_burned; // how much energy you have to burn to play this effect
@@ -234,6 +240,61 @@ struct s_equipment_ability_type_stasis_field
 };
 static_assert(sizeof(s_equipment_ability_type_stasis_field) == 0x20);
 
+struct s_equipment_ability_type_daddy
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_super_jump
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_ammo_pack
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_power_first
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_health_pack
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_jet_pack
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_hologram
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_special_weapon
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_special_move
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_engineer_shields
+{
+	// TODO
+};
+
+struct s_equipment_ability_type_sprint
+{
+	// TODO
+};
+
 struct s_equipment_definition : s_item_definition
 {
 	/* ------ timers */
@@ -266,8 +327,9 @@ struct s_equipment_definition : s_item_definition
 
 	real danger_radius; // how large a danger zone we should create around this equipment (0 means no danger zone)
 	real min_deployment_distance; // how far does my target have to be for me to throw this at them
-	real awareness_time; // how long I should go unnoticed by nearby enemies
+	real awareness_time; // how long before nearby enemies become aware of the player
 	string_id ai_dialogue_equipment_type; // the equipment ability type name used by the ai dialog system used to filter equipment activation dialogue events
+
 	c_tag_block<s_unit_camera> override_camera;
 
 	/* ------ abilities */
@@ -276,7 +338,7 @@ struct s_equipment_definition : s_item_definition
 	c_tag_block<s_equipment_ability_type_spawner> spawner;
 	c_tag_block<s_equipment_ability_type_proximity_mine> proximity_mine;
 	c_tag_block<s_equipment_ability_type_motion_tracker_noise> motion_tracker_noise;
-	s_tag_block unknown_ability_block; // TODO
+	c_tag_block<s_equipment_ability_type_unknown> unknown_ability; // TODO
 	c_tag_block<s_equipment_ability_type_invincibility> invincibility_mode;
 	c_tag_block<s_equipment_ability_type_tree_of_life> tree_of_life;
 	c_tag_block<s_equipment_ability_type_shapeshifter> shapeshifter;
@@ -284,12 +346,35 @@ struct s_equipment_definition : s_item_definition
 	c_tag_block<s_equipment_ability_type_ai_trait_field> ai_trait_field;
 	c_tag_block<s_equipment_ability_type_repulsor_field> repulsor_field;
 	c_tag_block<s_equipment_ability_type_stasis_field> stasis_field;
-	s_tag_block iwhbydaddy; // TODO
-	s_tag_block super_jump; // TODO
-	s_tag_block ammo_pack; // TODO
-	s_tag_block power_fist; // TODO
+	c_tag_block<s_equipment_ability_type_daddy> daddy;
+	c_tag_block<s_equipment_ability_type_super_jump> super_jump;
+	c_tag_block<s_equipment_ability_type_ammo_pack> ammo_pack;
+	c_tag_block<s_equipment_ability_type_power_first> power_fist;
+	c_tag_block<s_equipment_ability_type_health_pack> health_pack;
+	c_tag_block<s_equipment_ability_type_jet_pack> jet_pack;
+	c_tag_block<s_equipment_ability_type_hologram> hologram;
+	c_tag_block<s_equipment_ability_type_special_weapon> special_weapon;
+	c_tag_block<s_equipment_ability_type_special_move> special_move;
+	c_tag_block<s_equipment_ability_type_engineer_shields> engineer_shields;
+	c_tag_block<s_equipment_ability_type_sprint> sprint;
 
-	//
-	// TODO: finish
-	//
+	c_enum<e_damage_reporting_type, char> damage_reporting_type;
+	char : 8;
+	char : 8;
+	char : 8;
+
+	s_tag_reference hud_interface;
+	s_tag_reference pickup_sound;
+	s_tag_reference empty_sound;
+	
+	s_tag_reference activation_effect;
+	s_tag_reference active_effect;
+	s_tag_reference looping_effect;
+	s_tag_reference deactivate_effect;
+
+	string_id activation_animation;
+	string_id active_animation;
+	string_id deactivate_animation;
+	string_id active_animation_stance;
 };
+static_assert(sizeof(s_equipment_definition) == sizeof(s_item_definition) + 0x220);

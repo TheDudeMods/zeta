@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <items/equipment_definitions.h>
+
 /* ---------- prototypes */
 
 [[nodiscard]]
@@ -14,6 +16,8 @@ c_cache_file_reach *cache_file_load();
 
 int main()
 {
+	printf("%zX\n", sizeof(s_equipment_definition) - sizeof(s_item_definition));
+
 	puts("Zeta v0.0.1");
 
 	auto file = cache_file_load();
