@@ -94,6 +94,14 @@ enum e_cache_file_section
 	k_number_of_cache_file_sections
 };
 
+enum e_cache_file_content_hash
+{
+	_cache_file_content_hash_tags_internal,
+	_cache_file_content_hash_tags_language_dependent,
+	_cache_file_content_hash_tags_language_neutral,
+	k_number_of_cache_file_content_hashes
+};
+
 struct s_cache_file_header
 {
 	tag header_signature;

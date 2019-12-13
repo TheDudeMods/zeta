@@ -240,8 +240,31 @@ struct s_equipment_ability_type_stasis_field
 };
 static_assert(sizeof(s_equipment_ability_type_stasis_field) == 0x20);
 
+enum e_equipment_daddy_flags
+{
+	_equipment_daddy_inactive_unstowed_bit,
+	_equipment_daddy_inactive_stowed_bit,
+	_equipment_daddy_active_unstowed_bit,
+	_equipment_daddy_active_stowed_bit,
+	_equipment_daddy_warming_up_unstowed_bit,
+	_equipment_daddy_warming_up_stowed_bit,
+	_equipment_daddy_cooling_down_unstowed_bit,
+	_equipment_daddy_cooling_down_stowed_bit,
+	_equipment_daddy_shield_vitality_tied_to_energy_bit, // as energy goes down, the shield vitality will as well
+	_equipment_daddy_attach_to_marker_bit, // child object directly attached to parent
+	_equipment_daddy_drain_energy_when_child_destroyed_bit, // destruction of child object drains equipment of all energy
+	k_number_of_equipment_daddy_flags
+};
+
 struct s_equipment_ability_type_daddy
 {
+	s_tag_reference child_object;
+	c_enum<e_equipment_daddy_flags, ushort> flags;
+	short : 16;
+	real shield_damage_to_energy_scale; // scale factor for energy gain from shield damage to child. Damage is normalized, so if this value is -1.0 then the equipment will lose all its energy when its child's shield is depleted
+	real starting_warm_up_object_scale; // if &gt;0 (and warm up time is &gt;0), object size will scale up from this up to 1.0 over course of warm up time and down over cooldown time
+	real target_object_scale;  // if nonzero, object size will scale to this ratio after warmup time. default = 1.0
+
 	// TODO
 };
 

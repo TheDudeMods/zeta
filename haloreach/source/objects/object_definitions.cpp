@@ -407,6 +407,7 @@ TAG_GROUP(
 	{ _field_block, "jetwash", &jetwash_definition_block },
 	{ _field_block, "widgets", &object_widget_block },
 	{ _field_block, "change_colors", &object_change_color_block },
+	{ _field_block, "predicted_resources", &object_predicted_resource_block },
 	{ _field_block, "multiplayer_object", &multiplayer_object_definition_block },
 	{ _field_tag_reference, "simulation_interpolation", &object_simulation_interpolation_reference },
 	{ _field_block, "reviving_equipment", &object_reviving_equipment_block },
