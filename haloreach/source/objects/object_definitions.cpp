@@ -411,6 +411,5 @@ TAG_GROUP(
 	{ _field_block, "multiplayer_object", &multiplayer_object_definition_block },
 	{ _field_tag_reference, "simulation_interpolation", &object_simulation_interpolation_reference },
 	{ _field_block, "reviving_equipment", &object_reviving_equipment_block },
-	{ _field_block, "unknown_object_block", nullptr }, // TODO
 	{ _field_terminator }
 };
