@@ -37,12 +37,58 @@ TAG_BLOCK(
 	{ _field_terminator }
 };
 
+TAG_PAD(
+	_field_long_integer,
+	render_method_postprocess_useless_padding,
+	1);
+
 TAG_BLOCK(
 	render_method_postprocess_definition_block,
 	sizeof(s_render_method_postprocess_definition),
 	NONE)
 {
-	{ _field_explanation, "TODO: define render_method_postprocess_block" },
+	{ _field_tag_reference, "base_template", nullptr }, // TODO
+	{ _field_block, "shader_maps", nullptr }, // TODO
+	{ _field_block, "arguments", nullptr }, // TODO
+	{ _field_block, "unknown1", nullptr }, // TODO
+	{ _field_long_integer, "unknown2" },
+	{ _field_block, "unknown3", nullptr }, // TODO
+	{ _field_block, "unknown4", nullptr }, // TODO
+	{ _field_block, "unknown5", nullptr }, // TODO
+	{ _field_block, "functions", nullptr }, // TODO
+	{ _field_long_integer, "unknown6" },
+	{ _field_long_integer, "unknown7" },
+	{ _field_real, "unknown8" },
+	{ _field_short_integer, "unknown9" },
+	{ _field_short_integer, "unknown10" },
+	{ _field_short_integer, "unknown11" },
+	{ _field_short_integer, "unknown12" },
+	{ _field_short_integer, "unknown13" },
+	{ _field_short_integer, "unknown14" },
+	{ _field_short_integer, "unknown15" },
+	{ _field_short_integer, "unknown16" },
+	{ _field_short_integer, "unknown17" },
+	{ _field_short_integer, "unknown18" },
+	{ _field_short_integer, "unknown19" },
+	{ _field_short_integer, "unknown20" },
+	{ _field_short_integer, "unknown21" },
+	{ _field_short_integer, "unknown22" },
+	{ _field_short_integer, "unknown23" },
+	{ _field_short_integer, "unknown24" },
+	{ _field_short_integer, "unknown25" },
+	{ _field_short_integer, "unknown26" },
+	{ _field_short_integer, "unknown27" },
+	{ _field_short_integer, "unknown28" },
+	{ _field_short_integer, "unknown29" },
+	{ _field_short_integer, "unknown30" },
+	{ _field_short_integer, "unknown31" },
+	{ _field_short_integer, "unknown32" },
+	{ _field_short_integer, "unknown33" },
+	{ _field_short_integer, "unknown34" },
+	{ _field_short_integer, "unknown35" },
+	{ _field_short_integer, "unknown36" },
+	{ _field_long_integer, "resource_index" },
+	{ _field_pad, "", &render_method_postprocess_useless_padding },
 	{ _field_terminator }
 };
 

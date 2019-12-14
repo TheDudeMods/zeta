@@ -33,8 +33,50 @@ struct s_render_method_animated_parameter
 
 struct s_render_method_postprocess_definition
 {
-	// TODO
+	s_tag_reference base_template;
+	s_tag_block shader_maps; // TODO
+	s_tag_block arguments; // TODO
+	s_tag_block unknown1; // TODO
+	long unknown2;
+	s_tag_block unknown3; // TODO
+	s_tag_block unknown4; // TODO
+	s_tag_block unknown5; // TODO
+	s_tag_block functions; // TODO
+	long unknown6;
+	long unknown7;
+	real unknown8;
+	short unknown9;
+	short unknown10;
+	short unknown11;
+	short unknown12;
+	short unknown13;
+	short unknown14;
+	short unknown15;
+	short unknown16;
+	short unknown17;
+	short unknown18;
+	short unknown19;
+	short unknown20;
+	short unknown21;
+	short unknown22;
+	short unknown23;
+	short unknown24;
+	short unknown25;
+	short unknown26;
+	short unknown27;
+	short unknown28;
+	short unknown29;
+	short unknown30;
+	short unknown31;
+	short unknown32;
+	short unknown33;
+	short unknown34;
+	short unknown35;
+	short unknown36;
+	long resource_index;
+	long : 32;
 };
+static_assert(sizeof(s_render_method_postprocess_definition) == 0xB4);
 
 struct s_render_method_unknown
 {

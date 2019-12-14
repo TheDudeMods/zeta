@@ -404,8 +404,8 @@ struct s_bitmap_image
 	c_enum<e_bitmap_curve, char> curve;
 	char : 8;
 	char interleaved_texture_index;
-	long pixels_offset;
-	long pixels_count;
+	long pixel_data_offset;
+	long pixel_data_length;
 	long unknown1C;
 	char unknown20;
 	char unknown21;
