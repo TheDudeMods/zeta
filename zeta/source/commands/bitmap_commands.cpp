@@ -103,7 +103,7 @@ bool extract_bitmap_execute(
 
 	FILE *stream = fopen(arg_values[1], "wb+");
 	fwrite(&dds_header, sizeof(s_dds_header), 1, stream);
-	fwrite(bitmap_resource.get_data(), image->pixel_data_length, 1, stream);
+	fwrite((char *)bitmap_resource.get_data() + image->pixel_data_offset, image->pixel_data_length, 1, stream);
 	fclose(stream);
 
 	printf("Wrote \"%s\" successfully.\n", arg_values[1]);
