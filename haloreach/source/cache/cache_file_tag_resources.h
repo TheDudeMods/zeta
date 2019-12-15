@@ -102,7 +102,7 @@ struct s_cache_file_resource_page
 	long sha1_a[5];
 	long sha1_b[5];
 	long sha1_c[5];
-	short block_asset_count;
+	short section_count;
 	short unknown;
 };
 static_assert(sizeof(s_cache_file_resource_page) == 0x58);

@@ -40,6 +40,22 @@ public:
 	virtual s_command *get_command(char const *name);
 	virtual c_command_context *get_parent() const;
 	virtual c_cache_file_reach *get_file() const;
+
+	template <typename t_command_context>
+	t_command_context *get_context()
+	{
+		t_command_context *result = nullptr;
+
+		for (auto current = this;
+			current != nullptr;
+			current = current->m_parent)
+		{
+			result = dynamic_cast<t_command_context *>(current);
+			if (result) break;
+		}
+
+		return result;
+	}
 };
 
 /* ---------- globals/COMMANDS.CPP */

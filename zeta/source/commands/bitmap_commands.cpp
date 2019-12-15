@@ -23,8 +23,8 @@ static s_command g_bitmap_commands[k_number_of_bitmap_commands] =
 {
 	{
 		"extract_bitmap",
-		"extract_bitmap <image_index> <filename>",
-		"Extracts the bitmap image at the specified index to the provided filename.",
+		"extract_bitmap <image_index> <out_filename>",
+		"Extracts the bitmap image_definition at the specified index to the provided out_filename.",
 		false,
 		extract_bitmap_execute
 	}
@@ -68,42 +68,53 @@ bool extract_bitmap_execute(
 		return false;
 
 	auto image_index = strtoul(arg_values[0], nullptr, 0);
-	auto filename = arg_values[1];
+	auto out_filename = arg_values[1];
 
-	auto editing_context = dynamic_cast<c_bitmap_command_context *>(g_command_context);
-	auto file = editing_context->get_file();
+	auto bitmap_context = g_command_context->get_context<c_bitmap_command_context>();
+	auto cache_file = bitmap_context->get_file();
 
-	if (!editing_context)
+	if (!bitmap_context)
 	{
 		puts("ERROR: invalid command context!");
 		return true;
 	}
 
-	auto bitmap = editing_context->get_bitmap();
+	auto bitmap = bitmap_context->get_bitmap();
 
-	s_bitmap_image *image = nullptr;
-	if (!bitmap->images.try_get_element(file, image_index, &image) || !image)
+	if (!bitmap)
 	{
-		printf("ERROR: Invalid image index: %ul\n", image_index);
+		printf("ERROR: bitmap definition is null!");
 		return true;
 	}
 
-	s_bitmap_resource_info *resource_info = nullptr;
-	if (!bitmap->resources.try_get_element(file, image_index, &resource_info) || !resource_info)
+	auto image_definition = bitmap->images.get_element(cache_file, image_index);
+	auto image_resource_handle = bitmap->resources.get_element(cache_file, image_index);
+
+	if (!image_definition || !image_resource_handle)
 	{
-		printf("ERROR: Invalid image index: %ul\n", image_index);
+		printf("ERROR: Invalid image_definition index: %ul\n", image_index);
 		return true;
 	}
 
-	c_cache_file_reach_tag_resource<s_bitmap_texture_interop_resource> bitmap_resource(file, resource_info->resource_index);
-	auto image_resource = (s_bitmap_texture_resource *)bitmap_resource.get_data(bitmap_resource->bitmap.address);
+	auto bitmap_resource = c_cache_file_reach_tag_resource<s_bitmap_texture_interop_resource>(
+		cache_file, image_resource_handle->resource_index);
+
+	auto image_resource = bitmap_resource.get_data<s_bitmap_texture_resource>(
+		bitmap_resource->bitmap.address);
 
 	s_dds_header dds_header;
-	bitmap_image_initialize_dds_header(image, image_resource, &dds_header);
+	bitmap_image_initialize_dds_header(image_definition, image_resource, &dds_header);
 
 	FILE *stream = fopen(arg_values[1], "wb+");
+	
 	fwrite(&dds_header, sizeof(s_dds_header), 1, stream);
-	fwrite((char *)bitmap_resource.get_data() + image->pixel_data_offset, image->pixel_data_length, 1, stream);
+	
+	fwrite(
+		bitmap_resource.get_data<char>() + image_definition->pixel_data_offset,
+		bitmap_resource.get_data_length(), // <--- TODO: find better length
+		sizeof(char),
+		stream);
+
 	fclose(stream);
 
 	printf("Wrote \"%s\" successfully.\n", arg_values[1]);

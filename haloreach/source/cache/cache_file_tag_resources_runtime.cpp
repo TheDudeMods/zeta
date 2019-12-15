@@ -2,7 +2,10 @@
 #include <datatypes/data_array.h>
 #include <files/file_synchronous_io.h>
 #include <tag_files/tag_files.h>
+
 #include <zlib/zlib.h>
+
+#include <algorithm>
 
 /* ---------- code */
 
@@ -71,6 +74,11 @@ bool c_cache_file_reach::tag_resource_definition_try_and_get(
 	return true;
 }
 
+static int compare_page_offsets(const void *a, const void *b)
+{
+	return *(long *)a - *(long *)b;
+}
+
 bool c_cache_file_reach::tag_resource_try_and_get(
 	long resource_index,
 	long *out_length,
@@ -104,27 +112,20 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 	if (!resource->section)
 		return false;
 
-	s_cache_file_resource_section *segment = nullptr;
-	if (!resource->section.try_resolve(this, &layout_table->sections, &segment))
+	s_cache_file_resource_section *section = nullptr;
+	if (!resource->section.try_resolve(this, &layout_table->sections, &section))
 		return false;
 
-	if (!segment->primary_page || segment->primary_section_offset == NONE)
-		return false;
-
-	auto segment_offset = (segment->secondary_section_offset != NONE) ?
-		segment->secondary_section_offset :
-		segment->primary_section_offset;
-
-	if (segment_offset == NONE)
+	if (!section->primary_page || section->primary_section_offset == NONE)
 		return false;
 
 	s_cache_file_resource_page *primary_page = nullptr;
-	if (segment->primary_page.try_resolve(this, &layout_table->pages, &primary_page))
+	if (section->primary_page.try_resolve(this, &layout_table->pages, &primary_page))
 		if (primary_page->block_offset == NONE)
 			primary_page = nullptr;
 
 	s_cache_file_resource_page *secondary_page = nullptr;
-	if (segment->secondary_page.try_resolve(this, &layout_table->pages, &secondary_page))
+	if (section->secondary_page.try_resolve(this, &layout_table->pages, &secondary_page))
 		if (secondary_page->block_offset == NONE)
 			secondary_page = nullptr;
 
@@ -141,13 +142,78 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 	if (!page_data)
 		return false;
 
-	auto segment_length = page->uncompressed_block_size - segment_offset;
-	auto segment_data = new uchar[segment_length];
-	csmemcpy(segment_data, page_data + segment_offset, segment_length);
+	auto page_section_offset = (section->secondary_section_offset != NONE) ?
+		section->secondary_section_offset :
+		section->primary_section_offset;
 
+	if (page_section_offset == NONE)
+		return false;
+
+	auto page_section_count = page->section_count;
+	auto page_section_offsets = new long[page_section_count];
+	auto current_section_offset = (long *)page_section_offsets;
+
+	for (auto i = 0; i < layout_table->sections.count; i++)
+	{
+		s_cache_file_resource_section *current_section = nullptr;
+
+		if (!resource->section.try_resolve(this, &layout_table->sections, &current_section))
+			continue;
+
+		if (!current_section->primary_page || current_section->primary_section_offset == NONE)
+			continue;
+
+		s_cache_file_resource_page *current_primary_page = nullptr;
+
+		if (current_section->primary_page.try_resolve(this, &layout_table->pages, &current_primary_page))
+			if (primary_page->block_offset == NONE)
+				primary_page = nullptr;
+
+		s_cache_file_resource_page *current_secondary_page = nullptr;
+
+		if (current_section->secondary_page.try_resolve(this, &layout_table->pages, &current_secondary_page))
+			if (current_secondary_page->block_offset == NONE)
+				current_secondary_page = nullptr;
+
+		auto current_page = current_secondary_page ?
+			current_secondary_page :
+			current_primary_page;
+		
+		if (current_page != page || current_section_offset >= page_section_offsets + page_section_count)
+			break;
+
+		*current_section_offset = (current_section->secondary_section_offset != NONE) ?
+			current_section->secondary_section_offset :
+			current_section->primary_section_offset;
+
+		current_section_offset++;
+	}
+
+	std::sort(page_section_offsets, page_section_offsets + page_section_count);
+
+	auto page_segment_length = (long)NONE;
+
+	for (auto i = 0; i < page_section_count; i++)
+	{
+		if (page_section_offsets[i] == page_section_offset)
+		{
+			page_segment_length = (i == page_section_count - 1) ?
+				(page->uncompressed_block_size - page_section_offset) :
+				(page_section_offsets[i + 1] - page_section_offset);
+			break;
+		}
+	}
+
+	if (page_segment_length <= 0)
+		return false;
+
+	auto segment_data = new uchar[page_segment_length];
+	csmemcpy(segment_data, page_data + page_section_offset, page_segment_length);
+
+	delete[] page_section_offsets;
 	delete[] page_data;
 
-	if (out_length) *out_length = segment_length;
+	if (out_length) *out_length = page_segment_length;
 	if (out_address) *out_address = segment_data;
 
 	return true;

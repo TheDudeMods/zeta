@@ -75,7 +75,7 @@ public:
 	}
 
 	template <typename t_type>
-	t_type *get_data(ulong address)
+	t_type *get_data(ulong address = 0)
 	{
 		return (t_type *)get_data(address);
 	}
