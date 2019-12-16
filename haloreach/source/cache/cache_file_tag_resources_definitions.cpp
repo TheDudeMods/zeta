@@ -72,7 +72,7 @@ TAG_BLOCK(
 	{ _field_array, "sha1_a", &cache_file_resource_page_sha1_array },
 	{ _field_array, "sha1_b", &cache_file_resource_page_sha1_array },
 	{ _field_array, "sha1_c", &cache_file_resource_page_sha1_array },
-	{ _field_short_integer, "segment" },
+	{ _field_short_integer, "section_count" },
 	{ _field_short_integer, "unknown" },
 	{ _field_terminator }
 };

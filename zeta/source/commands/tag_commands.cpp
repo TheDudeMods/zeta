@@ -1,9 +1,12 @@
+
 #include <bitmaps/bitmaps.h>
 #include <tag_files/tag_files.h>
 #include <cache/cache_file_tag_resources.h>
+#include <render_methods/render_method_definitions.h>
 #include <commands/bitmap_commands.h>
 #include <commands/editing_commands.h>
 #include <commands/rasterizer_shader_commands.h>
+#include <commands/render_method_commands.h>
 #include <commands/render_model_commands.h>
 #include <commands/tag_commands.h>
 
@@ -193,6 +196,17 @@ bool edit_tag_execute(
 		file->get_string(group->name));
 
 	auto tag_definition = file->get_tag_definition<void>(reference.index & k_uint16_max);
+
+	if (group->is_in_group(k_render_method_group_tag))
+	{
+		g_command_context = new c_render_method_command_context(
+			tag_name_string.get_buffer(),
+			(c_render_method *)tag_definition,
+			file,
+			g_command_context);
+
+		return true;
+	}
 
 	switch (group->group_tags[0])
 	{

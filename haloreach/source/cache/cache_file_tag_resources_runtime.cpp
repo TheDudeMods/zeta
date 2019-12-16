@@ -197,9 +197,13 @@ bool c_cache_file_reach::tag_resource_try_and_get(
 	{
 		if (page_section_offsets[i] == page_section_offset)
 		{
-			page_segment_length = (i == page_section_count - 1) ?
+			while (page_section_offsets[i] == page_section_offset)
+				i++;
+
+			page_segment_length = (i >= page_section_count) ?
 				(page->uncompressed_block_size - page_section_offset) :
-				(page_section_offsets[i + 1] - page_section_offset);
+				(page_section_offsets[i] - page_section_offset);
+
 			break;
 		}
 	}
