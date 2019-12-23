@@ -13,7 +13,7 @@ enum
 	k_maximum_number_of_multiplayer_object_definitions = 1
 };
 
-/* ---------- enumerators */
+/* ---------- types */
 
 enum e_multiplayer_object_type
 {
@@ -58,23 +58,6 @@ enum e_multiplayer_object_teleporter_flags
 	k_number_of_multiplayer_object_teleporter_flags
 };
 
-enum e_multiplayer_object_flags
-{
-	_multiplayer_object_only_render_in_editor_bit,
-	_multiplayer_object_phased_physics_in_forge_bit,
-	_multiplayer_object_valid_initial_player_spawn_bit,
-	_multiplayer_object_fixed_boundary_orientation_bit,
-	_multiplayer_object_candy_monitor_should_ignore_bit,
-	_multiplayer_object_inherit_owning_team_color_bit,
-	_multiplayer_object_boundary_volume_doesnt_kill_immediately_bit,
-	_multiplayer_object_only_collision_in_editor_bit,
-	_multiplayer_object_only_physics_in_editor_bit,
-	_multiplayer_object_force_render_in_forge_bit,
-	_multiplayer_object_respawn_player_spawn_bit,
-	_multiplayer_object_fallback_player_spawn_bit,
-	k_number_of_multiplayer_object_flags
-};
-
 enum e_multiplayer_object_boundary_shape
 {
 	_multiplayer_object_boundary_shape_none,
@@ -91,7 +74,22 @@ enum e_multiplayer_object_spawn_timer_type
 	k_number_of_multiplayer_object_spawn_timer_types
 };
 
-/* ---------- structures */
+enum e_multiplayer_object_flags
+{
+	_multiplayer_object_only_render_in_editor_bit,
+	_multiplayer_object_phased_physics_in_forge_bit,
+	_multiplayer_object_valid_initial_player_spawn_bit,
+	_multiplayer_object_fixed_boundary_orientation_bit,
+	_multiplayer_object_candy_monitor_should_ignore_bit,
+	_multiplayer_object_inherit_owning_team_color_bit,
+	_multiplayer_object_boundary_volume_doesnt_kill_immediately_bit,
+	_multiplayer_object_only_collision_in_editor_bit,
+	_multiplayer_object_only_physics_in_editor_bit,
+	_multiplayer_object_force_render_in_forge_bit,
+	_multiplayer_object_respawn_player_spawn_bit,
+	_multiplayer_object_fallback_player_spawn_bit,
+	k_number_of_multiplayer_object_flags
+};
 
 struct s_multiplayer_object_boundary_shader_definition
 {
@@ -119,6 +117,7 @@ struct s_multiplayer_object_definition
 	string_id spawned_object_marker_name;
 	s_tag_reference spawned_object;
 	string_id nyi_boundary_material;
-	s_multiplayer_object_boundary_shader_definition boundary_shaders[k_number_of_multiplayer_object_boundary_shapes];
+	s_multiplayer_object_boundary_shader_definition boundary_shaders[
+		k_number_of_multiplayer_object_boundary_shapes];
 };
 static_assert(sizeof(s_multiplayer_object_definition) == 0xBC);

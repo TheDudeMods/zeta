@@ -173,7 +173,9 @@ long bitmap_image_get_resource_length(
 	auto virtual_width = bitmap_image_get_virtual_width(image);
 	auto virtual_height = bitmap_image_get_virtual_height(image);
 
-	switch (image->format.operator e_bitmap_format())
+	auto format = image->format.operator e_bitmap_format();
+
+	switch (format)
 	{
 	case _bitmap_format_ctx1:
 	case _bitmap_format_dxt1:

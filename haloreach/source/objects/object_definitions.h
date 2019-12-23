@@ -107,30 +107,6 @@ enum e_object_runtime_flags
 	k_number_of_object_runtime_flags
 };
 
-enum e_object_attachment_change_color
-{
-	_object_attachment_change_color_none,
-	_object_attachment_change_color_primary,
-	_object_attachment_change_color_secondary,
-	_object_attachment_change_color_tertiary,
-	_object_attachment_change_color_quaternary,
-	k_number_of_object_attachment_change_colors
-};
-
-enum e_object_attachment_flags
-{
-	_object_attachment_force_always_on_bit,
-	_object_attachment_effect_size_scale_from_object_scale_bit,
-	k_number_of_object_attachment_flags
-};
-
-enum e_object_change_color_function_flags
-{
-	_object_change_color_function_blend_in_hsv_bit,
-	_object_change_color_function_more_colors_bit,
-	k_number_of_object_change_color_function_flags
-};
-
 /* ---------- structures */
 
 struct s_object_early_mover_obb
@@ -243,6 +219,23 @@ struct s_object_function
 };
 static_assert(sizeof(s_object_function) == 0x40);
 
+enum e_object_attachment_change_color
+{
+	_object_attachment_change_color_none,
+	_object_attachment_change_color_primary,
+	_object_attachment_change_color_secondary,
+	_object_attachment_change_color_tertiary,
+	_object_attachment_change_color_quaternary,
+	k_number_of_object_attachment_change_colors
+};
+
+enum e_object_attachment_flags
+{
+	_object_attachment_force_always_on_bit,
+	_object_attachment_effect_size_scale_from_object_scale_bit,
+	k_number_of_object_attachment_flags
+};
+
 struct s_object_attachment
 {
 	s_tag_reference type;
@@ -268,6 +261,13 @@ struct s_object_change_color_initial_permutation
 	string_id variant_name;
 };
 static_assert(sizeof(s_object_change_color_initial_permutation) == 0x20);
+
+enum e_object_change_color_function_flags
+{
+	_object_change_color_function_blend_in_hsv_bit,
+	_object_change_color_function_more_colors_bit,
+	k_number_of_object_change_color_function_flags
+};
 
 struct s_object_change_color_function
 {
