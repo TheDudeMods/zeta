@@ -17,23 +17,23 @@ public:
 	{
 	}
 
-	c_basic_buffer(t_element *elements, long size) :
+	c_basic_buffer(t_element *elements, long long size) :
 		m_elements(elements),
 		m_size(size)
 	{
 	}
 
-	t_element *get_elements()
-	{
-		return m_elements;
-	}
-
-	long long get_size()
+	long long get_size() const
 	{
 		return m_size;
 	}
 
 	t_element const *get_elements() const
+	{
+		return m_elements;
+	}
+
+	t_element *get_elements()
 	{
 		return m_elements;
 	}

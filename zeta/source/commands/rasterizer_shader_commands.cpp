@@ -6,35 +6,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-/* ---------- constants */
-
-enum
-{
-	k_number_of_rasterizer_shader_commands = 1,
-	k_number_of_rasterizer_shader_command_sets = 2
-};
-
-/* ---------- globals */
-
 extern s_tag_group pixel_shader_group;
 extern s_tag_group vertex_shader_group;
-
-static s_command g_bitmap_commands[k_number_of_rasterizer_shader_commands] =
-{
-	{
-		"extract_shader_files",
-		"extract_shader_files <compiled_shader_index> <filename>",
-		"Extracts the compiled shaders at the specified index to the provided filename.",
-		false,
-		extract_shader_files_execute
-	}
-};
-
-static s_command_set g_bitmap_command_sets[k_number_of_rasterizer_shader_command_sets] =
-{
-	{ k_number_of_editing_commands, g_editing_commands },
-	{ k_number_of_rasterizer_shader_commands, g_bitmap_commands }
-};
 
 /* ---------- code */
 
@@ -52,8 +25,8 @@ c_rasterizer_shader_command_context::c_rasterizer_shader_command_context(
 		parent),
 	m_rasterizer_shader(rasterizer_shader)
 {
-	m_command_set_count = k_number_of_rasterizer_shader_command_sets;
-	m_command_sets = g_bitmap_command_sets;
+	m_command_set_count = NUMBEROF(k_rasterizer_shader_command_sets);
+	m_command_sets = k_rasterizer_shader_command_sets;
 }
 
 c_rasterizer_shader *c_rasterizer_shader_command_context::get_rasterizer_shader()

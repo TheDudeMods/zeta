@@ -5,34 +5,7 @@
 
 #include <cstdio>
 
-/* ---------- constants */
-
-enum
-{
-	k_number_of_render_method_commands = 1,
-	k_number_of_render_method_command_sets = 2
-};
-
-/* ---------- globals */
-
 extern s_tag_group render_method_group;
-
-static s_command g_render_method_commands[k_number_of_render_method_commands] =
-{
-	{
-		"extract_render_method_constants",
-		"extract_render_method_constants [out_filename]",
-		"Extracts the render_method constants to the provided out_filename (if provided).",
-		false,
-		extract_render_method_constants_execute
-	}
-};
-
-static s_command_set g_render_method_command_sets[k_number_of_render_method_command_sets] =
-{
-	{ k_number_of_editing_commands, g_editing_commands },
-	{ k_number_of_render_method_commands, g_render_method_commands }
-};
 
 /* ---------- code */
 
@@ -51,8 +24,8 @@ c_render_method_command_context::c_render_method_command_context(
 		parent),
 	m_render_method(render_method)
 {
-	m_command_set_count = k_number_of_render_method_command_sets;
-	m_command_sets = g_render_method_command_sets;
+	m_command_set_count = NUMBEROF(k_render_method_command_sets);
+	m_command_sets = k_render_method_command_sets;
 }
 
 c_render_method *c_render_method_command_context::get_render_method()

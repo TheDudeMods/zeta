@@ -1,220 +1,124 @@
 #pragma once
 
 #include <cseries/cseries.h>
+#include <datatypes/enum.h>
+#include <datatypes/flags.h>
+#include <datatypes/static_bitarray.h>
 #include <math/real_math.h>
 #include <tag_files/tag_groups.h>
 #include <geometry/geometry_definitions.h>
-#include <objects/object_types.h>
 
-/* ---------- structures */
+/* ---------- constants */
 
-struct s_scenario_structure_bsp
+enum
 {
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	short : 16;
-	short : 16;
-	short : 16;
-	short : 16;
-	s_tag_block structure_seams;
-	long : 32;
-	long : 32;
-	long : 32;
-	s_tag_block collision_materials;
-	s_tag_block unknown64;
-	s_tag_block unknown70;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	real_bounds world_x_bounds;
-	real_bounds world_y_bounds;
-	real_bounds world_z_bounds;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	s_tag_block cluster_portals;
-	s_tag_block detail_objects;
-	s_tag_block clusters;
-	s_tag_block materials;
-	s_tag_block sky_owner_cluster;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	s_tag_block background_sound_environment_palette;
-	s_tag_data unknown1A0;
-	s_tag_block markers;
-	long : 32;
-	long : 32;
-	long : 32;
-	s_tag_block unknown1CC;
-	s_tag_block runtime_decals;
-	s_tag_block environment_object_palette;
-	s_tag_block environment_objects;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	s_tag_block instanced_geometry_groups;
-	s_tag_block instanced_geometry_subgroups;
-	long : 32;
-	long : 32;
-	long : 32;
-	s_tag_block instanced_geometry_instances;
-	s_tag_reference instanced_geometry_imposters;
-	s_tag_block decorators;
-	s_render_geometry geometry1;
-	s_tag_block decals;
-	s_tag_block decal_properties;
-	s_render_geometry geometry2;
-	s_tag_block unknown_sound_clusters_a;
-	s_tag_block transparent_planes;
-	long : 32;
-	long : 32;
-	long : 32;
-	s_tag_block collision_mopp_codes;
-	long : 32;
-	real_bounds collision_x_bounds;
-	real_bounds collision_y_bounds;
-	real_bounds collision_z_bounds;
-	s_tag_block breakable_surface_mopp_codes;
-	s_tag_block breakable_surface_key_table;
-	long : 32;
-	long : 32;
-	long : 32;
-	s_render_geometry geometry3;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long : 32;
-	long collision_resource_index;
-	long : 32;
-	long pathfinding_resource_index;
-	long : 32;
-	long : 32;
+	k_structure_bsp_group_tag = 'sbsp',
+	k_structure_design_group_tag = 'sddt',
 };
-static_assert(sizeof(s_scenario_structure_bsp) == 0x544);
 
-struct s_structure_bsp_pathfinding_object_ref_bsp2d_ref_resource
-{
-	long node_or_sector_ref;
-};
-static_assert(sizeof(s_structure_bsp_pathfinding_object_ref_bsp2d_ref_resource) == 0x4);
+/* ---------- types */
 
-struct s_structure_bsp_pathfinding_object_ref_bsp_resource
+struct s_structure_design_build_identifier
 {
-	long bsp_index;
-	short node_index;
-	short unused;
-	c_tag_block<s_structure_bsp_pathfinding_object_ref_bsp2d_ref_resource> bsp2d_refs;
-	long vertex_offset;
+	long manifest_id[4];
+	long build_index;
+	long structure_importer_version;
 };
-static_assert(sizeof(s_structure_bsp_pathfinding_object_ref_bsp_resource) == 0x18);
+static_assert(sizeof(s_structure_design_build_identifier) == 0x18);
 
-struct s_structure_bsp_pathfinding_object_ref_resource
+struct s_structure_design_physics_definition
 {
-	ushort flags;
-	short unused;
-	c_tag_block<s_structure_bsp_pathfinding_object_ref_bsp_resource> bsps;
-	long object_unique_id;
-	short origin_bsp_index;
-	c_enum<e_object_type, char> object_type;
-	char source;
+	long importer_version;
+	s_tag_block soft_ceiling_mopp_code; // TODO
+	s_tag_block soft_ceilings;			// TODO
+	s_tag_block water_mopp_code;		// TODO
+	s_tag_block water_groups;			// TODO
+	s_tag_block water_instances;		// TODO
 };
-static_assert(sizeof(s_structure_bsp_pathfinding_object_ref_resource) == 0x18);
+static_assert(sizeof(s_structure_design_physics_definition) == 0x40);
 
-struct s_structure_bsp_pathfinding_tag_resources
+struct s_structure_design_planar_fog_set
 {
-	s_tag_block sectors;
-	s_tag_block links;
-	s_tag_block references;
-	s_tag_block bsp2d_nodes;
-	s_tag_block vertices;
-	s_tag_block object_refs;
-	s_tag_block pathfinding_hints;
-	s_tag_block instanced_geometry_references;
-	long structure_checksum;
-	s_tag_block giant_pathfinding;
-	s_tag_block seams;
-	s_tag_block jump_seams;
-	s_tag_block doors;
+	s_tag_block planar_fogs; // TODO
+	s_tag_block mopp_code; // TODO
 };
-static_assert(sizeof(s_structure_bsp_pathfinding_tag_resources) == 0x94);
+static_assert(sizeof(s_structure_design_planar_fog_set) == 0x18);
 
-struct s_structure_bsp_cache_file_tag_resources
+struct s_structure_bsp_instanced_geometry_definition
 {
-	s_tag_block surface_planes;
-	s_tag_block planes;
-	s_tag_block edge_to_seams;
-	c_tag_block<s_structure_bsp_pathfinding_tag_resources> pathfinding_data;
+	long unknown0[80];
+	c_tag_block_index<s_mesh, short> mesh;
+	c_tag_block_index<s_mesh_compression_resource, short> compression;
 };
-static_assert(sizeof(s_structure_bsp_cache_file_tag_resources) == 0x30);
+static_assert(sizeof(s_structure_bsp_instanced_geometry_definition) == 0x144);
+
+enum e_structure_bsp_instance_geometry_instance_flags
+{
+	_instanced_geometry_instance_contains_split_lighting_parts_bit,
+	_instanced_geometry_instance_render_only_bit,
+	_instanced_geometry_instance_does_not_block_aoe_damage_bit,
+	_instanced_geometry_instance_collidable_bit,
+	_instanced_geometry_instance_contains_decal_parts_bit,
+	_instanced_geometry_instance_contains_water_parts_bit,
+	_instanced_geometry_instance_negative_scale_bit,
+	_instanced_geometry_instance_outside_map_bit,
+	_instanced_geometry_instance_seam_colliding_bit,
+	_instanced_geometry_instance_contains_deferred_reflections_bit,
+	_instanced_geometry_instance_remove_from_shadow_geometry_bit,
+	_instanced_geometry_instance_cinema_only_bit,
+	_instanced_geometry_instance_exclude_from_cinema_bit,
+	_instanced_geometry_instance_disable_fx_bit,
+	_instanced_geometry_instance_disable_play_collision_bit,
+	_instanced_geometry_instance_disable_bullet_collision_bit,
+	k_number_of_structure_bsp_instance_geometry_instance_flags
+};
+
+struct s_structure_bsp_instanced_geometry_instance
+{
+	real_matrix4x3 matrix;
+	c_tag_block_index<s_structure_bsp_instanced_geometry_definition, short> instance_definition;
+	c_flags<e_structure_bsp_instance_geometry_instance_flags, ushort> flags;
+	c_tag_block_index<s_mesh, short> mesh;
+	c_tag_block_index<s_mesh_compression_resource, short> compression;
+	long seam_bitvector[4];
+	real_bounds x_bounds;
+	real_bounds y_bounds;
+	real_bounds z_bounds;
+	real_point3d world_bounding_sphere_center;
+	real world_bounding_sphere_radius;
+	real unknown1;
+	real unknown2;
+	char unknown3;
+	char unknown4;
+	char unknown5;
+	char unknown6;
+	real unknown7;
+	real unknown8;
+	real unknown9;
+	real unknown10;
+	real unknown11;
+	real unknown12;
+	real unknown13;
+	string_id name;
+};
+static_assert(sizeof(s_structure_bsp_instanced_geometry_instance) == 0xA0);
+
+struct s_structure_design_definition
+{
+	s_structure_design_build_identifier build_identifier;
+	s_structure_design_build_identifier parent_build_identifier;
+	s_structure_design_physics_definition physics;
+	s_structure_design_planar_fog_set planar_fog_set;
+
+	/* ------ rain */
+
+	s_render_geometry render_geometry;
+	c_tag_block<s_structure_bsp_instanced_geometry_definition> instanced_geometry_definitions;
+	c_tag_block<s_structure_bsp_instanced_geometry_instance> instanced_geometry_instances;
+	c_tag_block<s_geometry_material> materials;
+
+	long unknown1;
+	long unknown2;
+	long unknown3;
+};
+static_assert(sizeof(s_structure_design_definition) == 0x160);

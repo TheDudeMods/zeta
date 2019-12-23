@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cseries/cseries.h>
-#include <bitmaps/bitmaps.h>
+#include <datatypes/flags.h>
+#include <datatypes/tag.h>
 
 /* ---------- enumerators */
 

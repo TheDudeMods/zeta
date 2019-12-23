@@ -347,11 +347,11 @@ struct s_water_bounding_box
 };
 static_assert(sizeof(s_water_bounding_box) == 0x1C);
 
-struct s_mesh_resource_group
+struct s_mesh_compression_resource
 {
-	ulong address;
+	c_tag_resource_structure<void> polyart_asset;
 };
-static_assert(sizeof(s_mesh_resource_group) == 0x4);
+static_assert(sizeof(s_mesh_compression_resource) == 0xC);
 
 struct s_render_geometry
 {
@@ -370,7 +370,7 @@ struct s_render_geometry
 	c_tag_block<s_water_bounding_box> water_bounding_box;
 	long resource_index;
 	long : 32;
-	c_tag_block<s_mesh_resource_group> mesh_resource_groups;
+	c_tag_block<s_mesh_compression_resource> mesh_resource_groups;
 };
 static_assert(sizeof(s_render_geometry) == 0xA8);
 

@@ -22,7 +22,6 @@
     <ClCompile Include="source\ai\ai.cpp" />
     <ClCompile Include="source\bitmaps\bitmaps.cpp" />
     <ClCompile Include="source\bitmaps\bitmap_definitions.cpp" />
-    <ClCompile Include="source\bitmaps\dds.cpp" />
     <ClCompile Include="source\cache\cache_files.cpp" />
     <ClCompile Include="source\cache\cache_file_tag_resources_runtime.cpp" />
     <ClCompile Include="source\cache\cache_file_tag_resources_definitions.cpp" />
@@ -58,6 +57,7 @@
     <ClCompile Include="source\render_methods\render_method_definitions.cpp" />
     <ClCompile Include="source\scenario\scenario.cpp" />
     <ClCompile Include="source\simulation\game_interface\simulation_game_position_updates.cpp" />
+    <ClCompile Include="source\structures\structure_bsp_definitions.cpp" />
     <ClCompile Include="source\tag_files\string_ids.cpp" />
     <ClCompile Include="source\tag_files\tag_definitions.cpp" />
     <ClCompile Include="source\tag_files\tag_files.cpp" />
@@ -71,7 +71,6 @@
     <ClInclude Include="source\animations\animation_definitions.h" />
     <ClInclude Include="source\bitmaps\bitmaps.h" />
     <ClInclude Include="source\bitmaps\bitmap_definitions.h" />
-    <ClInclude Include="source\bitmaps\dds.h" />
     <ClInclude Include="source\cache\cache_files.h" />
     <ClInclude Include="source\cache\cache_file_tag_resources.h" />
     <ClInclude Include="source\camera\camera_track.h" />

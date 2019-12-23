@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\bitmaps\dds.cpp" />
     <ClCompile Include="source\cache\cache_files_base.cpp" />
     <ClCompile Include="source\cseries\cseries_asserts.cpp" />
     <ClCompile Include="source\cseries\cseries_memory.cpp" />
@@ -61,6 +62,7 @@
     <ClCompile Include="source\zlib\zutil.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\bitmaps\dds.h" />
     <ClInclude Include="source\cache\cache_files_base.h" />
     <ClInclude Include="source\cseries\cseries.h" />
     <ClInclude Include="source\cseries\cseries_asserts.h" />

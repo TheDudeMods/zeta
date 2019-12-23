@@ -9,45 +9,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-/* ---------- constants */
-
-enum
-{
-	k_number_of_editing_command_sets = 1
-};
-
-/* ---------- globals */
-
-s_command g_editing_commands[k_number_of_editing_commands] =
-{
-	{
-		"list_fields",
-		"list_fields [filter]",
-		"Lists all fields in the current structure whose names match the specified filter (if any).",
-		true,
-		list_fields_execute
-	},
-	{
-		"set_field",
-		"set_field <field_name> <field_value>",
-		"Sets the value of field_name in the current structure to field_value.",
-		true,
-		set_field_execute
-	},
-	{
-		"edit_block",
-		"edit_block <field_name> [element_index]",
-		"Opens the specified block/structure for editing.",
-		true,
-		edit_block_execute
-	}
-};
-
-static s_command_set g_editing_command_sets[k_number_of_editing_command_sets] =
-{
-	{ k_number_of_editing_commands, g_editing_commands }
-};
-
 /* ---------- code */
 
 c_editing_command_context::c_editing_command_context(
@@ -58,8 +19,8 @@ c_editing_command_context::c_editing_command_context(
 	c_command_context *parent) :
 	c_command_context(
 		name,
-		k_number_of_editing_command_sets,
-		g_editing_command_sets,
+		NUMBEROF(k_editing_command_sets),
+		k_editing_command_sets,
 		file,
 		parent),
 	m_address(address),

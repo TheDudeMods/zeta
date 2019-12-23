@@ -435,7 +435,7 @@ TAG_PAD(
 
 TAG_BLOCK(
 	mesh_resource_group_block,
-	sizeof(s_mesh_resource_group),
+	sizeof(s_mesh_compression_resource),
 	NONE)
 {
 	{ _field_dword_integer, "address" },

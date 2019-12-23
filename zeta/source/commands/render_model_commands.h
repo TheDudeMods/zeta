@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cseries/cseries.h>
+#include <cache/cache_file_tag_resources.h>
+#include <models/render_model_definitions.h>
+#include <geometry/geometry_definitions.h>
 #include <commands/commands.h>
 #include <commands/editing_commands.h>
-#include <models/render_model_definitions.h>
 
 /* ---------- classes */
 
@@ -24,4 +26,37 @@ protected:
 
 /* ---------- prototypes/RENDER_MODEL_COMMANDS.CPP */
 
+long mesh_stream_to_obj_file(
+	c_cache_file_reach *file,
+	c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition> &geometry_resource,
+	s_render_geometry_api_vertex_buffer_reference *vertex_buffers,
+	s_render_geometry_api_index_buffer_reference *index_buffers,
+	long base_index,
+	s_compression_info *compression_info,
+	char const *mesh_name,
+	s_mesh *mesh,
+	FILE *obj_stream,
+	real_point3d offset = real_point3d());
+
 bool extract_render_model_execute(long arg_count, char const **arg_values);
+
+/* ---------- constants */
+
+extern __declspec(selectany)
+s_command const k_render_model_commands[] =
+{
+	{
+		"extract_render_model",
+		"extract_render_model <filename>",
+		"Extracts the current render_model to the provided filename.",
+		false,
+		extract_render_model_execute
+	}
+};
+
+extern __declspec(selectany)
+s_command_set const k_render_model_command_sets[] =
+{
+	{ NUMBEROF(k_editing_commands), k_editing_commands },
+	{ NUMBEROF(k_render_model_commands), k_render_model_commands }
+};

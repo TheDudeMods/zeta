@@ -1,4 +1,9 @@
 
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <cstdio>
+#include <cstdlib>
+
 #include <bitmaps/bitmaps.h>
 #include <tag_files/tag_files.h>
 #include <cache/cache_file_tag_resources.h>
@@ -8,72 +13,8 @@
 #include <commands/rasterizer_shader_commands.h>
 #include <commands/render_method_commands.h>
 #include <commands/render_model_commands.h>
+#include <commands/structure_design_commands.h>
 #include <commands/tag_commands.h>
-
-#define _CRT_SECURE_NO_WARNINGS
-
-#include <cstdio>
-#include <cstdlib>
-
-/* ---------- constants */
-
-enum
-{
-	k_number_of_tag_command_sets = 1
-};
-
-/* ---------- globals */
-
-s_command g_tag_commands[k_number_of_tag_commands] =
-{
-	{
-		"list_tags",
-		"list_tags [group_tag] [filter]",
-		"Lists all tags instances of the specified group.",
-		true,
-		list_tags_execute
-	},
-	{
-		"edit_tag",
-		"edit_tag <tag_handle>",
-		"Opens the specified tag instance for editing.",
-		false,
-		edit_tag_execute
-	},
-	{
-		"file_offset",
-		"file_offset <page_address>",
-		"Lists the file offset for a page address.",
-		true,
-		file_offset_execute
-	},
-	{
-		"list_local_resource_tags",
-		"list_local_resource_tags <group_tag>",
-		"Lists all resource-owning tags instances of the specified group within the current cache file.",
-		true,
-		list_local_resource_tags_execute
-	},
-	{
-		"list_resource_tag_metrics",
-		"list_resource_tag_metrics <filename>",
-		"Lists all tags that reference a resource within the given cache file.",
-		true,
-		list_resource_tag_metrics_execute
-	},
-	{
-		"save_cache_file",
-		"save_cache_file",
-		"Saves the changes to the current cache file.",
-		true,
-		save_cache_file_execute
-	}
-};
-
-static s_command_set g_tag_command_sets[k_number_of_tag_command_sets] =
-{
-	{ k_number_of_tag_commands, g_tag_commands }
-};
 
 /* ---------- code */
 
@@ -81,7 +22,55 @@ c_command_context *create_tag_command_context(
 	c_cache_file_reach *file,
 	c_command_context *parent)
 {
-	 return new c_command_context("tags", k_number_of_tag_command_sets, g_tag_command_sets, file, parent);
+	 return new c_command_context(
+		 "tags",
+		 NUMBEROF(k_tag_command_sets),
+		 k_tag_command_sets,
+		 file,
+		 parent);
+}
+
+void print_instances_in_buffer(
+	c_cache_file_reach *cache_file,
+	char const *filter,
+	tag group_tag,
+	c_basic_buffer<void> const &buffer)
+{
+	auto tags_header = cache_file->get_tags_header();
+
+	auto new_buffer = c_basic_buffer<void>(
+		cache_file->get_tags_section_pointer<void>((ulonglong)buffer.get_elements()),
+		buffer.get_size());
+
+	for (auto i = 0; i < tags_header->instances.count; i++)
+	{
+		auto instance = cache_file->get_tag_instance(i);
+
+		if (!instance || !instance->address || instance->group_index == NONE)
+			continue;
+
+		auto definition_address = cache_file->get_tag_definition<uchar>(i);
+
+		if (!definition_address || definition_address < new_buffer.begin() || definition_address >= new_buffer.end())
+			continue;
+
+		auto tag_name = cache_file->get_tag_name(i);
+		auto tag_name_length = csstrlen(tag_name);
+
+		if (filter && !csstrstr((char *)tag_name, filter))
+			continue;
+
+		auto group = cache_file->get_tag_group(instance->group_index);
+		auto cache_file_header = cache_file->get_header();
+
+		if (group_tag == NONE || group->is_in_group(group_tag))
+			printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",
+				i,
+				instance->identifier,
+				cache_file_header->memory_buffer_offset + cache_file->get_page_offset(instance->address),
+				tag_name_length == 0 ? "<unnamed>" : tag_name,
+				cache_file->get_string(group->name));
+	}
 }
 
 bool list_tags_execute(
@@ -119,30 +108,28 @@ bool list_tags_execute(
 
 	auto filter = arg_count > 1 ? arg_values[1] : nullptr;
 
-	for (auto i = 0; i < tags_header->instances.count; i++)
-	{
-		auto instance = file->get_tag_instance(i);
+	puts("tag_post_link_buffer:");
+	print_instances_in_buffer(file, filter, group_tag, header->tag_post_link_buffer);
+	puts("");
 
-		if (!instance || !instance->address || instance->group_index == NONE)
-			continue;
+	puts("tag_language_dependent_read_only_buffer:");
+	print_instances_in_buffer(file, filter, group_tag, header->tag_language_dependent_read_only_buffer);
+	puts("");
 
-		auto tag_name = file->get_tag_name(i);
-		auto tag_name_length = csstrlen(tag_name);
+	puts("tag_language_dependent_read_write_buffer:");
+	print_instances_in_buffer(file, filter, group_tag, header->tag_language_dependent_read_write_buffer);
+	puts("");
 
-		if (filter && !csstrstr((char *)tag_name, filter))
-			continue;
+	puts("tag_language_neutral_read_write_buffer:");
+	print_instances_in_buffer(file, filter, group_tag, header->tag_language_neutral_read_write_buffer);
+	puts("");
 
-		auto group = file->get_tag_group(instance->group_index);
-		auto cache_file_header = file->get_header();
+	puts("tag_language_neutral_write_combined_buffer:");
+	print_instances_in_buffer(file, filter, group_tag, header->tag_language_neutral_write_combined_buffer);
+	puts("");
 
-		if (group_tag == NONE || group->is_in_group(group_tag))
-			printf("[Index: 0x%04lX, Identifier: 0x%04lX, Offset: 0x%llX] %s.%s\n",
-				i,
-				instance->identifier,
-				cache_file_header->memory_buffer_offset + file->get_page_offset(instance->address),
-				tag_name_length == 0 ? "<unnamed>" : tag_name,
-				file->get_string(group->name));
-	}
+	puts("tag_language_neutral_read_only_buffer:");
+	print_instances_in_buffer(file, filter, group_tag, header->tag_language_neutral_read_only_buffer);
 
 	return true;
 }
@@ -230,6 +217,14 @@ bool edit_tag_execute(
 		g_command_context = new c_render_model_command_context(
 			tag_name_string.get_buffer(),
 			(s_render_model_definition *)tag_definition,
+			file,
+			g_command_context);
+		break;
+
+	case k_structure_design_group_tag:
+		g_command_context = new c_structure_design_command_context(
+			tag_name_string.get_buffer(),
+			(s_structure_design_definition *)tag_definition,
 			file,
 			g_command_context);
 		break;
@@ -451,17 +446,25 @@ bool save_cache_file_execute(
 	auto file = g_command_context->get_file();
 	auto header = file->get_header();
 
-	auto stream = fopen(file->get_filename(), "rb+");
+	auto stream = fopen(file->get_filename(), "wb");
 
-	long tags_section_offset, tags_section_size;
+	fseek(stream, sizeof(s_cache_file_header), SEEK_SET);
 
-	auto tags_section_buffer =
-		file->get_section_buffer(_cache_file_section_tags, &tags_section_offset, &tags_section_size);
+	for (auto i = 0, offset = 0; i < k_number_of_cache_file_sections; i++)
+	{
+		long buffer_length = 0;
+		auto buffer = file->get_section_buffer(static_cast<e_cache_file_section>(i), nullptr, &buffer_length);
 
-	fseek(stream, tags_section_offset, SEEK_SET);
-	fwrite(tags_section_buffer, 1, tags_section_size, stream);
+		header->section_offsets[i] = sizeof(s_cache_file_header);
+		header->section_bounds[i].offset = offset;
 
-	auto pos = ftell(stream);
+		fwrite(buffer, sizeof(uchar), buffer_length, stream);
+
+		offset += buffer_length;
+	}
+
+	fseek(stream, 0, SEEK_SET);
+	fwrite(header, sizeof(s_cache_file_header), 1, stream);
 
 	fclose(stream);
 

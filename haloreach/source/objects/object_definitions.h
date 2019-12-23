@@ -107,6 +107,42 @@ enum e_object_runtime_flags
 	k_number_of_object_runtime_flags
 };
 
+enum e_object_attachment_change_color
+{
+	_object_attachment_change_color_none,
+	_object_attachment_change_color_primary,
+	_object_attachment_change_color_secondary,
+	_object_attachment_change_color_tertiary,
+	_object_attachment_change_color_quaternary,
+	k_number_of_object_attachment_change_colors
+};
+
+enum e_object_attachment_flags
+{
+	_object_attachment_force_always_on_bit,
+	_object_attachment_effect_size_scale_from_object_scale_bit,
+	k_number_of_object_attachment_flags
+};
+
+enum e_object_change_color_function_flags
+{
+	_object_change_color_function_blend_in_hsv_bit,
+	_object_change_color_function_more_colors_bit,
+	k_number_of_object_change_color_function_flags
+};
+
+/* ---------- structures */
+
+struct s_object_early_mover_obb
+{
+	string_id node_name;
+	real_bounds x_bounds;
+	real_bounds y_bounds;
+	real_bounds z_bounds;
+	real_euler_angles3d angles;
+};
+static_assert(sizeof(s_object_early_mover_obb) == 0x28);
+
 enum e_object_ai_properties_flags
 {
 	_object_ai_properties_destroyable_cover_bit,
@@ -145,6 +181,16 @@ enum e_object_ai_distance
 	k_number_of_object_ai_distances
 };
 
+struct s_object_ai_properties
+{
+	c_flags<e_object_ai_properties_flags, ulong> flags;
+	string_id ai_type_name;
+	string_id interaction_name;
+	c_enum<e_object_ai_size, short> size;
+	c_enum<e_object_ai_distance, short> leap_jump_speed;
+};
+static_assert(sizeof(s_object_ai_properties) == 0x10);
+
 enum e_object_function_interpolation_mode
 {
 	_object_function_interpolation_constant_velocity,
@@ -153,63 +199,6 @@ enum e_object_function_interpolation_mode
 	_object_function_interpolation_fractional,
 	k_number_of_object_function_interpolations
 };
-
-enum e_object_function_flags
-{
-	_object_function_invert_bit,
-	_object_function_mapping_does_not_control_active_bit,
-	_object_function_always_active_bit,
-	_object_function_random_time_offset_bit,
-	_object_function_always_exports_value_bit,
-	_object_function_turn_off_with_uses_magnitude_bit,
-	k_number_of_object_function_flags
-};
-
-enum e_object_attachment_change_color
-{
-	_object_attachment_change_color_none,
-	_object_attachment_change_color_primary,
-	_object_attachment_change_color_secondary,
-	_object_attachment_change_color_tertiary,
-	_object_attachment_change_color_quaternary,
-	k_number_of_object_attachment_change_colors
-};
-
-enum e_object_attachment_flags
-{
-	_object_attachment_force_always_on_bit,
-	_object_attachment_effect_size_scale_from_object_scale_bit,
-	k_number_of_object_attachment_flags
-};
-
-enum e_object_change_color_function_flags
-{
-	_object_change_color_function_blend_in_hsv_bit,
-	_object_change_color_function_more_colors_bit,
-	k_number_of_object_change_color_function_flags
-};
-
-/* ---------- structures */
-
-struct s_object_early_mover_obb
-{
-	string_id node_name;
-	real_bounds x_bounds;
-	real_bounds y_bounds;
-	real_bounds z_bounds;
-	real_euler_angles3d angles;
-};
-static_assert(sizeof(s_object_early_mover_obb) == 0x28);
-
-struct s_object_ai_properties
-{
-	c_flags<e_object_ai_properties_flags, long> flags;
-	string_id ai_type_name;
-	string_id interaction_name;
-	c_enum<e_object_ai_size, short> size;
-	c_enum<e_object_ai_distance, short> leap_jump_speed;
-};
-static_assert(sizeof(s_object_ai_properties) == 0x10);
 
 struct s_object_function_interpolation
 {
@@ -227,6 +216,17 @@ struct s_object_runtime_interpolator_function
 	long runtime_interpolator_to_object_function_mapping;
 };
 static_assert(sizeof(s_object_runtime_interpolator_function) == 0x4);
+
+enum e_object_function_flags
+{
+	_object_function_invert_bit,
+	_object_function_mapping_does_not_control_active_bit,
+	_object_function_always_active_bit,
+	_object_function_random_time_offset_bit,
+	_object_function_always_exports_value_bit,
+	_object_function_turn_off_with_uses_magnitude_bit,
+	k_number_of_object_function_flags
+};
 
 struct s_object_function
 {

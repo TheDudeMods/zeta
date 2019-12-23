@@ -8,8 +8,11 @@
 
 void bitmap_image_initialize_dds_header(
 	s_bitmap_image *image,
-	s_bitmap_texture_resource *resource,
-	struct s_dds_header *header);
+	s_dds_header *header);
+
+void bitmap_image_apply_dds_header(
+	s_bitmap_image *image,
+	s_dds_header *header);
 
 long bitmap_image_get_virtual_width(
 	s_bitmap_image *image);

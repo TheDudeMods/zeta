@@ -27,3 +27,32 @@ protected:
 /* ---------- prototypes/BITMAP_COMMANDS.CPP */
 
 bool extract_bitmap_execute(long arg_count, char const **arg_values);
+bool inject_bitmap_execute(long arg_count, char const **arg_values);
+
+/* ---------- constants */
+
+extern __declspec(selectany)
+s_command const k_bitmap_commands[] =
+{
+	{
+		"extract_bitmap",
+		"extract_bitmap <image_index> <out_filename>",
+		"Extracts the bitmap image_definition at the specified index to the provided out_filename.",
+		false,
+		extract_bitmap_execute
+	},
+	{
+		"inject_bitmap",
+		"inject_bitmap <image_index> <filename>",
+		"Injects the image file to the bitmap image_definition at the specified index.",
+		false,
+		extract_bitmap_execute
+	}
+};
+
+extern __declspec(selectany)
+s_command_set const k_bitmap_command_sets[] =
+{
+	{ NUMBEROF(k_editing_commands), k_editing_commands },
+	{ NUMBEROF(k_bitmap_commands), k_bitmap_commands }
+};

@@ -18,7 +18,7 @@ struct s_command
 struct s_command_set
 {
 	long command_count;
-	s_command *commands;
+	s_command const *commands;
 };
 
 /* ---------- classes */
@@ -28,16 +28,16 @@ class c_command_context
 protected:
 	c_static_string<256> m_name;
 	long m_command_set_count;
-	s_command_set *m_command_sets;
+	s_command_set const *m_command_sets;
 	c_command_context *m_parent;
 	c_cache_file_reach *m_file;
 
 public:
-	c_command_context(char const *name, long command_set_count, s_command_set *command_sets, c_cache_file_reach *file, c_command_context *parent = nullptr);
+	c_command_context(char const *name, long command_set_count, s_command_set const *command_sets, c_cache_file_reach *file, c_command_context *parent = nullptr);
 
 	virtual char *get_name(char *buffer) const;
 	virtual long get_command_count() const;
-	virtual s_command *get_command(char const *name);
+	virtual s_command const *get_command(char const *name);
 	virtual c_command_context *get_parent() const;
 	virtual c_cache_file_reach *get_file() const;
 

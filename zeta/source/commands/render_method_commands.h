@@ -26,3 +26,24 @@ protected:
 /* ---------- prototypes/BITMAP_COMMANDS.CPP */
 
 bool extract_render_method_constants_execute(long arg_count, char const **arg_values);
+
+/* ---------- constants */
+
+extern __declspec(selectany)
+s_command const k_render_method_commands[] =
+{
+	{
+		"extract_render_method_constants",
+		"extract_render_method_constants [out_filename]",
+		"Extracts the render_method constants to the provided out_filename (if provided).",
+		false,
+		extract_render_method_constants_execute
+	}
+};
+
+extern __declspec(selectany)
+s_command_set const k_render_method_command_sets[] =
+{
+	{ NUMBEROF(k_editing_commands), k_editing_commands },
+	{ NUMBEROF(k_render_method_commands), k_render_method_commands }
+};

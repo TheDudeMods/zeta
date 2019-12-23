@@ -21,7 +21,7 @@ static char *g_command_arg_values[64];
 c_command_context::c_command_context(
 	char const *name,
 	long command_set_count,
-	s_command_set *command_sets,
+	s_command_set const *command_sets,
 	c_cache_file_reach *file,
 	c_command_context *parent) :
 	m_name(name),
@@ -54,7 +54,7 @@ long c_command_context::get_command_count() const
 	return count;
 }
 
-s_command *c_command_context::get_command(
+s_command const *c_command_context::get_command(
 	char const *name)
 {
 	if (!name)

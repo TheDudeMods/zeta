@@ -4,10 +4,9 @@
 
 void bitmap_image_initialize_dds_header(
 	s_bitmap_image *image,
-	s_bitmap_texture_resource *resource,
 	s_dds_header *header)
 {
-	assert(resource);
+	assert(image);
 	assert(header);
 
 	csmemset(header, 0, sizeof(s_dds_header));
@@ -21,8 +20,8 @@ void bitmap_image_initialize_dds_header(
 		FLAG(_dds_header_width_bit) |
 		FLAG(_dds_header_pixel_format_bit);
 
-	header->height = resource->height;
-	header->width = resource->width;
+	header->height = image->height;
+	header->width = image->width;
 
 	if (image->format == _bitmap_format_a8_r8_g8_b8)
 	{
@@ -79,6 +78,41 @@ void bitmap_image_initialize_dds_header(
 
 	header->caps[0] = 0;
 	header->caps[0] = FLAG(12);
+}
+
+void bitmap_image_apply_dds_header(
+	s_bitmap_image *image,
+	s_dds_header *header)
+{
+	assert(image);
+	assert(header);
+
+	image->height = header->height;
+	image->width = header->width;
+
+	if (!header->pixel_format.flags.test(_dds_format_four_cc_bit) &&
+		header->pixel_format.flags.test(_dds_format_rgb_bit) &&
+		header->pixel_format.flags.test(_dds_format_alpha_pixels_bit))
+	{
+		image->format = _bitmap_format_a8_r8_g8_b8;
+	}
+	else if (header->pixel_format.flags.test(_dds_format_four_cc_bit))
+	{
+		switch (header->pixel_format.four_cc)
+		{
+		case '1TXD':
+			image->format = _bitmap_format_dxt1;
+			break;
+
+		case '3TXD':
+			image->format = _bitmap_format_dxt3;
+			break;
+
+		case '5TXD':
+			image->format = _bitmap_format_dxt5;
+			break;
+		}
+	}
 }
 
 long bitmap_image_get_virtual_width(
@@ -172,6 +206,10 @@ long bitmap_image_get_resource_length(
 	case _bitmap_format_a8_r8_g8_b8:
 	case _bitmap_format_x8_r8_g8_b8:
 		length = virtual_width * virtual_height * 4;
+		break;
+
+	case _bitmap_format_unused_1e:
+		length = virtual_width * virtual_height * 8;
 		break;
 	}
 
