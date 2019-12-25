@@ -20,6 +20,7 @@
 #include <rasterizer/rasterizer_shader_definitions.h>
 #include <render_methods/render_method_definitions.h>
 #include <physics/spring_acceleration.h>
+#include <scenario/scenario.h>
 #include <scenario/structure_lightmap_definitions.h>
 #include <structures/structure_bsp_definitions.h>
 
@@ -44,6 +45,8 @@ extern s_tag_group projectile_group;
 extern s_tag_group render_method_group;
 extern s_tag_group render_method_shader_group;
 extern s_tag_group render_model_group;
+extern s_tag_group scenario_group;
+extern s_tag_group scenario_lightmap_group;
 extern s_tag_group scenario_lightmap_bsp_data_group;
 extern s_tag_group scenery_group;
 extern s_tag_group spring_acceleration_group;
@@ -75,6 +78,8 @@ static struct tag_definition
 	{ k_render_method_group_tag, &render_method_group },
 	{ k_render_method_shader_group_tag, &render_method_shader_group },
 	{ k_render_model_group_tag, &render_model_group },
+	{ k_scenario_group_tag, &scenario_group },
+	{ k_scenario_lightmap_group_tag, &scenario_lightmap_group },
 	{ k_scenario_lightmap_bsp_data_group_tag, &scenario_lightmap_bsp_data_group },
 	{ k_scenery_group_tag, &scenery_group },
 	{ k_spring_acceleration_group_tag, &spring_acceleration_group },

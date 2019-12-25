@@ -2,6 +2,30 @@
 
 /* ---------- definitions */
 
+TAG_BLOCK(
+	scenario_lightmap_data_reference_block,
+	sizeof(s_scenario_lightmap_data_reference),
+	NONE)
+{
+	{ _field_tag_reference, "lightmap_data", nullptr },
+	{ _field_tag_reference, "wetness_data", nullptr },
+	{ _field_terminator }
+};
+
+TAG_GROUP(
+	scenario_lightmap_group,
+	k_scenario_lightmap_group_tag,
+	sizeof(s_scenario_lightmap))
+{
+	{ _field_long_integer, "unknown0" },
+	{ _field_block, "lightmap_data_references", &scenario_lightmap_data_reference_block },
+	{ _field_block, "airprobes", nullptr },
+	{ _field_block, "unknown1", nullptr },
+	{ _field_block, "unknown2", nullptr },
+	{ _field_block, "unknown3", nullptr },
+	{ _field_block, "unknown4", nullptr },
+};
+
 extern s_struct_definition render_geometry_struct;
 
 TAG_GROUP(

@@ -55,7 +55,7 @@
     <ClCompile Include="source\physics\water_physics.cpp" />
     <ClCompile Include="source\rasterizer\rasterizer_shader_definitions.cpp" />
     <ClCompile Include="source\render_methods\render_method_definitions.cpp" />
-    <ClCompile Include="source\scenario\scenario.cpp" />
+    <ClCompile Include="source\scenario\scenario_definitions.cpp" />
     <ClCompile Include="source\scenario\structure_lightmap_definitions.cpp" />
     <ClCompile Include="source\simulation\game_interface\simulation_game_position_updates.cpp" />
     <ClCompile Include="source\structures\structure_bsp_definitions.cpp" />

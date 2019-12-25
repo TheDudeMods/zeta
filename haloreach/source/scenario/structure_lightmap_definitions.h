@@ -11,13 +11,35 @@
 
 enum
 {
+	k_scenario_lightmap_group_tag = 'sLdT',
 	k_scenario_lightmap_bsp_data_group_tag = 'Lbsp',
 };
 
 /* ---------- types */
 
+struct s_scenario_lightmap_data_reference
+{
+	s_tag_reference lightmap_data;
+	s_tag_reference wetness_data;
+};
+static_assert(sizeof(s_scenario_lightmap_data_reference) == 0x20);
+
+struct s_scenario_lightmap
+{
+	// TODO: finish
+	long unknown0;
+	c_tag_block<s_scenario_lightmap_data_reference> lightmap_data_references;
+	s_tag_block airprobes;
+	s_tag_block unknown1;
+	s_tag_block unknown2;
+	s_tag_block unknown3;
+	s_tag_block unknown4;
+};
+static_assert(sizeof(s_scenario_lightmap) == 0x4C);
+
 struct s_scenario_lightmap_bsp_data
 {
+	// TODO: finish
 	short unknown1;
 	short bsp_index;
 	long structure_checksum;
