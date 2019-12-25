@@ -108,6 +108,7 @@
     <ClInclude Include="source\objects\widgets\antenna.h" />
     <ClInclude Include="source\objects\widgets\cloth.h" />
     <ClInclude Include="source\physics\character_physics_definitions.h" />
+    <ClInclude Include="source\physics\collision_bsp.h" />
     <ClInclude Include="source\physics\grounded_friction.h" />
     <ClInclude Include="source\physics\havok_collision_damage.h" />
     <ClInclude Include="source\physics\spring_acceleration.h" />

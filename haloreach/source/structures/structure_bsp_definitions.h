@@ -7,6 +7,7 @@
 #include <math/real_math.h>
 #include <tag_files/tag_groups.h>
 #include <geometry/geometry_definitions.h>
+#include <physics/collision_bsp.h>
 
 /* ---------- constants */
 
@@ -46,9 +47,28 @@ static_assert(sizeof(s_structure_design_planar_fog_set) == 0x18);
 
 struct s_structure_bsp_instanced_geometry_definition
 {
-	long unknown0[80];
+	long checksum;
+	real_point3d bounding_sphere_offset;
+	real bounding_sphere_radius;
+	s_collision_bsp collision_bsp;
+	s_tag_block unknown1;
+	s_tag_block unknown2;
+	s_tag_block unknown3;
+	s_tag_block unknown4;
+	s_tag_block unknown5;
+	s_tag_block unknown6;
+	s_tag_block unknown7;
+	s_tag_block unknown8;
+	s_tag_block unknown9;
+	s_tag_block unknown10;
+	s_tag_block unknown11;
+	s_tag_block unknown12;
+	s_tag_block unknown13;
+	s_tag_block unknown14;
+	s_tag_block unknown15;
+	s_tag_block unknown16;
 	c_tag_block_index<s_mesh, short> mesh;
-	c_tag_block_index<s_mesh_compression_resource, short> compression;
+	c_tag_block_index<s_compression_info, short> compression;
 };
 static_assert(sizeof(s_structure_bsp_instanced_geometry_definition) == 0x144);
 
@@ -92,13 +112,13 @@ struct s_structure_bsp_instanced_geometry_instance
 	char unknown4;
 	char unknown5;
 	char unknown6;
-	real unknown7;
-	real unknown8;
-	real unknown9;
-	real unknown10;
-	real unknown11;
-	real unknown12;
-	real unknown13;
+	long unknown7;
+	long unknown8;
+	long unknown9;
+	long unknown10;
+	long unknown11;
+	long unknown12;
+	long unknown13;
 	string_id name;
 };
 static_assert(sizeof(s_structure_bsp_instanced_geometry_instance) == 0xA0);
@@ -432,11 +452,63 @@ struct s_structure_bsp_definition
 	s_tag_block unknown14;
 	s_tag_block unknown15;
 	s_tag_block unknown16;
-	long collision_resource_index;
+	long tag_resources_index;
 	long unused2;
-	long pathfinding_resource_index;
+	long cache_file_tag_resources_index;
 	long unused3;
 	long unknown17;
 	long unknown18;
 };
 static_assert(sizeof(s_structure_bsp_definition) == 0x548);
+
+struct s_structure_bsp_tag_resources
+{
+	c_tag_block<s_collision_bsp> collision_bsp;
+	s_tag_block large_collision_bsp;
+	c_tag_block<s_structure_bsp_instanced_geometry_definition> instanced_geometry_definitions;
+};
+static_assert(sizeof(s_structure_bsp_tag_resources) == 0x24);
+
+struct s_structure_bsp_resource_instanced_geometry_instance
+{
+	real_matrix4x3 matrix;
+	c_tag_block_index<s_structure_bsp_instanced_geometry_definition, short> instance_definition;
+	c_flags<e_structure_bsp_instance_geometry_instance_flags, ushort> flags;
+	c_tag_block_index<s_mesh, short> mesh;
+	c_tag_block_index<s_mesh_compression_resource, short> compression;
+	long seam_bitvector[4];
+	real_bounds x_bounds;
+	real_bounds y_bounds;
+	real_bounds z_bounds;
+	real_point3d world_bounding_sphere_center;
+	real world_bounding_sphere_radius;
+	real unknown1;
+	real unknown2;
+	char unknown3;
+	char unknown4;
+	char unknown5;
+	char unknown6;
+	long unknown7;
+	long unknown8;
+	long unknown9;
+	long unknown10;
+	long unknown11;
+	long unknown12;
+	long unknown13;
+};
+static_assert(sizeof(s_structure_bsp_resource_instanced_geometry_instance) == 0x9C);
+
+struct s_structure_bsp_cache_file_tag_resources
+{
+	c_tag_block<s_structure_bsp_surface> surfaces;
+	c_tag_block<s_structure_bsp_plane> planes;
+	c_tag_block<s_structure_seam_to_edge_mapping> edges_to_seams;
+	s_tag_block pathfinding_data;
+	s_tag_block unknown1;
+	s_tag_block unknown2;
+	c_tag_block<s_structure_bsp_resource_instanced_geometry_instance> instanced_geometry_instances;
+	s_tag_block unknown3;
+	s_tag_block unknown4;
+	s_tag_block unknown5;
+};
+static_assert(sizeof(s_structure_bsp_cache_file_tag_resources) == 0x78);

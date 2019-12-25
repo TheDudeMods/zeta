@@ -135,6 +135,27 @@ bool extract_structure_render_geometry_execute(
 	auto structure_bsp = file->get_tag_definition<s_structure_bsp_definition>(
 		structure_bsp_reference->structure_bsp.index);
 
+	auto tag_resources = c_cache_file_reach_tag_resource<s_structure_bsp_tag_resources>(
+		file, structure_bsp->tag_resources_index);
+
+	auto cache_file_tag_resources = c_cache_file_reach_tag_resource<s_structure_bsp_cache_file_tag_resources>(
+		file, structure_bsp->cache_file_tag_resources_index);
+
+	auto instanced_geometry_definitions = tag_resources.get_data<s_structure_bsp_instanced_geometry_definition>(
+		tag_resources->instanced_geometry_definitions.address);
+
+	auto instanced_geometry_instances = cache_file_tag_resources.get_data<s_structure_bsp_resource_instanced_geometry_instance>(
+		cache_file_tag_resources->instanced_geometry_instances.address);
+
+	auto instance1 = &instanced_geometry_instances[1];
+	auto instance2 = &instanced_geometry_instances[2];
+	auto instance3 = &instanced_geometry_instances[3];
+
+	auto structure_design_reference = scenario->structure_designs.get_element(file, 0);
+
+	auto structure_design = file->get_tag_definition<s_structure_design_definition>(
+		structure_design_reference->structure_design.index);
+
 	auto lightmap_data_reference = lightmap->lightmap_data_references.get_element(file, structure_index);
 
 	auto lightmap_data = file->get_tag_definition<s_scenario_lightmap_bsp_data>(
@@ -143,11 +164,6 @@ bool extract_structure_render_geometry_execute(
 	auto geometry_resource = c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition>(
 		file, lightmap_data->render_geometry.resource_index);
 
-	auto compression_info = lightmap_data->render_geometry.compression_info.count ?
-		file->get_tags_section_pointer_from_page_offset<s_compression_info>(
-			lightmap_data->render_geometry.compression_info.address) :
-		nullptr;
-
 	auto base_index = 1;
 
 	for (auto cluster_index = 0;
@@ -155,12 +171,10 @@ bool extract_structure_render_geometry_execute(
 		cluster_index++)
 	{
 		auto cluster = structure_bsp->clusters.get_element(file, cluster_index);
-		if (!cluster)
-			continue;
+		if (!cluster) continue;
 
 		auto mesh = cluster->mesh.resolve(file, &lightmap_data->render_geometry.meshes);
-		if (!mesh)
-			continue;
+		if (!mesh) continue;
 
 		char mesh_name[256];
 		csnzprintf(mesh_name, 256, "cluster%i", cluster_index);
@@ -169,17 +183,35 @@ bool extract_structure_render_geometry_execute(
 			file,
 			geometry_resource,
 			base_index,
-			compression_info,
+			nullptr,
 			mesh_name,
 			mesh,
 			obj_stream);
 	}
 
-	for (auto instanced_geometry_group_index = 0;
-		instanced_geometry_group_index < structure_bsp->instanced_geometry_groups.count;
-		instanced_geometry_group_index++)
+	for (auto instanced_geometry_instance_index = 0;
+		instanced_geometry_instance_index < cache_file_tag_resources->instanced_geometry_instances.count;
+		instanced_geometry_instance_index++)
 	{
-		// TODO
+		auto instanced_geometry_instance = &instanced_geometry_instances[instanced_geometry_instance_index];
+		auto instanced_geometry_definition = &instanced_geometry_definitions[instanced_geometry_instance->instance_definition.operator short()];
+
+		auto mesh = instanced_geometry_definition->mesh.resolve(file, &lightmap_data->render_geometry.meshes);
+		auto compression = instanced_geometry_definition->compression.resolve(file, &lightmap_data->render_geometry.compression_info);
+		if (!mesh) continue;
+
+		char mesh_name[256];
+		csnzprintf(mesh_name, 256, "instance%i", instanced_geometry_instance_index);
+
+		base_index += mesh_stream_to_obj_file(
+			file,
+			geometry_resource,
+			base_index,
+			compression,
+			mesh_name,
+			mesh,
+			obj_stream,
+			instanced_geometry_instance->matrix.position);
 	}
 
 	fclose(obj_stream);
