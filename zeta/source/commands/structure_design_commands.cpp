@@ -60,12 +60,6 @@ bool extract_rain_geometry_execute(
 	auto geometry_resource = c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition>(
 		file, structure_design->render_geometry.resource_index);
 
-	auto vertex_buffers = geometry_resource.get_data<s_render_geometry_api_vertex_buffer_reference>(
-		geometry_resource->vertex_buffers.address);
-
-	auto index_buffers = geometry_resource.get_data<s_render_geometry_api_index_buffer_reference>(
-		geometry_resource->index_buffers.address);
-
 	auto compression_info = structure_design->render_geometry.compression_info.count ?
 		file->get_tags_section_pointer_from_page_offset<s_compression_info>(
 			structure_design->render_geometry.compression_info.address) :
@@ -88,8 +82,6 @@ bool extract_rain_geometry_execute(
 		base_index += mesh_stream_to_obj_file(
 			file,
 			geometry_resource,
-			vertex_buffers,
-			index_buffers,
 			base_index,
 			compression_info,
 			mesh_name,

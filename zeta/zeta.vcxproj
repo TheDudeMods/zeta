@@ -25,6 +25,8 @@
     <ClCompile Include="source\commands\rasterizer_shader_commands.cpp" />
     <ClCompile Include="source\commands\render_method_commands.cpp" />
     <ClCompile Include="source\commands\render_model_commands.cpp" />
+    <ClCompile Include="source\commands\scenario_lightmap_bsp_data_commands.cpp" />
+    <ClCompile Include="source\commands\structure_bsp_commands.cpp" />
     <ClCompile Include="source\commands\structure_design_commands.cpp" />
     <ClCompile Include="source\commands\tag_commands.cpp" />
     <ClCompile Include="source\main\main.cpp" />
@@ -36,6 +38,8 @@
     <ClInclude Include="source\commands\render_method_commands.h" />
     <ClInclude Include="source\commands\render_model_commands.h" />
     <ClInclude Include="source\commands\rasterizer_shader_commands.h" />
+    <ClInclude Include="source\commands\scenario_lightmap_bsp_data_commands.h" />
+    <ClInclude Include="source\commands\structure_bsp_commands.h" />
     <ClInclude Include="source\commands\structure_design_commands.h" />
     <ClInclude Include="source\commands\tag_commands.h" />
   </ItemGroup>

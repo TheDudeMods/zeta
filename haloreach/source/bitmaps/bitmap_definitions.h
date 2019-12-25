@@ -454,17 +454,23 @@ static_assert(sizeof(s_bitmap_definition) == 0xC0);
 
 struct s_bitmap_texture_resource
 {
-	s_tag_data data;
 	s_tag_data import_data;
+	s_tag_data pixel_data;
 	short width;
 	short height;
 	char depth;
 	char mipmap_count;
 	c_enum<e_bitmap_type, char> type;
-	char unused;
-	c_enum<e_bitmap_format, long> format;
+	char unknown1;
+	long unknown2;
+	long unknown3;
+	c_enum<e_bitmap_format, char> format;
+	c_enum<e_bitmap_curve, char> curve;
+	c_flags<e_bitmap_image_flags, ushort> flags;
+	long unknown4;
+	long unknown5;
 };
-static_assert(sizeof(s_bitmap_texture_resource) == 0x34);
+static_assert(sizeof(s_bitmap_texture_resource) == 0x44);
 
 struct s_bitmap_texture_interop_resource
 {

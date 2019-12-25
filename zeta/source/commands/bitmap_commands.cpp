@@ -53,6 +53,7 @@ bool extract_bitmap_execute(
 
 	auto cache_file = bitmap_context->get_file();
 	auto bitmap = bitmap_context->get_bitmap();
+
 	auto image_definition = bitmap->images.get_element(cache_file, image_index);
 	auto image_resource_handle = bitmap->resources.get_element(cache_file, image_index);
 
@@ -68,11 +69,11 @@ bool extract_bitmap_execute(
 	auto image_resource = bitmap_resource.get_data<s_bitmap_texture_resource>(
 		bitmap_resource->bitmap.address);
 
-	auto image_data = bitmap_resource.get_data<uchar>(
-		image_resource->data.address);
-
 	auto image_import_data = bitmap_resource.get_data<uchar>(
 		image_resource->import_data.address);
+
+	auto image_pixel_data = bitmap_resource.get_data<uchar>(
+		image_resource->pixel_data.address);
 
 	s_dds_header dds_header;
 	bitmap_image_initialize_dds_header(image_definition, &dds_header);
@@ -81,12 +82,9 @@ bool extract_bitmap_execute(
 	
 	fwrite(&dds_header, sizeof(s_dds_header), 1, stream);
 	
-	auto bitmap_resource_length = bitmap_resource.get_data_length();
-	auto predicted_resource_length = bitmap_image_get_resource_length(image_definition);
-
 	fwrite(
 		bitmap_resource.get_data<uchar>() + image_definition->pixel_data_offset,
-		image_resource->import_data.size,
+		image_resource->pixel_data.size,
 		sizeof(char),
 		stream);
 

@@ -36,8 +36,6 @@ s_render_model_definition *c_render_model_command_context::get_render_model()
 long mesh_stream_to_obj_file(
 	c_cache_file_reach *file,
 	c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition> &geometry_resource,
-	s_render_geometry_api_vertex_buffer_reference *vertex_buffers,
-	s_render_geometry_api_index_buffer_reference *index_buffers,
 	long base_index,
 	s_compression_info *compression_info,
 	char const *mesh_name,
@@ -47,6 +45,12 @@ long mesh_stream_to_obj_file(
 {
 	auto parts = &mesh->parts;
 	auto subparts = &mesh->subparts;
+
+	auto vertex_buffers = geometry_resource.get_data<s_render_geometry_api_vertex_buffer_reference>(
+		geometry_resource->vertex_buffers.address);
+
+	auto index_buffers = geometry_resource.get_data<s_render_geometry_api_index_buffer_reference>(
+		geometry_resource->index_buffers.address);
 
 	long vertex_buffer_index = NONE;
 
@@ -260,12 +264,6 @@ bool extract_render_model_execute(
 	auto geometry_resource = c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition>(
 		file, render_model->geometry.resource_index);
 	
-	auto vertex_buffers = geometry_resource.get_data<s_render_geometry_api_vertex_buffer_reference>(
-		geometry_resource->vertex_buffers.address);
-
-	auto index_buffers = geometry_resource.get_data<s_render_geometry_api_index_buffer_reference>(
-		geometry_resource->index_buffers.address);
-
 	auto compression_info = render_model->geometry.compression_info.count ?
 		file->get_tags_section_pointer_from_page_offset<s_compression_info>(
 			render_model->geometry.compression_info.address) :
@@ -304,8 +302,6 @@ bool extract_render_model_execute(
 				base_index += mesh_stream_to_obj_file(
 					file,
 					geometry_resource,
-					vertex_buffers,
-					index_buffers,
 					base_index,
 					compression_info,
 					mesh_name,

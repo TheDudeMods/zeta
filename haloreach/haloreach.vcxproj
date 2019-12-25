@@ -56,6 +56,7 @@
     <ClCompile Include="source\rasterizer\rasterizer_shader_definitions.cpp" />
     <ClCompile Include="source\render_methods\render_method_definitions.cpp" />
     <ClCompile Include="source\scenario\scenario.cpp" />
+    <ClCompile Include="source\scenario\structure_lightmap_definitions.cpp" />
     <ClCompile Include="source\simulation\game_interface\simulation_game_position_updates.cpp" />
     <ClCompile Include="source\structures\structure_bsp_definitions.cpp" />
     <ClCompile Include="source\tag_files\string_ids.cpp" />
@@ -114,6 +115,8 @@
     <ClInclude Include="source\rasterizer\rasterizer_shader_definitions.h" />
     <ClInclude Include="source\render_methods\render_method_definitions.h" />
     <ClInclude Include="source\scenario\scenario.h" />
+    <ClInclude Include="source\scenario\scenario_types.h" />
+    <ClInclude Include="source\scenario\structure_lightmap_definitions.h" />
     <ClInclude Include="source\simulation\game_interface\simulation_game_position_updates.h" />
     <ClInclude Include="source\sound\sound_classes.h" />
     <ClInclude Include="source\sound\sound_definitions.h" />

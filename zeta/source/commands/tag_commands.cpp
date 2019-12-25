@@ -13,6 +13,8 @@
 #include <commands/rasterizer_shader_commands.h>
 #include <commands/render_method_commands.h>
 #include <commands/render_model_commands.h>
+#include <commands/scenario_lightmap_bsp_data_commands.h>
+#include <commands/structure_bsp_commands.h>
 #include <commands/structure_design_commands.h>
 #include <commands/tag_commands.h>
 
@@ -217,6 +219,22 @@ bool edit_tag_execute(
 		g_command_context = new c_render_model_command_context(
 			tag_name_string.get_buffer(),
 			(s_render_model_definition *)tag_definition,
+			file,
+			g_command_context);
+		break;
+
+	case k_scenario_lightmap_bsp_data_group_tag:
+		g_command_context = new c_scenario_lightmap_bsp_data_command_context(
+			tag_name_string.get_buffer(),
+			(s_scenario_lightmap_bsp_data *)tag_definition,
+			file,
+			g_command_context);
+		break;
+
+	case k_structure_bsp_group_tag:
+		g_command_context = new c_structure_bsp_command_context(
+			tag_name_string.get_buffer(),
+			(s_structure_bsp_definition *)tag_definition,
 			file,
 			g_command_context);
 		break;

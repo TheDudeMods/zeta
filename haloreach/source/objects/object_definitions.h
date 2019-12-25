@@ -313,7 +313,7 @@ struct s_object_definition
 	c_enum<e_object_lightmap_shadow_mode, short> lightmap_shadow_mode;
 	c_enum<e_object_sweetener_size, char> sweetener_size;
 	c_enum<e_water_density, char> water_density;
-	c_flags<e_object_runtime_flags, long> runtime_flags;
+	c_flags<e_object_runtime_flags, ulong> runtime_flags;
 	real dynamic_light_sphere_radius;
 	real_point3d dynamic_light_sphere_offset;
 	string_id generic_hud_text;

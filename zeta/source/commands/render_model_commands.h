@@ -29,8 +29,6 @@ protected:
 long mesh_stream_to_obj_file(
 	c_cache_file_reach *file,
 	c_cache_file_reach_tag_resource<s_render_geometry_api_resource_definition> &geometry_resource,
-	s_render_geometry_api_vertex_buffer_reference *vertex_buffers,
-	s_render_geometry_api_index_buffer_reference *index_buffers,
 	long base_index,
 	s_compression_info *compression_info,
 	char const *mesh_name,

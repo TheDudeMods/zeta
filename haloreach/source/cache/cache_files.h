@@ -9,7 +9,7 @@
 #include <memory/allocation_interface.h>
 #include <memory/memory_interface.h>
 #include <tag_files/string_ids.h>
-#include <scenario/scenario.h>
+#include <scenario/scenario_types.h>
 
 /* ---------- constants */
 
