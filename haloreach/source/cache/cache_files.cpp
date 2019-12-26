@@ -115,8 +115,7 @@ c_cache_file_reach::c_cache_file_reach(
 	char const *filename) :
 	c_cache_file(filename),
 	m_header(),
-	m_address_mask(0),
-	m_memory_buffers()
+	m_address_mask(0)
 {
 	c_file_path path;
 	path.set_filename(filename);
@@ -135,18 +134,31 @@ c_cache_file_reach::c_cache_file_reach(
 	// Allocate and read the cache file sections
 	//
 
-	for (auto i = 0; i < k_number_of_cache_file_sections; i++)
-	{
-		auto section_offset = m_header.section_offsets[i] + m_header.section_bounds[i].offset;
-		auto section_size = m_header.section_bounds[i].size;
+	auto debug_section_offset =
+		m_header.section_offsets[_cache_file_section_debug] +
+		m_header.section_bounds[_cache_file_section_debug].offset;
 
-		m_memory_buffers[i] = new char[section_size];
+	auto debug_section_size =
+		m_header.section_bounds[_cache_file_section_debug].size;
 
-		file_set_position(&file, section_offset, _file_error_mode_none);
-		file_read(&file, section_size, _file_error_mode_none, m_memory_buffers[i]);
-	}
+	m_debug_section_buffer = c_basic_buffer(new uchar[debug_section_size], debug_section_size);
 
-	m_address_mask = ((ulonglong)m_memory_buffers[_cache_file_section_tags] - m_header.virtual_base_address);
+	file_set_position(&file, debug_section_offset, _file_error_mode_none);
+	file_read(&file, debug_section_size, _file_error_mode_none, m_debug_section_buffer);
+
+	auto tags_section_offset =
+		m_header.section_offsets[_cache_file_section_tags] +
+		m_header.section_bounds[_cache_file_section_tags].offset;
+
+	auto tags_section_size =
+		m_header.section_bounds[_cache_file_section_tags].size;
+
+	m_tags_section_buffer = c_basic_buffer(new uchar[tags_section_size], tags_section_size);
+
+	file_set_position(&file, tags_section_offset, _file_error_mode_none);
+	file_read(&file, tags_section_size, _file_error_mode_none, m_tags_section_buffer);
+
+	m_address_mask = ((ulonglong)m_tags_section_buffer.get_elements() - m_header.virtual_base_address);
 
 	assert(m_header.tag_post_link_buffer.empty()
 		|| m_header.tag_post_link_buffer.end() == m_header.tag_language_dependent_read_only_buffer.begin());
@@ -164,9 +176,8 @@ c_cache_file_reach::c_cache_file_reach(
 
 c_cache_file_reach::~c_cache_file_reach()
 {
-	for (auto i = 0; i < k_number_of_cache_file_sections; i++)
-		if (m_memory_buffers[i])
-			delete[] m_memory_buffers[i];
+	delete[] m_debug_section_buffer;
+	delete[] m_tags_section_buffer;
 }
 
 s_cache_file_header *c_cache_file_reach::get_header()
@@ -287,20 +298,6 @@ s_cache_file_tag_instance *c_cache_file_reach::get_tag_instance(
 		tags_header->instances.address);
 
 	return &instances[absolute_index];
-}
-
-char *c_cache_file_reach::get_section_buffer(
-	e_cache_file_section section,
-	long *out_offset,
-	long *out_size)
-{
-	if (out_offset)
-		*out_offset = m_header.section_offsets[section] + m_header.section_bounds[section].offset;
-
-	if (out_size)
-		*out_size = m_header.section_bounds[section].size;
-
-	return m_memory_buffers[section];
 }
 
 ulonglong c_cache_file_reach::get_page_offset(

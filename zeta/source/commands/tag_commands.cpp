@@ -450,18 +450,9 @@ bool save_cache_file_execute(
 
 	fseek(stream, sizeof(s_cache_file_header), SEEK_SET);
 
-	for (auto i = 0, offset = 0; i < k_number_of_cache_file_sections; i++)
-	{
-		long buffer_length = 0;
-		auto buffer = file->get_section_buffer(static_cast<e_cache_file_section>(i), nullptr, &buffer_length);
-
-		header->section_offsets[i] = sizeof(s_cache_file_header);
-		header->section_bounds[i].offset = offset;
-
-		fwrite(buffer, sizeof(uchar), buffer_length, stream);
-
-		offset += buffer_length;
-	}
+	//
+	// TODO: write cache file sections
+	//
 
 	fseek(stream, 0, SEEK_SET);
 	fwrite(header, sizeof(s_cache_file_header), 1, stream);

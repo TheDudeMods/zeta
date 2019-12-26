@@ -230,7 +230,8 @@ class c_cache_file_reach : public c_cache_file
 private:
 	s_cache_file_header m_header;
 	ulonglong m_address_mask;
-	char *m_memory_buffers[k_number_of_cache_file_sections];
+	c_basic_buffer<uchar> m_debug_section_buffer;
+	c_basic_buffer<uchar> m_tags_section_buffer;
 
 public:
 	c_cache_file_reach(char const *filename);
@@ -273,8 +274,6 @@ public:
 		struct s_cache_file_resource_shared_file *shared_file,
 		struct s_cache_file_resource_page *page);
 
-	char *get_section_buffer(e_cache_file_section section, long *out_offset, long *out_size);
-
 	template <typename t_type>
 	t_type *get_debug_section_pointer(long offset)
 	{
@@ -283,7 +282,7 @@ public:
 
 		auto actual_offset = offset - m_header.section_bounds[_cache_file_section_debug].offset;
 
-		return reinterpret_cast<t_type *>(m_memory_buffers[_cache_file_section_debug] + actual_offset);
+		return reinterpret_cast<t_type *>(m_debug_section_buffer + actual_offset);
 	}
 
 	template <typename t_type>
@@ -306,7 +305,7 @@ public:
 		if (page_offset == 0)
 			return nullptr;
 
-		return (t_type *)(m_memory_buffers[_cache_file_section_tags] + get_page_offset(page_offset));
+		return (t_type *)(m_tags_section_buffer + get_page_offset(page_offset));
 	}
 
 	template <typename t_tag_definition>
