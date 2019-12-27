@@ -234,9 +234,18 @@ void *c_cache_file_reach::get_resource_page_data(
 
 	if (shared_file)
 	{
-		csmemcpy(resource_cache_file_path, m_filename, csstrrchr((char *)m_filename, '\\') - m_filename);
+		auto last_separator = csstrrchr((char *)m_filename, '\\');
+
+		if (!last_separator)
+			last_separator = csstrrchr((char *)m_filename, '/');
+
+		csmemcpy(resource_cache_file_path, m_filename, last_separator - m_filename);
 
 		auto file_path = csstrrchr(shared_file->path.get_buffer(), '\\');
+
+		if (!file_path)
+			file_path = csstrrchr(shared_file->path.get_buffer(), '/');
+
 		csmemcpy(resource_cache_file_path + csstrlen(resource_cache_file_path), file_path, csstrlen(file_path));
 	}
 	else
