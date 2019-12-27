@@ -239,12 +239,8 @@ void *c_cache_file_reach::get_resource_page_data(
 		if (!last_separator)
 			last_separator = csstrrchr((char *)m_filename, '/');
 
-		if (!last_separator) {
-			csmemcpy(resource_cache_file_path, m_filename, csstrlen(m_filename));
-		}
-		else {
+		if (last_separator)
 			csmemcpy(resource_cache_file_path, m_filename, last_separator - m_filename);
-		}
 
 		auto file_path = csstrrchr(shared_file->path.get_buffer(), '\\');
 
