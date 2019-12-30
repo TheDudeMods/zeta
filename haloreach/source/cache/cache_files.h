@@ -104,103 +104,127 @@ enum e_cache_file_content_hash
 
 struct s_cache_file_header
 {
-	tag header_signature;
+	//Comments represent the size of the data structure (above the line)
+	//and the offset in the .map file (to the right of the line)
+	//This is valid for Halo Reach MCC on PC
 
-	long file_version;
-	long file_length;
-	long file_compressed_length;
+	//sizeof 4
+	tag header_signature; //0x0000
 
-	ulonglong tags_header_address;
+	//sizeof 4
+	long file_version;	//0x004
+	long file_length;	//0x008
+	long file_compressed_length;	//0x000C
 
-	long memory_buffer_offset;
-	long memory_buffer_size;
+	//sizeof 8
+	ulonglong tags_header_address;	//0x0010
 
-	c_static_string<256> source_file;
-	c_static_string<32> build;
-	c_enum<e_scenario_type, short> scenario_type;
-	c_enum<e_scenario_load_type, short> load_type;
+	long memory_buffer_offset;		//0x0018
+	long memory_buffer_size;		//0x001C
 
-	char unknown1;
-	bool tracked_build;
-	char unknown2;
-	char unknown3;
+	//sizeof 1 * 256
+	c_static_string<256> source_file;	//0x0020
+	//sizeof 1 * 32
+	c_static_string<32> build;			//0x0120
 
-	long unknown4;
-	long unknown5;
-	long unknown6;
-	long unknown7;
-	long unknown8;
+	//sizeof 2
+	c_enum<e_scenario_type, short> scenario_type;	//0x0140
+	//sizeof 2
+	c_enum<e_scenario_load_type, short> load_type;	//0x0142
 
-	long string_id_count;
-	long string_ids_buffer_size;
-	long string_id_indices_offset;
-	long string_ids_buffer_offset;
 
-	long unknown9;
+	//sizeof 1
+	char unknown1;				//0x0144
+	//sizeof 1
+	bool tracked_build;			//0x0145
+	char unknown2;				//0x0146
+	char unknown3;				//0x0147
 
-	ulonglong timestamp;
-	ulonglong mainmenu_timestamp;
-	ulonglong shared_timestamp;
-	ulonglong campaign_timestamp;
-	ulonglong multiplayer_timestamp;
+	long unknown4;				//0x0148
+	long unknown5;				//0x014C
+	long unknown6;				//0x0150
+	long unknown7;				//0x0154
+	long unknown8;				//0x0158
 
-	c_static_string<32> name;
+	long string_id_count;			//0x015C
+	long string_ids_buffer_size;	//0x0160
+	long string_id_indices_offset;	//0x0164
+	long string_ids_buffer_offset;	//0x0168
 
-	long unknown15;
+	long unknown9;					//0x016C
 
-	c_static_string<256> scenario_path;
+	ulonglong timestamp;			//0x0170
+	ulonglong mainmenu_timestamp;	//0x0178
+	ulonglong shared_timestamp;		//0x0180
+	ulonglong campaign_timestamp;	//0x0188
+	ulonglong multiplayer_timestamp;	//0x0190
 
-	long minor_version;
+	//sizeof 1 * 32
+	c_static_string<32> name;	//0x0198
 
-	long tag_name_count;
-	long tag_names_buffer_offset;
-	long tag_names_buffer_size;
-	long tag_name_indices_offset;
+	long unknown15;				//0x01B8  one bee eight
 
-	ulong checksum;
+	//sizeof 1 * 256
+	c_static_string<256> scenario_path;		//0x01BC
 
-	long unknown17;
-	long unknown18;
-	long unknown19;
-	long unknown20;
-	long unknown21;
-	long unknown22;
-	long unknown23;
-	long unknown24;
-	long unknown25;
+	long minor_version;			//0x02BC
 
-	ulonglong virtual_base_address;
+	long tag_name_count;		//0x02C0
+	long tag_names_buffer_offset;	//0x02C4
+	long tag_names_buffer_size;		//0x02C8
+	long tag_name_indices_offset;	//0x02CC
 
-	ulong xdk_version;
-	long unknown26;
+	ulong checksum;				//0x02D0
 
-	c_basic_buffer<void> tag_post_link_buffer;
-	c_basic_buffer<void> tag_language_dependent_read_only_buffer;
-	c_basic_buffer<void> tag_language_dependent_read_write_buffer;
-	c_basic_buffer<void> tag_language_neutral_read_write_buffer;
-	c_basic_buffer<void> tag_language_neutral_write_combined_buffer;
-	c_basic_buffer<void> tag_language_neutral_read_only_buffer;
+	long unknown17;				//0x02D4
+	long unknown18;				//0x02D8
+	long unknown19;				//0x02DC
+	long unknown20;				//0x02E0
+	long unknown21;				//0x02E4
+	long unknown22;				//0x02E8
+	long unknown23;				//0x02EC
+	long unknown24;				//0x02F0
+	long unknown25;				//0x02F4
 
-	ulonglong unknown29;
-	ulonglong unknown30;
+	ulonglong virtual_base_address;		//0x02F8
 
-	long sha1_a[5];
-	long sha1_b[5];
-	long sha1_c[5];
+	ulong xdk_version;					//0x0300
+	long unknown26;				//0x0304
 
-	long rsa[64];
+	//sizeof 16
+	c_basic_buffer<void> tag_post_link_buffer;						//0x0308		think this is right, but seems weird in the hex
+	c_basic_buffer<void> tag_language_dependent_read_only_buffer;	//0x0318		
+	c_basic_buffer<void> tag_language_dependent_read_write_buffer;	//0x0328		
+	
+	c_basic_buffer<void> tag_language_neutral_read_write_buffer;	//0x0338		
+	c_basic_buffer<void> tag_language_neutral_write_combined_buffer;//0x0348		
+	c_basic_buffer<void> tag_language_neutral_read_only_buffer;		//0x0358		
 
+	ulonglong unknown29;											//0x0368		
+	ulonglong unknown30;											//0x0370
+
+	//sizeof 4 * 5
+	long sha1_a[5];			//0x0378	
+	long sha1_b[5];			//0x038C
+	long sha1_c[5];			//0x03A0
+	
+	//sizeof 4 * 64
+	long rsa[64];			//0x03B4
+
+	//sizeof 16
 	c_static_array<long,
-		k_number_of_cache_file_sections> section_offsets;
+		k_number_of_cache_file_sections> section_offsets;	//0x04B4
 
+	//sizeof 32
 	c_static_array<s_cache_file_section_file_bounds,
-		k_number_of_cache_file_sections> section_bounds;
+		k_number_of_cache_file_sections> section_bounds;	//0x04C4
 
-	long guid[4];
+	long guid[4];				//0x04E4	
 
-	long unknown34[0x26C2];
-
-	tag footer_signature;
+	//sizeof 39688 or 0x9B08
+	long unknown34[0x26C2];		//0x04F4	
+						
+	tag footer_signature;		//0x9FFC	
 };
 static_assert(sizeof(s_cache_file_header) == 0xA000);
 
